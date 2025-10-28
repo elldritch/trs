@@ -33,3 +33,17 @@ model AuditAppointment {
   applicationId Int
   application   TreatReturnApplication @relation(fields: [applicationId], references: [id])
 }
+
+enum PrintJobStatus {
+  AVAILABLE
+  CLAIMED
+  COMPLETED
+}
+
+model PrintJob {
+  id            Int                    @id @default(autoincrement())
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  status        PrintJobStatus         @default(AVAILABLE)
+  pdfBlob       Bytes?
+}
