@@ -8,7 +8,6 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import { ApplicationStateProvider } from "~/contexts/ApplicationStateContext";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -20,7 +19,8 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Lato:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    // The IRS uses source sans pro, so we're using source sans 3.
+    href: "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap",
   },
 ];
 
@@ -43,11 +43,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <ApplicationStateProvider>
-      <Outlet />
-    </ApplicationStateProvider>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
