@@ -37,7 +37,9 @@ export default function Home() {
           <h1 className="text-2xl font-light">
             Want to see an auditor faster? Book a TRS audit appointment.
           </h1>
-          {/* TODO: Add TRS logo badge image here. */}
+          <div className="h-64 mx-auto w-64 mt-4">
+            <img src="/trs-emblem.png" className="h-full" />
+          </div>
           <Link to="/appointment">
             <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
               Book appointment
@@ -50,7 +52,9 @@ export default function Home() {
           <h1 className="text-2xl font-light">
             Already filed your return? Check your return status online.
           </h1>
-          {/* TODO: Add TRS logo badge image here. */}
+          <div className="h-64 mx-auto w-64 mt-4">
+            <img src="/trs-emblem.png" className="h-full" />
+          </div>
           <Link to="/status">
             <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
               Check my return status
