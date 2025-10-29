@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useLoaderData, useNavigate } from "react-router";
 import {
   loadStepStateOrRedirect,
-  loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
