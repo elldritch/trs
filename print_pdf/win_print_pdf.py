@@ -11,6 +11,22 @@ except ImportError:
     print("Please install it using: pip install pywin32")
     sys.exit(1)
 
+"""
+Notes:
+This script is for Windows, as it uses the win32print API.
+
+This was tested on a Windows 11 machine connected over USB to a Brother
+HL-L6210DW printer. We had to manually download and install the printer driver
+to get this to work. The default/generic Microsoft IPP driver that
+auto-loaded when this printer was connected over a network did not work with
+this script, despite working when manually printing a PDF from Chrome.
+
+This script reads and spools the raw PDF data rather than invoking
+win32api.ShellExecute(0, "print", pdf_path, None, ".", 0) which would print
+the PDF using the default PDF viewer on the system. We didn't try that option
+but I'm documenting it here in case it comes in handy later.
+"""
+
 def print_pdf_and_wait(filepath, printer_name):
     """
     Sends a PDF file to a specific printer using raw data transfer and blocks
@@ -20,7 +36,10 @@ def print_pdf_and_wait(filepath, printer_name):
     If other print jobs are in the queue (from this or other users),
     this script will wait for ALL jobs to complete, not just the one it sent.
 
-    This method sends the file in "RAW" mode, which relies on the printer
+    This is OK for TRS use-case since this script will be the only source of
+    print jobs being sent to the printer.
+
+    Note: This method sends the file in "RAW" mode, which relies on the printer
     being able to interpret the file type directly (e.g., a PostScript printer
     for a PS file, or a modern printer that can handle PDF).
     """
@@ -45,7 +64,7 @@ def print_pdf_and_wait(filepath, printer_name):
         try:
             jobs = win32print.EnumJobs(hPrinter, 0, -1, 2)
             if jobs:
-                print(f"Warning: {len(jobs)} job(s) already in the queue. Will wait for all jobs to clear.")
+                print(f"Warning: {len(jobs)} job(s) already in the queue. This script will add a new job to the queue.")
         except Exception as e:
             # EnumJobs can fail for permissions reasons
             print(f"Warning: Could not read job queue. Monitoring may be unreliable. {e}")
@@ -83,6 +102,8 @@ def print_pdf_and_wait(filepath, printer_name):
 
         # Give the spooler a moment to register the new job
         print("Waiting for job to appear in queue...")
+        # This 3-second wait seems excessive, but for our use case
+        # (expecting 9 print jobs every four minutes), it should be fine.
         time.sleep(3)
 
         # Start polling the print queue
@@ -94,7 +115,7 @@ def print_pdf_and_wait(filepath, printer_name):
                     print("Print queue is clear. Assuming job is complete.")
                     break
                 print(f"Waiting for {len(jobs)} job(s) to finish...")
-                time.sleep(3) # Poll every 3 seconds
+                time.sleep(2) # Poll every 2 seconds
             except Exception as e:
                 print(f"Error while polling queue (job may still be printing): {e}")
                 print("Stopping monitoring loop.")
@@ -112,7 +133,7 @@ def print_pdf_and_wait(filepath, printer_name):
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python win_print_pdf.py \"C:\\path\\to\\your\\file.pdf\" \"Printer Name\"")
-        print("Example: python win_print_pdf.py \"report.pdf\" \"HP LaserJet Pro M404n\"")
+        print("Example: python win_print_pdf.py \"form1040tr.pdf\" \"Brother HL-L6210DW series\"")
         sys.exit(1)
 
     pdf_path = sys.argv[1]
