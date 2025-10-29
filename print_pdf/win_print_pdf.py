@@ -11,16 +11,15 @@ except ImportError:
     print("Please install it using: pip install pywin32")
     sys.exit(1)
 
-def print_pdf_and_wait(filepath):
+def print_pdf_and_wait(filepath, printer_name):
     """
-    Sends a PDF file to the default printer and blocks until the print queue is clear.
+    Sends a PDF file to a specific printer and blocks until the print queue is clear.
 
-    Note: This function works by polling the default printer's job queue.
+    Note: This function works by polling the specified printer's job queue.
     If other print jobs are in the queue (from this or other users),
     this script will wait for ALL jobs to complete, not just the one it sent.
     """
 
-    # Ensure the file path is absolute, as ShellExecute can be sensitive
     abs_filepath = os.path.abspath(filepath)
 
     if not os.path.exists(abs_filepath):
@@ -29,16 +28,7 @@ def print_pdf_and_wait(filepath):
 
     print(f"Attempting to print file: {abs_filepath}")
 
-    printer_name = None
-    try:
-        # Get the default printer name
-        printer_name = win32print.GetDefaultPrinter()
-    except Exception as e:
-        # This can fail if no default printer is set (e.g., in a server environment)
-        print(f"Error: Could not get default printer. Is one set up in Windows? {e}")
-        return
-
-    print(f"Using default printer: {printer_name}")
+    print(f"Using printer: {printer_name}")
 
     hPrinter = None
     try:
@@ -56,28 +46,35 @@ def print_pdf_and_wait(filepath):
             print(f"Warning: Could not read job queue. Monitoring may be unreliable. {e}")
 
         # Send the print job
-        # This uses the Windows "print" verb, which invokes the default
-        # PDF handler (e.g., Acrobat, Edge) to print the file.
+        # This uses the "printto" verb to specify a printer.
+        # This relies on the default PDF handler (Acrobat, Edge, etc.)
+        # correctly supporting the "printto" command.
         print("Sending print job to spooler...")
         try:
             # ShellExecute returns a value > 32 on success
+            # We use the "printto" verb and pass the printer name as the
+            # fourth argument (lpParameters).
+
+            # The printer name needs to be quoted for the command line
+            printer_param = f'"{printer_name}"'
+
             ret = win32api.ShellExecute(
-                0,        # Handle to parent window (0=desktop)
-                "print",  # Verb
+                0,           # Handle to parent window (0=desktop)
+                "printto",   # Verb
                 abs_filepath, # File to print
-                None,     # Parameters (None for print)
-                ".",      # Directory
-                0         # Show command (0=hide)
+                printer_param, # Parameters (printer name)
+                ".",         # Directory
+                0            # Show command (0=hide)
             )
 
             if ret <= 32:
                 print(f"Error: ShellExecute failed with code {ret}. Could not start print job.")
-                print("Make sure a default program is set for printing PDFs.")
+                print(f"Make sure a default PDF program is set and supports 'printto' verb.")
                 return
 
         except Exception as e:
-            print(f"Error: Failed to execute 'print' command. {e}")
-            print("Is a default PDF viewer associated with the 'print' action?")
+            print(f"Error: Failed to execute 'printto' command. {e}")
+            print("Is a default PDF viewer associated with the 'printto' action?")
             return
 
         # Give the spooler a moment to register the new job
@@ -109,9 +106,11 @@ def print_pdf_and_wait(filepath):
             print("Closed printer handle.")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python print_pdf_windows.py \"C:\\path\\to\\your\\file.pdf\"")
+    if len(sys.argv) < 3:
+        print("Usage: python win_print_pdf.py \"C:\\path\\to\\your\\file.pdf\" \"Printer Name\"")
+        print("Example: python win_print_pdf.py \"report.pdf\" \"HP LaserJet Pro M404n\"")
         sys.exit(1)
 
     pdf_path = sys.argv[1]
-    print_pdf_and_wait(pdf_path)
+    printer_arg = sys.argv[2]
+    print_pdf_and_wait(pdf_path, printer_arg)
