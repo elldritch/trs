@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { ApplicationState, QuestionAnswer } from "~/lib/types";
 import { loadAppState, setAppState } from "~/lib/state.client";
@@ -6,12 +6,13 @@ import { loadAppState, setAppState } from "~/lib/state.client";
 type ApplicationStateContextType = {
   state: ApplicationState;
   setAnswer: (questionId: string, answer: string) => void;
+  setReadyToSubmit: (ready: boolean) => void;
 };
 
 const ApplicationStateContext = createContext<ApplicationStateContextType | null>(null);
 
 export function ApplicationStateProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<ApplicationState>({ state: "unstarted" });
+  const [state, setState] = useState<ApplicationState>({ state: "unstarted", readyToSubmit: false });
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export function ApplicationStateProvider({ children }: { children: ReactNode }) 
           state: "in_progress",
           currentStep: 1,
           step1: [{ questionId, answer }],
+          readyToSubmit: false,
         };
       }
 
@@ -49,6 +51,7 @@ export function ApplicationStateProvider({ children }: { children: ReactNode }) 
 
         return {
           ...prevState,
+          readyToSubmit: prevState.readyToSubmit,
           [currentStepKey]: newAnswers,
         };
       }
@@ -56,8 +59,20 @@ export function ApplicationStateProvider({ children }: { children: ReactNode }) 
     });
   };
 
+  const setReadyToSubmit = (ready: boolean) => {
+    setState((prevState) => {
+      if (prevState.state === "in_progress") {
+        return {
+          ...prevState,
+          readyToSubmit: ready,
+        };
+      }
+      return prevState;
+    });
+  };
+
   return (
-    <ApplicationStateContext.Provider value={{ state, setAnswer }}>
+    <ApplicationStateContext.Provider value={{ state, setAnswer, setReadyToSubmit }}>
       {children}
     </ApplicationStateContext.Provider>
   );
