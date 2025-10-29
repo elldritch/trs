@@ -1,3 +1,8 @@
+export type Question = {
+    id: string;
+    text: string;
+}
+
 export type QuestionAnswer = {
     questionId: string;
     answer: string;
