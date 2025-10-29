@@ -4,46 +4,50 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "./generated/prisma"
 }
 
 enum TreatReturnApplicationStatus {
-  IN_PROGRESS
-  SUBMITTED
+  IN_REVIEW
   APPROVED
   REJECTED
 }
 
 model TreatReturnApplication {
-  id               Int                          @id @default(autoincrement())
-  ticketId         String                       @unique
-  status           TreatReturnApplicationStatus @default(IN_PROGRESS)
-  createdAt        DateTime                     @default(now())
-  updatedAt        DateTime                     @updatedAt
-  finalResponses   Json?
-  finalCandyPayout Int?
-  pdfMappings      Json?
-  pdfFilePath      String?
-  AuditAppointment AuditAppointment[]
-}
+  id Int @id @default(autoincrement())
 
-model AuditAppointment {
-  id            Int                    @id @default(autoincrement())
-  timeslot      DateTime
-  applicationId Int
-  application   TreatReturnApplication @relation(fields: [applicationId], references: [id])
+  // A short, unique alpha-numeric identifier for this application.
+  ticketId                 String                       @unique
+  // The status of this application.
+  status                   TreatReturnApplicationStatus
+  // The rendered PDF file content.
+  renderedPdf              Bytes
+  // The start time of the audit appointment time slot, if an appointment has been made for this application.
+  auditAppointmentTimeSlot DateTime?
+
+  // The associated print jobs. Applications can be printed more than once.
+  printJobs PrintJob[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum PrintJobStatus {
-  AVAILABLE
-  CLAIMED
+  UNSTARTED
+  STARTED
   COMPLETED
 }
 
 model PrintJob {
-  id            Int                    @id @default(autoincrement())
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
-  status        PrintJobStatus         @default(AVAILABLE)
-  pdfBlob       Bytes?
+  id Int @id @default(autoincrement())
+
+  // The print job's status.
+  status                   PrintJobStatus
+  // The application to be printed.
+  treatReturnApplicationId Int
+  treatReturnApplication   TreatReturnApplication @relation(fields: [treatReturnApplicationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

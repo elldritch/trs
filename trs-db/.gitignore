@@ -1,2 +1,4 @@
-.env
 /node_modules/
+# This should not yet be checked into version control[^1].
+# [^1]: https://www.prisma.io/docs/orm/prisma-schema/overview/generators#3-exclude-the-generated-directory-from-version-control
+/generated/prisma
