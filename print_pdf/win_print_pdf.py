@@ -13,11 +13,16 @@ except ImportError:
 
 def print_pdf_and_wait(filepath, printer_name):
     """
-    Sends a PDF file to a specific printer and blocks until the print queue is clear.
+    Sends a PDF file to a specific printer using raw data transfer and blocks
+    until the print queue is clear.
 
     Note: This function works by polling the specified printer's job queue.
     If other print jobs are in the queue (from this or other users),
     this script will wait for ALL jobs to complete, not just the one it sent.
+
+    This method sends the file in "RAW" mode, which relies on the printer
+    being able to interpret the file type directly (e.g., a PostScript printer
+    for a PS file, or a modern printer that can handle PDF).
     """
 
     abs_filepath = os.path.abspath(filepath)
@@ -45,36 +50,35 @@ def print_pdf_and_wait(filepath, printer_name):
             # EnumJobs can fail for permissions reasons
             print(f"Warning: Could not read job queue. Monitoring may be unreliable. {e}")
 
-        # Send the print job
-        # This uses the "printto" verb to specify a printer.
-        # This relies on the default PDF handler (Acrobat, Edge, etc.)
-        # correctly supporting the "printto" command.
         print("Sending print job to spooler...")
         try:
-            # ShellExecute returns a value > 32 on success
-            # We use the "printto" verb and pass the printer name as the
-            # fourth argument (lpParameters).
+            # Open the PDF file in binary read mode
+            with open(abs_filepath, 'rb') as f:
+                pdf_data = f.read()
+        except Exception as e:
+            print(f"Error: Failed to open pdf in binary read mode. {e}")
+            return
 
-            # The printer name needs to be quoted for the command line
-            printer_param = f'"{printer_name}"'
-
-            ret = win32api.ShellExecute(
-                0,           # Handle to parent window (0=desktop)
-                "printto",   # Verb
-                abs_filepath, # File to print
-                printer_param, # Parameters (printer name)
-                ".",         # Directory
-                0            # Show command (0=hide)
-            )
-
-            if ret <= 32:
-                print(f"Error: ShellExecute failed with code {ret}. Could not start print job.")
-                print(f"Make sure a default PDF program is set and supports 'printto' verb.")
+        try:
+            # Start a print job. The job title is the filename.
+            # The "RAW" datatype indicates the data is sent without modification.
+            job_id = win32print.StartDocPrinter(hPrinter, 1, (os.path.basename(abs_filepath), None, "RAW"))
+            if job_id == 0:
+                print("Error: StartDocPrinter failed. Could not start print job.")
                 return
 
+            # Start the page
+            win32print.StartPagePrinter(hPrinter)
+            # Write the file content to the printer
+            win32print.WritePrinter(hPrinter, pdf_data)
+            # End the page
+            win32print.EndPagePrinter(hPrinter)
+
+            # End the print job
+            win32print.EndDocPrinter(hPrinter)
+            print("Print job sent successfully.")
         except Exception as e:
-            print(f"Error: Failed to execute 'printto' command. {e}")
-            print("Is a default PDF viewer associated with the 'printto' action?")
+            print(f"Error: Failed to send job to printer. {e}")
             return
 
         # Give the spooler a moment to register the new job
