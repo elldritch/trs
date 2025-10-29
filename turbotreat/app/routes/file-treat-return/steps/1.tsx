@@ -11,9 +11,7 @@ export type Step1State = {
 };
 
 export function clientLoader() {
-  console.log("a");
   const treatReturnState = loadStepStateOrRedirect(1);
-  console.log("b");
 
   // Validate state. If state fails validation, reset it to initial state.
   if (typeof treatReturnState.step1.firstName !== "string") {
