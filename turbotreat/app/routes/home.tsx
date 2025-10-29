@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <header className="h-8 px-4 mt-4">
-        <img src="/public/unintuit-turbotreat.png" className="h-full" />
+        <img src="/unintuit-turbotreat.png" className="h-full" />
       </header>
       <main className="p-4">
         <div className="rounded-lg bg-stone-100 py-10 px-8 text-center">
@@ -25,9 +25,35 @@ export default function Home() {
           <p className="text-sm font-light mt-6">
             Get every treat you deserve on your refund, guaranteed*
           </p>
-          <Link to="/application">
-            <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2">
+          <Link to="/file">
+            <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
               File my return
+            </button>
+          </Link>
+        </div>
+      </main>
+      <main className="p-4">
+        <div className="rounded-lg bg-stone-100 py-10 px-8 text-center">
+          <h1 className="text-2xl font-light">
+            Want to see an auditor faster? Book a TRS audit appointment.
+          </h1>
+          {/* TODO: Add TRS logo badge image here. */}
+          <Link to="/appointment">
+            <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
+              Book appointment
+            </button>
+          </Link>
+        </div>
+      </main>
+      <main className="p-4">
+        <div className="rounded-lg bg-stone-100 py-10 px-8 text-center">
+          <h1 className="text-2xl font-light">
+            Already filed your return? Check your return status online.
+          </h1>
+          {/* TODO: Add TRS logo badge image here. */}
+          <Link to="/status">
+            <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
+              Check my return status
             </button>
           </Link>
         </div>
