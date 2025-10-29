@@ -1,7 +1,7 @@
 import { Form } from "react-router";
 import type { Route } from "./+types/submit";
 import { useAppState } from "~/contexts/ApplicationStateContext";
-import type { ApplicationState } from "~/lib/types";
+import type { ApplicationState, QuestionAnswer } from "~/lib/types";
 import { prisma } from "trs-db";
 
 
@@ -81,12 +81,28 @@ export async function action({
 export default function Submit({
   actionData,
 }: Route.ComponentProps) {
-  const { state } = useAppState() as { state: ApplicationState };
+  const { state } = useAppState();
 
   return (
     <div>
       <h1>Submit</h1>
       {/* TODO: Add the "review form" UI here too */}
+      <div>
+        <h2>Review your answers</h2>
+        {Object.entries(state)
+          .filter(([step, answers]) => step.startsWith("step") && Array.isArray(answers))
+          .map(([step, answers]: [string, QuestionAnswer[]]) => (
+            <div key={step} className="mb-4">
+              {/* I know it's janky to have the string replace but prob fine for this project */}
+              <h3>{step} - <a href={`/application/steps/${step.replace("step", "")}`}>Edit</a></h3>
+              <ul>
+                {answers.map((answer) => (
+                  <li key={answer.questionId}>{answer.questionId}: {answer.answer}</li>
+                ))}
+              </ul>
+            </div>
+          ))} 
+      </div>
       <Form method="post">
         <input type="hidden" name="state" value={JSON.stringify(state)} />
         <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2" type="submit">
