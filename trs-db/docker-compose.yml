@@ -1,0 +1,12 @@
+name: trs-db
+
+services:
+  database:
+    image: postgres:16
+    restart: unless-stopped
+    expose:
+      - "5432"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/var/lib/postgresql/data

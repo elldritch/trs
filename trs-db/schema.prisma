@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TreatReturnApplicationStatus {
+  IN_PROGRESS
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model TreatReturnApplication {
+  id               Int                          @id @default(autoincrement())
+  ticketId         String                       @unique
+  status           TreatReturnApplicationStatus @default(IN_PROGRESS)
+  createdAt        DateTime                     @default(now())
+  updatedAt        DateTime                     @updatedAt
+  finalResponses   Json?
+  finalCandyPayout Int?
+  pdfMappings      Json?
+  pdfFilePath      String?
+  AuditAppointment AuditAppointment[]
+}
+
+model AuditAppointment {
+  id            Int                    @id @default(autoincrement())
+  timeslot      DateTime
+  applicationId Int
+  application   TreatReturnApplication @relation(fields: [applicationId], references: [id])
+}
+
+enum PrintJobStatus {
+  AVAILABLE
+  CLAIMED
+  COMPLETED
+}
+
+model PrintJob {
+  id            Int                    @id @default(autoincrement())
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  status        PrintJobStatus         @default(AVAILABLE)
+  pdfBlob       Bytes?
+}
