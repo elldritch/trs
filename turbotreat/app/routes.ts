@@ -23,6 +23,7 @@ export default [
     ...prefix("step", [
       route("1", "routes/file-treat-return/steps/1.tsx"),
       route("2", "routes/file-treat-return/steps/2.tsx"),
+      route("3", "routes/file-treat-return/steps/3.tsx"),
     ]),
     // At the very end, we present a review screen and submit the application to
     // the database. We then clear the application state from `localStorage`,
