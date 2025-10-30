@@ -43,7 +43,6 @@ export default function Step14() {
   const [parents, setParents] = useState<ParentInfo[]>(
     treatReturnState.step14?.parents || []
   );
-  const [showParentsHelp, setShowParentsHelp] = useState(false);
   const [newParent, setNewParent] = useState<Omit<ParentInfo, 'willEatCandy'> & { willEatCandy: string }>({ 
     name: "", 
     costume: "",
@@ -89,26 +88,9 @@ export default function Step14() {
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
-          <div className="flex items-center mb-2">
-            <legend className="text-xl font-bold">
-              Do you currently live with any parent or guardian?
-            </legend>
-            <button 
-              onClick={() => setShowParentsHelp(!showParentsHelp)}
-              className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-              aria-label="Help with living situation"
-            >
-              ?
-            </button>
-          </div>
-          {showParentsHelp && (
-            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Parents/Guardians</h4>
-              <p className="text-sm">
-                This includes any parent or legal guardian you live with, even if only part-time. Select 'No' only if you don't live with any parents or guardians.
-              </p>
-            </div>
-          )}
+          <legend className="text-xl font-bold mb-4">
+            Do you currently live with any parent or guardian?
+          </legend>
           <div className="space-x-4">
             <label className="inline-flex items-center">
               <input
