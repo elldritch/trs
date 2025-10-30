@@ -24,7 +24,6 @@ export default [
       route("13", "routes/file-treat-return/steps/13.tsx"),
       route("14", "routes/file-treat-return/steps/14.tsx"),
       route("15", "routes/file-treat-return/steps/15.tsx"),
-      route("16", "routes/file-treat-return/steps/16.tsx"),
     ]),
     route("finish", "routes/file-treat-return/submit.tsx"),
   ]),

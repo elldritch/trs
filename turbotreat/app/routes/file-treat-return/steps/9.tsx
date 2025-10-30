@@ -7,8 +7,9 @@ import {
 
 
 type Step9State = {
-  filled1040TRES: "" | "yes" | "no";
-  candiesPaid: string;
+  homeworkCompleted: "" | "yes" | "no";
+  totalHomework: string;
+  homeworkAtHome: string;
 };
 
 export type { Step9State };
@@ -19,7 +20,7 @@ export function clientLoader() {
   if (!treatReturnState.step9) {
     const initialState = {
       ...treatReturnState,
-      step9: { filled1040TRES: "", candiesPaid: "" } as Step9State,
+      step9: { homeworkCompleted: "", totalHomework: "", homeworkAtHome: "" } as Step9State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -31,54 +32,35 @@ export function clientLoader() {
 export default function Step9() {
   const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [filled1040TRES, setFilled1040TRES] = useState(treatReturnState.step9.filled1040TRES);
-  const [candiesPaid, setCandiesPaid] = useState(treatReturnState.step9.candiesPaid);
-  const [showHelp, setShowHelp] = useState(false);
+  const [homeworkCompleted, setHomeworkCompleted] = useState(treatReturnState.step9.homeworkCompleted);
+  const [totalHomework, setTotalHomework] = useState(treatReturnState.step9.totalHomework);
+  const [homeworkAtHome, setHomeworkAtHome] = useState(treatReturnState.step9.homeworkAtHome);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step9: { filled1040TRES, candiesPaid },
+      step9: { homeworkCompleted, totalHomework, homeworkAtHome },
     });
-  }, [filled1040TRES, candiesPaid]);
+  }, [homeworkCompleted, totalHomework, homeworkAtHome]);
+
+  const isFormValid = homeworkCompleted === "no" || 
+                     (homeworkCompleted === "yes" && totalHomework && homeworkAtHome);
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
-          <div className="flex items-center mb-2">
-            <legend className="text-xl font-bold">
-              Have you already filled out a form 1040-TR-ES earlier this year?
-            </legend>
-            <button 
-              onClick={() => setShowHelp(!showHelp)}
-              className="ml-2 text-orange-500 hover:text-orange-700"
-              aria-label="What is form 1040-TR-ES?"
-            >
-              ?
-            </button>
-          </div>
-          
-          {showHelp && (
-            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">What is form 1040-TR-ES?</h4>
-              <p className="text-sm">
-                Form 1040-TR-ES is used to submit estimated treat tax payments for treat income that is not subject to withholding. 
-                For instance, if you made treats yourself (self-employed treat income), or received treats from a house that did not 
-                issue you a form W-2-TR, that treat income might not have been subject to withholding. The TRS collects candy in a 
-                pay-as-you-go system, so estimated taxes on non-withheld treat income must be paid quarterly using Form 1040-TR-ES.
-              </p>
-            </div>
-          )}
-          
+          <legend className="text-xl font-bold mb-4">
+            Over the past year, have you completed at least three homework assignments?
+          </legend>
           <div className="space-x-4 mb-6">
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="1040tres"
+                name="homework-completed"
                 value="yes"
-                checked={filled1040TRES === "yes"}
-                onChange={(e) => setFilled1040TRES(e.target.value as "yes" | "no")}
+                checked={homeworkCompleted === "yes"}
+                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">Yes</span>
@@ -86,58 +68,66 @@ export default function Step9() {
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="1040tres"
+                name="homework-completed"
                 value="no"
-                checked={filled1040TRES === "no"}
-                onChange={(e) => setFilled1040TRES(e.target.value as "yes" | "no")}
+                checked={homeworkCompleted === "no"}
+                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">No</span>
             </label>
           </div>
 
-          {filled1040TRES === "yes" && (
-            <div className="mt-4">
-              <label className="block text-lg font-medium mb-2">
-                How many pieces of candy did you pay via form 1040-TR-ES?
-              </label>
-              <div className="text-sm text-gray-600 mb-2">
-                <p className="mb-2">
-                  <strong>Note:</strong> Estimated treat payments are made by weight, but deductions for estimated treat 
-                  payments are determined by converting estimated treat payment weights to a number of Standard Candies (SCs).
-                </p>
-                <p>
-                  To determine how many SCs you paid, take the total weight of the candy you paid in each quarter by consulting 
-                  box 13 of form 1040-TR-ES, and dividing by the Standard Candy weight to candy pieces conversion ratio for the given tax year. 
-                  The Standard Candy weight to candy pieces conversion schedule is available as form SCTR-2. The standard conversion ratio 
-                  for chocolate type candies for the 2025 tax year is 16.21g/pc.
-                </p>
+          {homeworkCompleted === "yes" && (
+            <div className="space-y-6 pl-6 border-l-2 border-gray-200">
+              <div>
+                <label className="block text-lg font-medium mb-2">
+                  How many homework assignments have you completed in total over the past year?
+                </label>
+                <input
+                  type="number"
+                  min="3"
+                  step="1"
+                  value={totalHomework}
+                  onChange={(e) => setTotalHomework(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  placeholder="Enter number of assignments"
+                />
               </div>
-              <input
-                type="number"
-                min="0"
-                step="1"
-                value={candiesPaid}
-                onChange={(e) => setCandiesPaid(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="Enter number of candies"
-              />
+
+              <div>
+                <label className="block text-lg font-medium mb-2">
+                  Of the homework assignments you've completed, how many of them were completed at your home 
+                  (rather than at school, at a library, or somewhere else)?
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max={totalHomework || ""}
+                  step="1"
+                  value={homeworkAtHome}
+                  onChange={(e) => setHomeworkAtHome(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  placeholder={`Enter number (max ${totalHomework || "—"})`}
+                  disabled={!totalHomework}
+                />
+              </div>
             </div>
           )}
         </fieldset>
 
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate("/file/step/8")}
+            onClick={() => navigate("/file/step/9")}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             Previous
           </button>
           <button
-            onClick={() => navigate("/file/step/10")}
-            disabled={!filled1040TRES || (filled1040TRES === "yes" && !candiesPaid)}
+            onClick={() => navigate("/file/step/11")}
+            disabled={!homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))}
             className={`px-4 py-2 rounded ${
-              !filled1040TRES || (filled1040TRES === "yes" && !candiesPaid)
+              !homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-orange-500 text-white hover:bg-orange-600"
             }`}

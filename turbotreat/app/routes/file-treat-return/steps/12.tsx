@@ -5,22 +5,11 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
-
-type Step12State = {
-  hasCommute: "" | "yes" | "no";
-  transportMethod: string;
+export type Step12State = {
+  willStudyNextYear: string;
+  candyForStudyActivities: string;
+  studyCandyPercentage: string;
 };
-
-const transportOptions = [
-  "Walking",
-  "Bicycle",
-  "Skateboard/Scooter",
-  "Car (driven by someone else)",
-  "Public Transportation",
-  "Other"
-];
-
-export type { Step12State };
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
@@ -28,7 +17,11 @@ export function clientLoader() {
   if (!treatReturnState.step12) {
     const initialState = {
       ...treatReturnState,
-      step12: { hasCommute: "", transportMethod: "" } as Step12State,
+      step12: { 
+        willStudyNextYear: "",
+        candyForStudyActivities: "",
+        studyCandyPercentage: ""
+      } as Step12State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -40,47 +33,55 @@ export function clientLoader() {
 export default function Step12() {
   const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [hasCommute, setHasCommute] = useState(treatReturnState.step12.hasCommute);
-  const [transportMethod, setTransportMethod] = useState(treatReturnState.step12.transportMethod);
-  const [showOtherInput, setShowOtherInput] = useState(
-    transportMethod && !transportOptions.includes(transportMethod)
+  const [willStudyNextYear, setWillStudyNextYear] = useState(
+    treatReturnState.step12?.willStudyNextYear || ""
+  );
+  const [candyForStudyActivities, setCandyForStudyActivities] = useState(
+    treatReturnState.step12?.candyForStudyActivities || ""
+  );
+  const [studyCandyPercentage, setStudyCandyPercentage] = useState(
+    treatReturnState.step12?.studyCandyPercentage || ""
   );
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step12: { hasCommute, transportMethod },
+      step12: { 
+        willStudyNextYear,
+        candyForStudyActivities,
+        studyCandyPercentage
+      },
     });
-  }, [hasCommute, transportMethod]);
+  }, [willStudyNextYear, candyForStudyActivities, studyCandyPercentage, treatReturnState]);
 
-  const handleTransportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setTransportMethod(value);
-    setShowOtherInput(value === "Other");
-    if (value !== "Other") {
-      setTransportMethod(value);
-    } else {
-      setTransportMethod("");
+  const isFormValid = () => {
+    if (willStudyNextYear === "") {
+      return false;
     }
+    if (willStudyNextYear === "yes" && candyForStudyActivities === "") {
+      return false;
+    }
+    if (candyForStudyActivities === "yes" && studyCandyPercentage === "") {
+      return false;
+    }
+    return true;
   };
-
-  const isFormValid = hasCommute === "no" || (hasCommute === "yes" && transportMethod);
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
           <legend className="text-xl font-bold mb-4">
-            Do you regularly commute to school or work?
+            Will you be studying, reading, doing homework, learning new things, or spending time in a library ("study-oriented activities") over the upcoming year?
           </legend>
-          <div className="space-x-4 mb-6">
+          <div className="space-x-4">
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="has-commute"
+                name="will-study"
                 value="yes"
-                checked={hasCommute === "yes"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
+                checked={willStudyNextYear === "yes"}
+                onChange={() => setWillStudyNextYear("yes")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">Yes</span>
@@ -88,68 +89,93 @@ export default function Step12() {
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="has-commute"
+                name="will-study"
                 value="no"
-                checked={hasCommute === "no"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
+                checked={willStudyNextYear === "no"}
+                onChange={() => setWillStudyNextYear("no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">No</span>
             </label>
           </div>
-
-          {hasCommute === "yes" && (
-            <div className="pl-6 border-l-2 border-gray-200 space-y-4">
-              <div>
-                <label htmlFor="transport-method" className="block text-lg font-medium mb-2">
-                  Which of the following means of transportation do you most frequently use to commute to school or work?
-                </label>
-                <select
-                  id="transport-method"
-                  value={showOtherInput ? "Other" : transportMethod}
-                  onChange={handleTransportChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Select an option</option>
-                  {transportOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {showOtherInput && (
-                <div>
-                  <label htmlFor="other-transport" className="block text-sm font-medium text-gray-700 mb-1">
-                    Please specify:
-                  </label>
-                  <input
-                    type="text"
-                    id="other-transport"
-                    value={transportMethod}
-                    onChange={(e) => setTransportMethod(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Enter your transportation method"
-                  />
-                </div>
-              )}
-            </div>
-          )}
         </fieldset>
+
+        {willStudyNextYear === "yes" && (
+          <fieldset className="mb-6">
+            <legend className="text-xl font-bold mb-4">
+              Will your candy collected over the past year be consumed during or before study-oriented activities in the upcoming year?
+            </legend>
+            <div className="space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="candy-for-study"
+                  value="yes"
+                  checked={candyForStudyActivities === "yes"}
+                  onChange={() => setCandyForStudyActivities("yes")}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">Yes</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="candy-for-study"
+                  value="no"
+                  checked={candyForStudyActivities === "no"}
+                  onChange={() => setCandyForStudyActivities("no")}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">No</span>
+              </label>
+            </div>
+            
+            {candyForStudyActivities === "yes" && (
+              <div className="mt-4">
+                <label className="block text-lg font-medium mb-2">
+                  About what percentage of the candy you've collected over the past year do you estimate will be consumed in support of these study-oriented activities?
+                </label>
+                <div className="w-32">
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={studyCandyPercentage}
+                      onChange={(e) => setStudyCandyPercentage(e.target.value)}
+                      className="w-full p-2 border rounded pr-12"
+                      placeholder="0-100"
+                    />
+                    <span className="absolute right-3 top-2 text-gray-500">%</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </fieldset>
+        )}
 
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate("/file/step/11")}
+            onClick={() => navigate("/file/step/12")}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             Previous
           </button>
           <button
-            onClick={() => navigate("/file/step/13")}
-            disabled={!hasCommute || (hasCommute === "yes" && !transportMethod)}
+            disabled={!isFormValid()}
+            onClick={() => {
+              setTreatReturnState({
+                ...treatReturnState,
+                step12: { 
+                  willStudyNextYear,
+                  candyForStudyActivities,
+                  studyCandyPercentage: candyForStudyActivities === "yes" ? studyCandyPercentage : ""
+                },
+              });
+              navigate("/file/step/14");
+            }}
             className={`px-4 py-2 rounded ${
-              !hasCommute || (hasCommute === "yes" && !transportMethod)
+              !isFormValid()
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-orange-500 text-white hover:bg-orange-600"
             }`}

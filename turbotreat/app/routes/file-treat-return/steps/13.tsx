@@ -5,10 +5,15 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
+type ParentInfo = {
+  name: string;
+  costume: string;
+  willEatCandy: string;
+};
+
 export type Step13State = {
-  willStudyNextYear: string;
-  candyForStudyActivities: string;
-  studyCandyPercentage: string;
+  livesWithParents: string;
+  parents: ParentInfo[];
 };
 
 export function clientLoader() {
@@ -18,9 +23,8 @@ export function clientLoader() {
     const initialState = {
       ...treatReturnState,
       step13: { 
-        willStudyNextYear: "",
-        candyForStudyActivities: "",
-        studyCandyPercentage: ""
+        livesWithParents: "",
+        parents: [],
       } as Step13State,
     };
     setTreatReturnState(initialState);
@@ -33,55 +37,68 @@ export function clientLoader() {
 export default function Step13() {
   const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [willStudyNextYear, setWillStudyNextYear] = useState(
-    treatReturnState.step13?.willStudyNextYear || ""
+  const [livesWithParents, setLivesWithParents] = useState(
+    treatReturnState.step13?.livesWithParents || ""
   );
-  const [candyForStudyActivities, setCandyForStudyActivities] = useState(
-    treatReturnState.step13?.candyForStudyActivities || ""
+  const [parents, setParents] = useState<ParentInfo[]>(
+    treatReturnState.step13?.parents || []
   );
-  const [studyCandyPercentage, setStudyCandyPercentage] = useState(
-    treatReturnState.step13?.studyCandyPercentage || ""
-  );
+  const [newParent, setNewParent] = useState<Omit<ParentInfo, 'willEatCandy'> & { willEatCandy: string }>({ 
+    name: "", 
+    costume: "",
+    willEatCandy: ""
+  });
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
       step13: { 
-        willStudyNextYear,
-        candyForStudyActivities,
-        studyCandyPercentage
+        livesWithParents,
+        parents,
       },
     });
-  }, [willStudyNextYear, candyForStudyActivities, studyCandyPercentage, treatReturnState]);
+  }, [livesWithParents, parents, treatReturnState]);
+
+  const addParent = () => {
+    if (newParent.name.trim() && newParent.costume.trim() && newParent.willEatCandy) {
+      setParents([...parents, {
+        ...newParent,
+        willEatCandy: newParent.willEatCandy
+      }]);
+      setNewParent({ name: "", costume: "", willEatCandy: "" });
+    }
+  };
+
+  const removeParent = (index: number) => {
+    const updatedParents = [...parents];
+    updatedParents.splice(index, 1);
+    setParents(updatedParents);
+  };
 
   const isFormValid = () => {
-    if (willStudyNextYear === "") {
-      return false;
-    }
-    if (willStudyNextYear === "yes" && candyForStudyActivities === "") {
-      return false;
-    }
-    if (candyForStudyActivities === "yes" && studyCandyPercentage === "") {
-      return false;
-    }
+    if (livesWithParents === "") return false;
+    if (livesWithParents === "yes" && parents.length === 0) return false;
     return true;
   };
+  
+  // Always show the form, but validate based on selection
+  const shouldShowParentForm = livesWithParents === "yes";
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
           <legend className="text-xl font-bold mb-4">
-            Will you be studying, reading, doing homework, learning new things, or spending time in a library ("study-oriented activities") over the upcoming year?
+            Do you currently live with any parent or guardian?
           </legend>
           <div className="space-x-4">
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="will-study"
+                name="lives-with-parents"
                 value="yes"
-                checked={willStudyNextYear === "yes"}
-                onChange={() => setWillStudyNextYear("yes")}
+                checked={livesWithParents === "yes"}
+                onChange={() => setLivesWithParents("yes")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">Yes</span>
@@ -89,10 +106,10 @@ export default function Step13() {
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="will-study"
+                name="lives-with-parents"
                 value="no"
-                checked={willStudyNextYear === "no"}
-                onChange={() => setWillStudyNextYear("no")}
+                checked={livesWithParents === "no"}
+                onChange={() => setLivesWithParents("no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">No</span>
@@ -100,63 +117,103 @@ export default function Step13() {
           </div>
         </fieldset>
 
-        {willStudyNextYear === "yes" && (
-          <fieldset className="mb-6">
-            <legend className="text-xl font-bold mb-4">
-              Will your candy collected over the past year be consumed during or before study-oriented activities in the upcoming year?
-            </legend>
-            <div className="space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="candy-for-study"
-                  value="yes"
-                  checked={candyForStudyActivities === "yes"}
-                  onChange={() => setCandyForStudyActivities("yes")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="candy-for-study"
-                  value="no"
-                  checked={candyForStudyActivities === "no"}
-                  onChange={() => setCandyForStudyActivities("no")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-            
-            {candyForStudyActivities === "yes" && (
-              <div className="mt-4">
-                <label className="block text-lg font-medium mb-2">
-                  About what percentage of the candy you've collected over the past year do you estimate will be consumed in support of these study-oriented activities?
-                </label>
-                <div className="w-32">
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={studyCandyPercentage}
-                      onChange={(e) => setStudyCandyPercentage(e.target.value)}
-                      className="w-full p-2 border rounded pr-12"
-                      placeholder="0-100"
-                    />
-                    <span className="absolute right-3 top-2 text-gray-500">%</span>
+        {shouldShowParentForm && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-3">Add Parent/Guardian</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newParent.name}
+                    onChange={(e) => setNewParent({...newParent, name: e.target.value})}
+                    className="w-full p-2 border rounded"
+                    placeholder="First name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Costume
+                  </label>
+                  <input
+                    type="text"
+                    value={newParent.costume}
+                    onChange={(e) => setNewParent({...newParent, costume: e.target.value})}
+                    className="w-full p-2 border rounded"
+                    placeholder="Costume description"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Will eat your candy?
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="will-eat-candy"
+                        value="yes"
+                        checked={newParent.willEatCandy === "yes"}
+                        onChange={() => setNewParent({...newParent, willEatCandy: "yes"})}
+                        className="h-4 w-4 text-orange-500"
+                      />
+                      <span className="ml-2">Yes</span>
+                    </label>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="will-eat-candy"
+                        value="no"
+                        checked={newParent.willEatCandy === "no"}
+                        onChange={() => setNewParent({...newParent, willEatCandy: "no"})}
+                        className="h-4 w-4 text-orange-500"
+                      />
+                      <span className="ml-2">No</span>
+                    </label>
                   </div>
                 </div>
               </div>
+              <button
+                onClick={addParent}
+                disabled={!newParent.name || !newParent.costume || !newParent.willEatCandy}
+                className="px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:bg-gray-100 disabled:text-gray-400"
+              >
+                Add Parent/Guardian
+              </button>
+            </div>
+
+            {parents.length > 0 && (
+              <div>
+                <h3 className="text-lg font-medium mb-3">Parents/Guardians</h3>
+                <div className="space-y-4">
+                  {parents.map((parent, index) => (
+                    <div key={index} className="p-4 border rounded-lg bg-gray-50 flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">{parent.name}</p>
+                        <p className="text-sm text-gray-600">Costume: {parent.costume}</p>
+                        <p className="text-sm text-gray-600">Will eat your candy: {parent.willEatCandy === "yes" ? "Yes" : "No"}</p>
+                      </div>
+                      <button
+                        onClick={() => removeParent(index)}
+                        className="text-red-500 hover:text-red-700"
+                        aria-label="Remove parent"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-          </fieldset>
+          </div>
         )}
 
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate("/file/step/12")}
+            onClick={() => navigate("/file/step/13")}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             Previous
@@ -167,12 +224,11 @@ export default function Step13() {
               setTreatReturnState({
                 ...treatReturnState,
                 step13: { 
-                  willStudyNextYear,
-                  candyForStudyActivities,
-                  studyCandyPercentage: candyForStudyActivities === "yes" ? studyCandyPercentage : ""
+                  livesWithParents,
+                  parents: livesWithParents === "yes" ? parents : []
                 },
               });
-              navigate("/file/step/14");
+              navigate("/file/step/15");
             }}
             className={`px-4 py-2 rounded ${
               !isFormValid()

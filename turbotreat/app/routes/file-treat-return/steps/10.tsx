@@ -6,10 +6,17 @@ import {
 } from "~/lib/treat-return-state.client";
 
 
+type Sibling = {
+  name: string;
+  costume: string;
+  willEatCandy: boolean;
+};
+
 type Step10State = {
-  homeworkCompleted: "" | "yes" | "no";
-  totalHomework: string;
-  homeworkAtHome: string;
+  hasSiblings: "" | "yes" | "no";
+  siblings: Sibling[];
+  newSiblingName: string;
+  newSiblingCostume: string;
 };
 
 export type { Step10State };
@@ -20,7 +27,12 @@ export function clientLoader() {
   if (!treatReturnState.step10) {
     const initialState = {
       ...treatReturnState,
-      step10: { homeworkCompleted: "", totalHomework: "", homeworkAtHome: "" } as Step10State,
+      step10: { 
+        hasSiblings: "", 
+        siblings: [],
+        newSiblingName: "",
+        newSiblingCostume: ""
+      } as Step10State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -32,35 +44,66 @@ export function clientLoader() {
 export default function Step10() {
   const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [homeworkCompleted, setHomeworkCompleted] = useState(treatReturnState.step10.homeworkCompleted);
-  const [totalHomework, setTotalHomework] = useState(treatReturnState.step10.totalHomework);
-  const [homeworkAtHome, setHomeworkAtHome] = useState(treatReturnState.step10.homeworkAtHome);
+  const [hasSiblings, setHasSiblings] = useState(treatReturnState.step10.hasSiblings);
+  const [siblings, setSiblings] = useState<Sibling[]>(treatReturnState.step10.siblings || []);
+  const [newSiblingName, setNewSiblingName] = useState(treatReturnState.step10.newSiblingName || "");
+  const [newSiblingCostume, setNewSiblingCostume] = useState(treatReturnState.step10.newSiblingCostume || "");
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step10: { homeworkCompleted, totalHomework, homeworkAtHome },
+      step10: { 
+        hasSiblings, 
+        siblings,
+        newSiblingName,
+        newSiblingCostume
+      },
     });
-  }, [homeworkCompleted, totalHomework, homeworkAtHome]);
+  }, [hasSiblings, siblings, newSiblingName, newSiblingCostume]);
 
-  const isFormValid = homeworkCompleted === "no" || 
-                     (homeworkCompleted === "yes" && totalHomework && homeworkAtHome);
+  const addSibling = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newSiblingName.trim() && newSiblingCostume.trim()) {
+      const newSibling: Sibling = {
+        name: newSiblingName.trim(),
+        costume: newSiblingCostume.trim(),
+        willEatCandy: false,
+      };
+      setSiblings([...siblings, newSibling]);
+      setNewSiblingName("");
+      setNewSiblingCostume("");
+    }
+  };
+
+  const removeSibling = (index: number) => {
+    const updatedSiblings = [...siblings];
+    updatedSiblings.splice(index, 1);
+    setSiblings(updatedSiblings);
+  };
+
+  const toggleWillEatCandy = (index: number) => {
+    const updatedSiblings = [...siblings];
+    updatedSiblings[index].willEatCandy = !updatedSiblings[index].willEatCandy;
+    setSiblings(updatedSiblings);
+  };
+
+  const isFormValid = hasSiblings === "no" || (hasSiblings === "yes" && siblings.length > 0);
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
           <legend className="text-xl font-bold mb-4">
-            Over the past year, have you completed at least three homework assignments?
+            Do you have any siblings?
           </legend>
           <div className="space-x-4 mb-6">
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="homework-completed"
+                name="has-siblings"
                 value="yes"
-                checked={homeworkCompleted === "yes"}
-                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
+                checked={hasSiblings === "yes"}
+                onChange={(e) => setHasSiblings(e.target.value as "yes" | "no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">Yes</span>
@@ -68,49 +111,97 @@ export default function Step10() {
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="homework-completed"
+                name="has-siblings"
                 value="no"
-                checked={homeworkCompleted === "no"}
-                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
+                checked={hasSiblings === "no"}
+                onChange={(e) => setHasSiblings(e.target.value as "yes" | "no")}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">No</span>
             </label>
           </div>
 
-          {homeworkCompleted === "yes" && (
+          {hasSiblings === "yes" && (
             <div className="space-y-6 pl-6 border-l-2 border-gray-200">
-              <div>
-                <label className="block text-lg font-medium mb-2">
-                  How many homework assignments have you completed in total over the past year?
-                </label>
-                <input
-                  type="number"
-                  min="3"
-                  step="1"
-                  value={totalHomework}
-                  onChange={(e) => setTotalHomework(e.target.value)}
-                  className="w-full p-2 border rounded"
-                  placeholder="Enter number of assignments"
-                />
-              </div>
+              <div className="space-y-4">
+                {siblings.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Siblings:</h3>
+                    <ul className="space-y-4">
+                      {siblings.map((sibling, index) => (
+                        <li key={index} className="p-4 border rounded-lg bg-gray-50">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium">{sibling.name}</p>
+                              <p className="text-sm text-gray-600">Costume: {sibling.costume}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeSibling(index)}
+                              className="text-red-500 hover:text-red-700"
+                              aria-label="Remove sibling"
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <div className="mt-2 flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`sibling-${index}-eat`}
+                              checked={sibling.willEatCandy}
+                              onChange={() => toggleWillEatCandy(index)}
+                              className="h-4 w-4 text-orange-500 rounded"
+                            />
+                            <label htmlFor={`sibling-${index}-eat`} className="ml-2 text-sm">
+                              Will {sibling.name} be eating any of your candy this year?
+                            </label>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-lg font-medium mb-2">
-                  Of the homework assignments you've completed, how many of them were completed at your home 
-                  (rather than at school, at a library, or somewhere else)?
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max={totalHomework || ""}
-                  step="1"
-                  value={homeworkAtHome}
-                  onChange={(e) => setHomeworkAtHome(e.target.value)}
-                  className="w-full p-2 border rounded"
-                  placeholder={`Enter number (max ${totalHomework || "—"})`}
-                  disabled={!totalHomework}
-                />
+                <div className="pt-4 border-t border-gray-200">
+                  <h3 className="text-lg font-medium mb-3">Add a Sibling</h3>
+                  <form onSubmit={addSibling} className="space-y-4">
+                    <div>
+                      <label htmlFor="sibling-name" className="block text-sm font-medium text-gray-700 mb-1">
+                        Sibling's Name
+                      </label>
+                      <input
+                        type="text"
+                        id="sibling-name"
+                        value={newSiblingName}
+                        onChange={(e) => setNewSiblingName(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        placeholder="Enter name"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="sibling-costume" className="block text-sm font-medium text-gray-700 mb-1">
+                        Sibling's Costume
+                      </label>
+                      <input
+                        type="text"
+                        id="sibling-costume"
+                        value={newSiblingCostume}
+                        onChange={(e) => setNewSiblingCostume(e.target.value)}
+                        className="w-full p-2 border rounded"
+                        placeholder="Enter costume"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200"
+                      disabled={!newSiblingName.trim() || !newSiblingCostume.trim()}
+                    >
+                      Add Sibling
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           )}
@@ -118,16 +209,16 @@ export default function Step10() {
 
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate("/file/step/9")}
+            onClick={() => navigate("/file/step/10")}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             Previous
           </button>
           <button
-            onClick={() => navigate("/file/step/11")}
-            disabled={!homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))}
+            onClick={() => navigate("/file/step/12")}
+            disabled={!hasSiblings || (hasSiblings === "yes" && siblings.length === 0)}
             className={`px-4 py-2 rounded ${
-              !homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))
+              !hasSiblings || (hasSiblings === "yes" && siblings.length === 0)
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-orange-500 text-white hover:bg-orange-600"
             }`}

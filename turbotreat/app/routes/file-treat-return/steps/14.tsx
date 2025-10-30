@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
-type ParentInfo = {
-  name: string;
-  costume: string;
-  willEatCandy: string;
-};
-
 export type Step14State = {
-  livesWithParents: string;
-  parents: ParentInfo[];
+  beenToDentist: string;
+  dentalWorkFromCandy: string;
+  reimbursedForDental: string;
 };
 
 export function clientLoader() {
@@ -23,8 +18,9 @@ export function clientLoader() {
     const initialState = {
       ...treatReturnState,
       step14: { 
-        livesWithParents: "",
-        parents: [],
+        beenToDentist: "",
+        dentalWorkFromCandy: "",
+        reimbursedForDental: ""
       } as Step14State,
     };
     setTreatReturnState(initialState);
@@ -37,68 +33,56 @@ export function clientLoader() {
 export default function Step14() {
   const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [livesWithParents, setLivesWithParents] = useState(
-    treatReturnState.step14?.livesWithParents || ""
+  const [beenToDentist, setBeenToDentist] = useState(
+    treatReturnState.step14?.beenToDentist || ""
   );
-  const [parents, setParents] = useState<ParentInfo[]>(
-    treatReturnState.step14?.parents || []
+  const [dentalWorkFromCandy, setDentalWorkFromCandy] = useState(
+    treatReturnState.step14?.dentalWorkFromCandy || ""
   );
-  const [newParent, setNewParent] = useState<Omit<ParentInfo, 'willEatCandy'> & { willEatCandy: string }>({ 
-    name: "", 
-    costume: "",
-    willEatCandy: ""
-  });
+  const [reimbursedForDental, setReimbursedForDental] = useState(
+    treatReturnState.step14?.reimbursedForDental || ""
+  );
+  
+  const [showDentalWorkHelp, setShowDentalWorkHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
       step14: { 
-        livesWithParents,
-        parents,
+        beenToDentist,
+        dentalWorkFromCandy: beenToDentist === "yes" ? dentalWorkFromCandy : "",
+        reimbursedForDental: (beenToDentist === "yes" && dentalWorkFromCandy === "yes") ? reimbursedForDental : ""
       },
     });
-  }, [livesWithParents, parents, treatReturnState]);
-
-  const addParent = () => {
-    if (newParent.name.trim() && newParent.costume.trim() && newParent.willEatCandy) {
-      setParents([...parents, {
-        ...newParent,
-        willEatCandy: newParent.willEatCandy
-      }]);
-      setNewParent({ name: "", costume: "", willEatCandy: "" });
-    }
-  };
-
-  const removeParent = (index: number) => {
-    const updatedParents = [...parents];
-    updatedParents.splice(index, 1);
-    setParents(updatedParents);
-  };
+  }, [beenToDentist, dentalWorkFromCandy, reimbursedForDental, treatReturnState]);
 
   const isFormValid = () => {
-    if (livesWithParents === "") return false;
-    if (livesWithParents === "yes" && parents.length === 0) return false;
+    if (beenToDentist === "") return false;
+    if (beenToDentist === "yes" && dentalWorkFromCandy === "") return false;
+    if (beenToDentist === "yes" && dentalWorkFromCandy === "yes" && reimbursedForDental === "") return false;
     return true;
   };
-  
-  // Always show the form, but validate based on selection
-  const shouldShowParentForm = livesWithParents === "yes";
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
           <legend className="text-xl font-bold mb-4">
-            Do you currently live with any parent or guardian?
+            Have you been to the dentist in the past year?
           </legend>
           <div className="space-x-4">
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="lives-with-parents"
+                name="been-to-dentist"
                 value="yes"
-                checked={livesWithParents === "yes"}
-                onChange={() => setLivesWithParents("yes")}
+                checked={beenToDentist === "yes"}
+                onChange={() => {
+                  setBeenToDentist("yes");
+                  if (dentalWorkFromCandy === "yes") {
+                    setReimbursedForDental("");
+                  }
+                }}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">Yes</span>
@@ -106,10 +90,14 @@ export default function Step14() {
             <label className="inline-flex items-center">
               <input
                 type="radio"
-                name="lives-with-parents"
+                name="been-to-dentist"
                 value="no"
-                checked={livesWithParents === "no"}
-                onChange={() => setLivesWithParents("no")}
+                checked={beenToDentist === "no"}
+                onChange={() => {
+                  setBeenToDentist("no");
+                  setDentalWorkFromCandy("");
+                  setReimbursedForDental("");
+                }}
                 className="h-4 w-4 text-orange-500"
               />
               <span className="ml-2">No</span>
@@ -117,119 +105,113 @@ export default function Step14() {
           </div>
         </fieldset>
 
-        {shouldShowParentForm && (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-3">Add Parent/Guardian</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newParent.name}
-                    onChange={(e) => setNewParent({...newParent, name: e.target.value})}
-                    className="w-full p-2 border rounded"
-                    placeholder="First name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Costume
-                  </label>
-                  <input
-                    type="text"
-                    value={newParent.costume}
-                    onChange={(e) => setNewParent({...newParent, costume: e.target.value})}
-                    className="w-full p-2 border rounded"
-                    placeholder="Costume description"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Will eat your candy?
-                  </label>
-                  <div className="flex space-x-4">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        name="will-eat-candy"
-                        value="yes"
-                        checked={newParent.willEatCandy === "yes"}
-                        onChange={() => setNewParent({...newParent, willEatCandy: "yes"})}
-                        className="h-4 w-4 text-orange-500"
-                      />
-                      <span className="ml-2">Yes</span>
-                    </label>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        name="will-eat-candy"
-                        value="no"
-                        checked={newParent.willEatCandy === "no"}
-                        onChange={() => setNewParent({...newParent, willEatCandy: "no"})}
-                        className="h-4 w-4 text-orange-500"
-                      />
-                      <span className="ml-2">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={addParent}
-                disabled={!newParent.name || !newParent.costume || !newParent.willEatCandy}
-                className="px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:bg-gray-100 disabled:text-gray-400"
+        {beenToDentist === "yes" && (
+          <fieldset className="mb-6">
+            <div className="flex items-center mb-2">
+              <legend className="text-lg font-medium">
+                Was any dental work you received performed as a result of eating candy over the last year?
+              </legend>
+              <button 
+                onClick={() => setShowDentalWorkHelp(!showDentalWorkHelp)}
+                className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
+                aria-label="Help with dental work question"
               >
-                Add Parent/Guardian
+                ?
               </button>
             </div>
-
-            {parents.length > 0 && (
-              <div>
-                <h3 className="text-lg font-medium mb-3">Parents/Guardians</h3>
-                <div className="space-y-4">
-                  {parents.map((parent, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-gray-50 flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">{parent.name}</p>
-                        <p className="text-sm text-gray-600">Costume: {parent.costume}</p>
-                        <p className="text-sm text-gray-600">Will eat your candy: {parent.willEatCandy === "yes" ? "Yes" : "No"}</p>
-                      </div>
-                      <button
-                        onClick={() => removeParent(index)}
-                        className="text-red-500 hover:text-red-700"
-                        aria-label="Remove parent"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
+            {showDentalWorkHelp && (
+              <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
+                <h4 className="font-bold mb-2">What is teeth?</h4>
+                <p className="text-sm">
+                  Teeth are bones, but in your face. If you ate so much candy that it hurt your face bones, you may have received treatment from a face bone doctor (dentist). Visits to the face bone doctor would be considered appointments for "dental work".
+                </p>
               </div>
             )}
-          </div>
+            <div className="space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="dental-work-from-candy"
+                  value="yes"
+                  checked={dentalWorkFromCandy === "yes"}
+                  onChange={() => {
+                    setDentalWorkFromCandy("yes");
+                    setReimbursedForDental("");
+                  }}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">Yes</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="dental-work-from-candy"
+                  value="no"
+                  checked={dentalWorkFromCandy === "no"}
+                  onChange={() => {
+                    setDentalWorkFromCandy("no");
+                    setReimbursedForDental("");
+                  }}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">No</span>
+              </label>
+            </div>
+          </fieldset>
+        )}
+
+        {beenToDentist === "yes" && dentalWorkFromCandy === "yes" && (
+          <fieldset className="mb-6">
+            <legend className="text-lg font-medium mb-2">
+              Were you already reimbursed for this dental work?
+            </legend>
+            <div className="space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="reimbursed-for-dental"
+                  value="yes"
+                  checked={reimbursedForDental === "yes"}
+                  onChange={() => setReimbursedForDental("yes")}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">Yes</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="reimbursed-for-dental"
+                  value="no"
+                  checked={reimbursedForDental === "no"}
+                  onChange={() => setReimbursedForDental("no")}
+                  className="h-4 w-4 text-orange-500"
+                />
+                <span className="ml-2">No</span>
+              </label>
+            </div>
+          </fieldset>
         )}
 
         <div className="flex justify-between mt-8">
           <button
-            onClick={() => navigate("/file/step/13")}
+            onClick={() => navigate("/file/step/14")}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
           >
             Previous
           </button>
           <button
-            disabled={!isFormValid()}
             onClick={() => {
               setTreatReturnState({
                 ...treatReturnState,
                 step14: { 
-                  livesWithParents,
-                  parents: livesWithParents === "yes" ? parents : []
+                  beenToDentist,
+                  dentalWorkFromCandy: beenToDentist === "yes" ? dentalWorkFromCandy : "",
+                  reimbursedForDental: (beenToDentist === "yes" && dentalWorkFromCandy === "yes") ? reimbursedForDental : ""
                 },
               });
-              navigate("/file/step/15");
+              navigate("/file/step/16");
             }}
+            disabled={!isFormValid()}
             className={`px-4 py-2 rounded ${
               !isFormValid()
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -243,3 +225,4 @@ export default function Step14() {
     </main>
   );
 }
+

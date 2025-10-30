@@ -9,6 +9,7 @@ import { QuestionHeader, Select, StepPagination, TextInput } from "./components.
 export type Step4State = {
   multipleStreets: boolean;
   streetNames: string | null;
+  allFromArborAve: boolean | null;
 };
 
 export function clientLoader() {
@@ -20,6 +21,7 @@ export function clientLoader() {
       step4: { 
         multipleStreets: false,
         streetNames: null,
+        allFromArborAve: null,
       } as Step4State,
     };
     setTreatReturnState(initialState);
@@ -30,9 +32,10 @@ export function clientLoader() {
 }
 
 export function isStep4Complete(step4: Step4State) {
-  if (step4.multipleStreets === false) return true;
-  if (step4.multipleStreets === true) return !!step4.streetNames?.trim();
-  return true;
+  if (step4.multipleStreets === true && !step4.streetNames?.trim()) {
+    return false;
+  }
+  return step4.allFromArborAve !== null;
 }
 
 export default function Step4() {
@@ -43,6 +46,9 @@ export default function Step4() {
   const [streetNames, setStreetNames] = useState<string | null>(
     treatReturnState.step4.streetNames
   );
+  const [allFromArborAve, setAllFromArborAve] = useState<boolean | null>(
+    treatReturnState.step4.allFromArborAve
+  );
 
   useEffect(() => {
     setTreatReturnState({
@@ -50,11 +56,12 @@ export default function Step4() {
       step4: { 
         multipleStreets,
         streetNames,
+        allFromArborAve,
       },
     });
-  }, [multipleStreets, streetNames, treatReturnState]);
+  }, [multipleStreets, streetNames, allFromArborAve, treatReturnState]);
 
-  const isComplete = () => isStep4Complete({ multipleStreets, streetNames });
+  const isComplete = () => isStep4Complete({ multipleStreets, streetNames, allFromArborAve });
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,6 +91,20 @@ export default function Step4() {
           />
         </div>
       )}
+
+     <div className="mt-4">
+        <QuestionHeader>
+          Is all the candy you collected this year from Arbor Ave?
+        </QuestionHeader>
+        <Select
+          value={allFromArborAve}
+          onChange={setAllFromArborAve}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+      </div>
 
       <StepPagination 
         disabled={!isComplete()} 
