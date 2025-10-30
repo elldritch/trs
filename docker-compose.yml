@@ -12,3 +12,25 @@ services:
       POSTGRES_DB: trs
     volumes:
       - ./postgres-data:/var/lib/postgresql/18/docker
+
+  trs-admin:
+    build:
+      context: ./trs-admin
+      dockerfile: Dockerfile
+    ports:
+      - "5174:3000"
+    environment:
+      - DATABASE_URL=postgresql://trs:hunter2@db:5432/trs
+    depends_on:
+      - db
+
+  turbotreat:
+    build:
+      context: ./turbotreat
+      dockerfile: Dockerfile
+    ports:
+      - "5173:3000"
+    environment:
+      - DATABASE_URL=postgresql://trs:hunter2@db:5432/trs
+    depends_on:
+      - db
