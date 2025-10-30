@@ -11,6 +11,7 @@ export default [
   // an application by ticket ID. Ideally [stretch] shows candy inventory.
   index("routes/dashboard.tsx"),
   // View an application by ticket ID. Ideally [stretch] should flag inconsistencies.
+  route("audit", "routes/audit.tsx"),
   route("audit/:ticketId", "routes/audit-application.tsx"),
   // View all appointments. Ideally [stretch] should let admins add new appointment
   // slots and cancel existing ones.
