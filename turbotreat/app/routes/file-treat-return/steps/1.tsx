@@ -10,6 +10,7 @@ import {
   HelpButton,
   HelpText,
   QuestionHeader,
+  StepPagination,
   TextInput,
 } from "./components.client";
 
@@ -37,6 +38,10 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep1Complete(step1: Step1State) {
+  return step1.firstName.length > 0;
+}
+
 export default function Step1({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
   const [firstName, setFirstName] = useState(treatReturnState.step1.firstName);
@@ -45,7 +50,8 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     setTreatReturnState({ ...treatReturnState, step1: { firstName } });
   }, [firstName]);
-  const disabled = !isCompleted({ firstName });
+
+  const shouldDisableNext = () => !isStep1Complete({ firstName });
 
   return (
     <>
@@ -66,7 +72,7 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
         to="/file/step/2"
         className={
           "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
-          (disabled
+          (shouldDisableNext()
             ? " bg-gray-300 cursor-not-allowed pointer-events-none"
             : " bg-sky-700 cursor-pointer")
         }

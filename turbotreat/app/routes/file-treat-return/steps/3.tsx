@@ -17,7 +17,7 @@ export type SchoolCondition = "cannot_attend" | "graduated" | "none" | null;
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
-  if (!treatReturnState.step3 || typeof treatReturnState.step3.attendsSchool !== "string") {
+  if (!treatReturnState.step3 || typeof treatReturnState.step3.attendsSchool !== "boolean") {
     const initialState = {
       ...treatReturnState,
       step3: { 
@@ -32,6 +32,15 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep3Complete(step3: Step3State) {
+  if (step3.attendsSchool) {
+    return !!step3.schoolYear;
+  } else if (!step3.attendsSchool) {
+    return step3.schoolConditions !== null;
+  }
+  return false;
+}
+
 export default function Step3() {
   const treatReturnState = useLoaderData<typeof clientLoader>();
   const [attendsSchool, setAttendsSchool] = useState(treatReturnState.step3.attendsSchool);
@@ -44,21 +53,18 @@ export default function Step3() {
     setTreatReturnState({
       ...treatReturnState,
       step3: { 
-        attendsSchool: attendsSchool as Step3State['attendsSchool'],
-        schoolYear: schoolYear as Step3State['schoolYear'],
-        schoolConditions: schoolConditions as Step3State['schoolConditions']
+        attendsSchool: attendsSchool,
+        schoolYear: schoolYear,
+        schoolConditions: schoolConditions
       },
     });
   }, [attendsSchool, schoolYear, schoolConditions]);
 
-  const isFormValid = () => {
-    if (attendsSchool) {
-      return !!schoolYear;
-    } else if (!attendsSchool) {
-      return schoolConditions !== null;
-    }
-    return false;
-  };
+  const shouldDisableNext = () => !isStep3Complete({
+    attendsSchool,
+    schoolYear,
+    schoolConditions
+  });
 
   return (
      <main className="flex flex-col gap-4">
@@ -101,7 +107,6 @@ export default function Step3() {
                 { value: "11th Grade", display: "11th Grade" },
                 { value: "12th Grade", display: "12th Grade" },
                 { value: "College", display: "College" },
-                { value: "Graduate", display: "Graduate" },
               ]}
             />
           </div>
@@ -127,7 +132,7 @@ export default function Step3() {
         )
       }
       
-        <StepPagination disabled={!isFormValid()} currentStep={3} />
+        <StepPagination disabled={shouldDisableNext()} currentStep={3} />
     </main>
   );
 }

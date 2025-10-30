@@ -55,6 +55,13 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep2Complete(step2: Step2State) {
+  if (step2.wearingCostume) {
+    return !!step2.costumeCategory && !!step2.costumeName;
+  }
+  return true;
+}
+
 export default function Step2({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
 
@@ -69,7 +76,11 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   );
   const [showCostumeHelp, setShowCostumeHelp] = useState(false);
 
-  const disabled = !isCompleted({ wearingCostume, costumeCategory, costumeName });
+  const shouldDisableNext = () => !isStep2Complete({
+    wearingCostume,
+    costumeCategory,
+    costumeName
+  });
 
   useEffect(() => {
     setTreatReturnState({
@@ -132,7 +143,7 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
         </div>
       )}
 
-      <StepPagination disabled={disabled} currentStep={2} />
+      <StepPagination disabled={shouldDisableNext()} currentStep={2} />
     </main>
   );
 }

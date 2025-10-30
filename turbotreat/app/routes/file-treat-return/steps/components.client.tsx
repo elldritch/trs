@@ -33,9 +33,11 @@ export function HelpText({
 export function TextInput({
   value,
   onChange,
+  placeholderText,
 }: {
   value: string;
   onChange: (value: string) => void;
+  placeholderText?: string;
 }) {
   return (
     <input
@@ -43,6 +45,7 @@ export function TextInput({
       className="w-full px-2 py-4 border block border-gray-300 rounded-md mt-2"
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholderText}
     />
   );
 }
