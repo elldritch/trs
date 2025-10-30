@@ -16,7 +16,6 @@ enum TreatReturnApplicationStatus {
 
 model TreatReturnApplication {
   id Int @id @default(autoincrement())
-
   // A short, unique alpha-numeric identifier for this application.
   ticketId                 String                       @unique
   // The status of this application.
@@ -31,6 +30,20 @@ model TreatReturnApplication {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Fields related to the final responses.
+  costume_name String?
+  school_year String?
+  street_names String?
+  collected_candy_weight_lbs Float?
+  received_tips_percent Float?
+  ptp_invested_percent Float?
+  reit_invested_percent Float?
+  candy_to_be_used_for_film Boolean?
+  candy_was_gained_from_crime Boolean?
+  already_submitted_1040tres Boolean?
+  reimbursed_for_dental Boolean?
+  will_save_candy_to_eoy Boolean?
 }
 
 enum PrintJobStatus {
