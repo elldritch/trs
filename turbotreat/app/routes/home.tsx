@@ -25,7 +25,7 @@ export default function Home() {
           <p className="text-sm font-light mt-6">
             Get every treat you deserve on your refund, guaranteed*
           </p>
-          <Link to="/file">
+          <Link to="/file/step/1">
             <button className="mt-6 rounded-md bg-sky-700 font-medium text-lg text-white w-full py-2 cursor-pointer">
               File my return
             </button>
