@@ -10,7 +10,7 @@ import {
 } from "~/lib/treat-return-state.client";
 import * as step1 from "./steps/1";
 import * as step2 from "./steps/2";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+// import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 
 export function clientLoader() {
@@ -104,7 +104,7 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
               </button>
             ) : (
               <div className="mt-2">
-                <ArrowPathIcon className="animate-spin h-20 mx-auto" />
+                {/* <ArrowPathIcon className="animate-spin h-20 mx-auto" /> */}
               </div>
             )}
           </>
