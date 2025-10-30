@@ -75,70 +75,72 @@ export default function Step4() {
   const shouldDisableNext = () => !isCompleted({ multipleStreets, streetNames, allFromArborAve, nonArborPercent });
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <QuestionHeader>
-          Did you collect candy from multiple streets this year?
-        </QuestionHeader>
-        <Select
-          value={multipleStreets}
-          onChange={setMultipleStreets}
-          options={[
-            { value: true, display: "Yes" },
-            { value: false, display: "No" },
-          ]}
-        />
-      </div>
-
-      {multipleStreets && (
-        <div className="animate-fade-in">
+    <main className="max-w-2xl mx-auto p-4">
+      <div className="space-y-8">
+        <div>
           <QuestionHeader>
-            List the streets you collected candy from this year.
-          </QuestionHeader>
-          <TextInput
-            value={streetNames || ''}
-            onChange={setStreetNames}
-            placeholderText="Separate street names by commas"
-          />
-        </div>
-      )}
-
-      {!multipleStreets && (
-        <div className="animate-fade-in">
-          <QuestionHeader>
-            Is all the candy you collected this year from Arbor Ave?
+            Did you collect candy from multiple streets this year?
           </QuestionHeader>
           <Select
-            value={allFromArborAve}
-            onChange={setAllFromArborAve}
+            value={multipleStreets}
+            onChange={setMultipleStreets}
             options={[
               { value: true, display: "Yes" },
               { value: false, display: "No" },
             ]}
           />
         </div>
-      )}
 
-      {(multipleStreets || (!multipleStreets && allFromArborAve === false)) && (
-        <div className="animate-fade-in">
-          <QuestionHeader>
-            What percentage of your candy came from a street other than Arbor?
-          </QuestionHeader>
-          <NumberInput
-            value={nonArborPercent}
-            onChange={setNonArborPercent}
-            minValue={0}
-            maxValue={100}
-            step={1}
-            placeholderText="Enter percentage (0-100)"
-          />
-        </div>
-      )}
+        {multipleStreets && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              List the streets you collected candy from this year.
+            </QuestionHeader>
+            <TextInput
+              value={streetNames || ''}
+              onChange={setStreetNames}
+              placeholderText="Separate street names by commas"
+            />
+          </div>
+        )}
 
-      <StepPagination
-        disabled={shouldDisableNext()}
-        currentStep={4}
-      />
-    </div>
+        {!multipleStreets && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Is all the candy you collected this year from Arbor Ave?
+            </QuestionHeader>
+            <Select
+              value={allFromArborAve}
+              onChange={setAllFromArborAve}
+              options={[
+                { value: true, display: "Yes" },
+                { value: false, display: "No" },
+              ]}
+            />
+          </div>
+        )}
+
+        {(multipleStreets || (!multipleStreets && allFromArborAve === false)) && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              What percentage of your candy came from a street other than Arbor?
+            </QuestionHeader>
+            <NumberInput
+              value={nonArborPercent}
+              onChange={setNonArborPercent}
+              minValue={0}
+              maxValue={100}
+              step={1}
+              placeholderText="Enter percentage (0-100)"
+            />
+          </div>
+        )}
+
+        <StepPagination
+          disabled={shouldDisableNext()}
+          currentStep={4}
+        />
+      </div>
+    </main>
   );
 }

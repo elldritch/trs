@@ -67,72 +67,74 @@ export default function Step3() {
   });
 
   return (
-     <main className="flex flex-col gap-4">
-      <div>
-        <QuestionHeader>
-          Do you regularly attend school?
-        </QuestionHeader>
-        <Select
-          value={attendsSchool}
-          onChange={setAttendsSchool}
-          options={[
-            { value: true, display: "Yes" },
-            { value: false, display: "No" },
-          ]}
-        />
-      </div>
+    <main className="max-w-2xl mx-auto p-4">
+      <div className="space-y-8">
+        <div>
+          <QuestionHeader>
+            Do you regularly attend school?
+          </QuestionHeader>
+          <Select
+            value={attendsSchool}
+            onChange={setAttendsSchool}
+            options={[
+              { value: true, display: "Yes" },
+              { value: false, display: "No" },
+            ]}
+          />
+        </div>
 
-      {attendsSchool && 
-        (
-          <div>
-            <QuestionHeader>
-              What is your school year?
-            </QuestionHeader>
-            <Select
-              value={schoolYear}
-              onChange={setSchoolYear}
-              options={[
-                { value: "Pre-K", display: "Pre-K" },
-                { value: "Elementary", display: "Elementary" },
-                { value: "1st Grade", display: "1st Grade" },
-                { value: "2nd Grade", display: "2nd Grade" },
-                { value: "3rd Grade", display: "3rd Grade" },
-                { value: "4th Grade", display: "4th Grade" },
-                { value: "5th Grade", display: "5th Grade" },
-                { value: "6th Grade", display: "6th Grade" },
-                { value: "7th Grade", display: "7th Grade" },
-                { value: "8th Grade", display: "8th Grade" },
-                { value: "9th Grade", display: "9th Grade" },
-                { value: "10th Grade", display: "10th Grade" },
-                { value: "11th Grade", display: "11th Grade" },
-                { value: "12th Grade", display: "12th Grade" },
-                { value: "College", display: "College" },
-              ]}
-            />
-          </div>
-        )
-      }
+        {attendsSchool &&
+          (
+            <div>
+              <QuestionHeader>
+                What is your school year?
+              </QuestionHeader>
+              <Select
+                value={schoolYear}
+                onChange={setSchoolYear}
+                options={[
+                  { value: "Pre-K", display: "Pre-K" },
+                  { value: "Elementary", display: "Elementary" },
+                  { value: "1st Grade", display: "1st Grade" },
+                  { value: "2nd Grade", display: "2nd Grade" },
+                  { value: "3rd Grade", display: "3rd Grade" },
+                  { value: "4th Grade", display: "4th Grade" },
+                  { value: "5th Grade", display: "5th Grade" },
+                  { value: "6th Grade", display: "6th Grade" },
+                  { value: "7th Grade", display: "7th Grade" },
+                  { value: "8th Grade", display: "8th Grade" },
+                  { value: "9th Grade", display: "9th Grade" },
+                  { value: "10th Grade", display: "10th Grade" },
+                  { value: "11th Grade", display: "11th Grade" },
+                  { value: "12th Grade", display: "12th Grade" },
+                  { value: "College", display: "College" },
+                ]}
+              />
+            </div>
+          )
+        }
 
-      {!attendsSchool && 
-        (
-          <div>
-            <QuestionHeader>
-              Do any of the following conditions apply to you?
-            </QuestionHeader>
-            <Select
-              value={schoolConditions}
-              onChange={setSchoolConditions}
-              options={[
-                { value: "cannot_attend", display: "Cannot yet attend school" },
-                { value: "graduated", display: "Already graduated" },
-                { value: "none", display: "None of these" },
-              ]}
-            />
-          </div>
-        )
-      }
-      
+        {!attendsSchool &&
+          (
+            <div>
+              <QuestionHeader>
+                Do any of the following conditions apply to you?
+              </QuestionHeader>
+              <Select
+                value={schoolConditions}
+                onChange={setSchoolConditions}
+                options={[
+                  { value: "cannot_attend", display: "Cannot yet attend school" },
+                  { value: "graduated", display: "Already graduated" },
+                  { value: "none", display: "None of these" },
+                ]}
+              />
+            </div>
+          )
+        }
+
         <StepPagination disabled={shouldDisableNext()} currentStep={3} />
+      </div>
     </main>
   );
 }

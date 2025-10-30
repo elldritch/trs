@@ -51,41 +51,43 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
   const shouldDisableNext = () => !isCompleted({ firstName, favoriteCandy });
 
   return (
-    <>
-      <QuestionHeader>
-        What is your first name?
-        <HelpButton onClick={() => setShowHelp(!showHelp)} />
-      </QuestionHeader>
+    <main className="max-w-2xl mx-auto p-4">
+      <div className="space-y-8">
+        <QuestionHeader>
+          What is your first name?
+          <HelpButton onClick={() => setShowHelp(!showHelp)} />
+        </QuestionHeader>
 
-      {showHelp && (
-        <HelpText title="How do I know my first name?">
-          Your first name is likely on forms you've previously filled out. You
-          can also ask a parent or guardian for assistance when trying to
-          determine your first name, or pick one yourself.
-        </HelpText>
-      )}
-      <TextInput value={firstName ?? ""} onChange={(value) => setFirstName(value)} />
+        {showHelp && (
+          <HelpText title="How do I know my first name?">
+            Your first name is likely on forms you've previously filled out. You
+            can also ask a parent or guardian for assistance when trying to
+            determine your first name, or pick one yourself.
+          </HelpText>
+        )}
+        <TextInput value={firstName ?? ""} onChange={(value) => setFirstName(value)} />
 
-      <QuestionHeader>
-        What is your favorite candy?
-      </QuestionHeader>
-      <TextInput
-        value={favoriteCandy ?? ""}
-        onChange={(value) => setFavoriteCandy(value)}
-        placeholderText="e.g., Snickers, Reese's, Kit Kat"
-      />
+        <QuestionHeader>
+          What is your favorite candy?
+        </QuestionHeader>
+        <TextInput
+          value={favoriteCandy ?? ""}
+          onChange={(value) => setFavoriteCandy(value)}
+          placeholderText="e.g., Snickers, Reese's, Kit Kat"
+        />
 
-      <Link
-        to="/file/step/2"
-        className={
-          "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
-          (shouldDisableNext()
-            ? " bg-gray-300 cursor-not-allowed pointer-events-none"
-            : " bg-sky-700 cursor-pointer")
-        }
-      >
-        Next
-      </Link>
-    </>
+        <Link
+          to="/file/step/2"
+          className={
+            "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
+            (shouldDisableNext()
+              ? " bg-gray-300 cursor-not-allowed pointer-events-none"
+              : " bg-sky-700 cursor-pointer")
+          }
+        >
+          Next
+        </Link>
+      </div>
+    </main>
   );
 }
