@@ -15,7 +15,8 @@ import {
 } from "./components.client";
 
 export type Step1State = {
-  firstName: string;
+  firstName: string | null;
+  favoriteCandy: string | null;
 };
 
 export function isCompleted(state: Step1State) {
@@ -26,10 +27,10 @@ export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
   // Validate state. If state fails validation, reset it to initial state.
-  if (typeof treatReturnState.step1.firstName !== "string") {
+  if (treatReturnState.step1.firstName === undefined) {
     const initialState = {
       ...treatReturnState,
-      step1: { firstName: "" },
+      step1: { firstName: null, favoriteCandy: null },
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -39,19 +40,20 @@ export function clientLoader() {
 }
 
 export function isStep1Complete(step1: Step1State) {
-  return step1.firstName.length > 0;
+  return !!step1.firstName && step1.firstName.length > 0 && !!step1.favoriteCandy && step1.favoriteCandy.length > 0;
 }
 
 export default function Step1({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
   const [firstName, setFirstName] = useState(treatReturnState.step1.firstName);
+  const [favoriteCandy, setFavoriteCandy] = useState(treatReturnState.step1.favoriteCandy);
   const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
-    setTreatReturnState({ ...treatReturnState, step1: { firstName } });
-  }, [firstName]);
+    setTreatReturnState({ ...treatReturnState, step1: { firstName, favoriteCandy } });
+  }, [firstName, favoriteCandy]);
 
-  const shouldDisableNext = () => !isStep1Complete({ firstName });
+  const shouldDisableNext = () => !isStep1Complete({ firstName, favoriteCandy });
 
   return (
     <>
@@ -67,7 +69,17 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
           determine your first name, or pick one yourself.
         </HelpText>
       )}
-      <TextInput value={firstName} onChange={(value) => setFirstName(value)} />
+      <TextInput value={firstName ?? ""} onChange={(value) => setFirstName(value)} />
+
+      <QuestionHeader>
+        What is your favorite candy?
+      </QuestionHeader>
+      <TextInput
+        value={favoriteCandy ?? ""}
+        onChange={(value) => setFavoriteCandy(value)}
+        placeholderText="e.g., Snickers, Reese's, Kit Kat"
+      />
+
       <Link
         to="/file/step/2"
         className={

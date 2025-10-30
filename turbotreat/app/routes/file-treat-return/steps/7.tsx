@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-
+import {
+  QuestionHeader,
+  Select,
+  NumberInput,
+  StepPagination,
+} from "./components.client";
 
 export type Step7State = {
-  californiaFilm: "" | "yes" | "no";
+  completedThreeHomework: boolean | null;
+  totalHomeworkCount: number | null;
+  homeworkAtHomeCount: number | null;
 };
 
 export function clientLoader() {
@@ -16,7 +23,11 @@ export function clientLoader() {
   if (!treatReturnState.step7) {
     const initialState = {
       ...treatReturnState,
-      step7: { californiaFilm: "" } as Step7State,
+      step7: {
+        completedThreeHomework: null,
+        totalHomeworkCount: null,
+        homeworkAtHomeCount: null,
+      } as Step7State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -25,71 +36,74 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep7Complete(step7: Step7State) {
+  if (step7.completedThreeHomework === null) return false;
+  if (step7.totalHomeworkCount === null) return false;
+  if (step7.homeworkAtHomeCount === null) return false;
+  return true;
+}
+
 export default function Step7() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [californiaFilm, setCaliforniaFilm] = useState(treatReturnState.step7.californiaFilm);
+  const [completedThreeHomework, setCompletedThreeHomework] = useState(treatReturnState.step7.completedThreeHomework);
+  const [totalHomeworkCount, setTotalHomeworkCount] = useState(treatReturnState.step7.totalHomeworkCount);
+  const [homeworkAtHomeCount, setHomeworkAtHomeCount] = useState(treatReturnState.step7.homeworkAtHomeCount);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step7: { californiaFilm },
+      step7: {
+        completedThreeHomework,
+        totalHomeworkCount,
+        homeworkAtHomeCount,
+      },
     });
-  }, [californiaFilm]);
+  }, [completedThreeHomework, totalHomeworkCount, homeworkAtHomeCount, treatReturnState]);
+
+  const shouldDisableNext = () => !isStep7Complete({
+    completedThreeHomework,
+    totalHomeworkCount,
+    homeworkAtHomeCount,
+  });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Will any of this candy be used to feed actors or actresses in a film or television 
-            production in the state of California?
-          </legend>
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="california-film"
-                value="yes"
-                checked={californiaFilm === "yes"}
-                onChange={(e) => setCaliforniaFilm(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="california-film"
-                value="no"
-                checked={californiaFilm === "no"}
-                onChange={(e) => setCaliforniaFilm(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
+        <QuestionHeader>
+          Over the past year, have you completed at least three homework assignments?
+        </QuestionHeader>
+        <Select
+          value={completedThreeHomework}
+          onChange={setCompletedThreeHomework}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/7")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/9")}
-            disabled={!californiaFilm}
-            className={`px-4 py-2 rounded ${
-              !californiaFilm
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <QuestionHeader>
+          How many homework assignments have you completed in total over the past year?
+        </QuestionHeader>
+        <NumberInput
+          value={totalHomeworkCount}
+          onChange={setTotalHomeworkCount}
+          minValue={0}
+          step={1}
+          placeholderText="Enter total number of homework assignments"
+        />
+
+        <QuestionHeader>
+          Of the homework assignments you've completed, how many of them were completed at your home (rather than at school, at a library, or somewhere else)?
+        </QuestionHeader>
+        <NumberInput
+          value={homeworkAtHomeCount}
+          onChange={setHomeworkAtHomeCount}
+          minValue={0}
+          step={1}
+          placeholderText="Enter number completed at home"
+        />
+
+        <StepPagination disabled={shouldDisableNext()} currentStep={7} />
       </div>
     </main>
   );

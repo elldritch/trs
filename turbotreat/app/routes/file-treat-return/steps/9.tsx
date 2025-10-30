@@ -1,18 +1,34 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import {
+  QuestionHeader,
+  Select,
+  StepPagination,
+} from "./components.client";
 
+export type TransportMethod =
+  | "school_bus"
+  | "public_transit"
+  | "gas_vehicle"
+  | "electric_vehicle"
+  | "bike"
+  | "scooter"
+  | "skateboard"
+  | "horse"
+  | "roller_skating"
+  | "walking"
+  | "running"
+  | "none"
+  | null;
 
-type Step9State = {
-  homeworkCompleted: "" | "yes" | "no";
-  totalHomework: string;
-  homeworkAtHome: string;
+export type Step9State = {
+  hasCommute: boolean | null;
+  transportMethod: TransportMethod;
 };
-
-export type { Step9State };
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
@@ -20,7 +36,10 @@ export function clientLoader() {
   if (!treatReturnState.step9) {
     const initialState = {
       ...treatReturnState,
-      step9: { homeworkCompleted: "", totalHomework: "", homeworkAtHome: "" } as Step9State,
+      step9: {
+        hasCommute: null,
+        transportMethod: null,
+      } as Step9State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -29,112 +48,71 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep9Complete(step9: Step9State) {
+  if (step9.hasCommute === null) return false;
+  if (step9.hasCommute === true && step9.transportMethod === null) return false;
+  return true;
+}
+
 export default function Step9() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [homeworkCompleted, setHomeworkCompleted] = useState(treatReturnState.step9.homeworkCompleted);
-  const [totalHomework, setTotalHomework] = useState(treatReturnState.step9.totalHomework);
-  const [homeworkAtHome, setHomeworkAtHome] = useState(treatReturnState.step9.homeworkAtHome);
+  const [hasCommute, setHasCommute] = useState(treatReturnState.step9.hasCommute);
+  const [transportMethod, setTransportMethod] = useState(treatReturnState.step9.transportMethod);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step9: { homeworkCompleted, totalHomework, homeworkAtHome },
+      step9: {
+        hasCommute,
+        transportMethod,
+      },
     });
-  }, [homeworkCompleted, totalHomework, homeworkAtHome]);
+  }, [hasCommute, transportMethod, treatReturnState]);
 
-  const isFormValid = homeworkCompleted === "no" || 
-                     (homeworkCompleted === "yes" && totalHomework && homeworkAtHome);
+  const shouldDisableNext = () => !isStep9Complete({ hasCommute, transportMethod });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Over the past year, have you completed at least three homework assignments?
-          </legend>
-          <div className="space-x-4 mb-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="homework-completed"
-                value="yes"
-                checked={homeworkCompleted === "yes"}
-                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="homework-completed"
-                value="no"
-                checked={homeworkCompleted === "no"}
-                onChange={(e) => setHomeworkCompleted(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
+        <QuestionHeader>
+          Do you regularly commute to school or work?
+        </QuestionHeader>
+        <Select
+          value={hasCommute}
+          onChange={setHasCommute}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+
+        {hasCommute === true && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Which of the following means of transportation do you most frequently use to commute to school or work?
+            </QuestionHeader>
+            <Select
+              value={transportMethod}
+              onChange={setTransportMethod}
+              options={[
+                { value: "school_bus", display: "Riding a school bus" },
+                { value: "public_transit", display: "Taking public transportation" },
+                { value: "gas_vehicle", display: "Driving a gas-powered vehicle" },
+                { value: "electric_vehicle", display: "Driving an electric vehicle" },
+                { value: "bike", display: "Riding a bike" },
+                { value: "scooter", display: "Riding a scooter" },
+                { value: "skateboard", display: "Riding a skateboard" },
+                { value: "horse", display: "Riding a horse" },
+                { value: "roller_skating", display: "Roller skating" },
+                { value: "walking", display: "Walking" },
+                { value: "running", display: "Running" },
+                { value: "none", display: "None of these" },
+              ]}
+            />
           </div>
+        )}
 
-          {homeworkCompleted === "yes" && (
-            <div className="space-y-6 pl-6 border-l-2 border-gray-200">
-              <div>
-                <label className="block text-lg font-medium mb-2">
-                  How many homework assignments have you completed in total over the past year?
-                </label>
-                <input
-                  type="number"
-                  min="3"
-                  step="1"
-                  value={totalHomework}
-                  onChange={(e) => setTotalHomework(e.target.value)}
-                  className="w-full p-2 border rounded"
-                  placeholder="Enter number of assignments"
-                />
-              </div>
-
-              <div>
-                <label className="block text-lg font-medium mb-2">
-                  Of the homework assignments you've completed, how many of them were completed at your home 
-                  (rather than at school, at a library, or somewhere else)?
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max={totalHomework || ""}
-                  step="1"
-                  value={homeworkAtHome}
-                  onChange={(e) => setHomeworkAtHome(e.target.value)}
-                  className="w-full p-2 border rounded"
-                  placeholder={`Enter number (max ${totalHomework || "—"})`}
-                  disabled={!totalHomework}
-                />
-              </div>
-            </div>
-          )}
-        </fieldset>
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/9")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/11")}
-            disabled={!homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))}
-            className={`px-4 py-2 rounded ${
-              !homeworkCompleted || (homeworkCompleted === "yes" && (!totalHomework || !homeworkAtHome))
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <StepPagination disabled={shouldDisableNext()} currentStep={9} />
       </div>
     </main>
   );

@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import {
+  QuestionHeader,
+  HelpButton,
+  HelpText,
+  Select,
+  StepPagination,
+} from "./components.client";
 
 export type Step12State = {
-  willStudyNextYear: string;
-  candyForStudyActivities: string;
-  studyCandyPercentage: string;
+  beenToDentist: boolean | null;
+  dentalWorkFromCandy: boolean | null;
+  reimbursedForDental: boolean | null;
 };
 
 export function clientLoader() {
@@ -17,10 +24,10 @@ export function clientLoader() {
   if (!treatReturnState.step12) {
     const initialState = {
       ...treatReturnState,
-      step12: { 
-        willStudyNextYear: "",
-        candyForStudyActivities: "",
-        studyCandyPercentage: ""
+      step12: {
+        beenToDentist: null,
+        dentalWorkFromCandy: null,
+        reimbursedForDental: null,
       } as Step12State,
     };
     setTreatReturnState(initialState);
@@ -30,159 +37,104 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep12Complete(step12: Step12State) {
+  if (step12.beenToDentist === null) return false;
+  if (step12.beenToDentist === false) return true;
+  if (step12.dentalWorkFromCandy === null) return false;
+  if (step12.dentalWorkFromCandy === false) return true;
+  if (step12.reimbursedForDental === null) return false;
+  return true;
+}
+
 export default function Step12() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [willStudyNextYear, setWillStudyNextYear] = useState(
-    treatReturnState.step12?.willStudyNextYear || ""
-  );
-  const [candyForStudyActivities, setCandyForStudyActivities] = useState(
-    treatReturnState.step12?.candyForStudyActivities || ""
-  );
-  const [studyCandyPercentage, setStudyCandyPercentage] = useState(
-    treatReturnState.step12?.studyCandyPercentage || ""
-  );
+  const [beenToDentist, setBeenToDentist] = useState(treatReturnState.step12.beenToDentist);
+  const [dentalWorkFromCandy, setDentalWorkFromCandy] = useState(treatReturnState.step12.dentalWorkFromCandy);
+  const [reimbursedForDental, setReimbursedForDental] = useState(treatReturnState.step12.reimbursedForDental);
+  const [showDentalWorkHelp, setShowDentalWorkHelp] = useState(false);
+  const [showReimbursedHelp, setShowReimbursedHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step12: { 
-        willStudyNextYear,
-        candyForStudyActivities,
-        studyCandyPercentage
+      step12: {
+        beenToDentist,
+        dentalWorkFromCandy,
+        reimbursedForDental,
       },
     });
-  }, [willStudyNextYear, candyForStudyActivities, studyCandyPercentage, treatReturnState]);
+  }, [beenToDentist, dentalWorkFromCandy, reimbursedForDental, treatReturnState]);
 
-  const isFormValid = () => {
-    if (willStudyNextYear === "") {
-      return false;
-    }
-    if (willStudyNextYear === "yes" && candyForStudyActivities === "") {
-      return false;
-    }
-    if (candyForStudyActivities === "yes" && studyCandyPercentage === "") {
-      return false;
-    }
-    return true;
-  };
+  const shouldDisableNext = () => !isStep12Complete({
+    beenToDentist,
+    dentalWorkFromCandy,
+    reimbursedForDental,
+  });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Will you be studying, reading, doing homework, learning new things, or spending time in a library ("study-oriented activities") over the upcoming year?
-          </legend>
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="will-study"
-                value="yes"
-                checked={willStudyNextYear === "yes"}
-                onChange={() => setWillStudyNextYear("yes")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="will-study"
-                value="no"
-                checked={willStudyNextYear === "no"}
-                onChange={() => setWillStudyNextYear("no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
+        <QuestionHeader>
+          Have you been to the dentist in the past year?
+        </QuestionHeader>
+        <Select
+          value={beenToDentist}
+          onChange={setBeenToDentist}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        {willStudyNextYear === "yes" && (
-          <fieldset className="mb-6">
-            <legend className="text-xl font-bold mb-4">
-              Will your candy collected over the past year be consumed during or before study-oriented activities in the upcoming year?
-            </legend>
-            <div className="space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="candy-for-study"
-                  value="yes"
-                  checked={candyForStudyActivities === "yes"}
-                  onChange={() => setCandyForStudyActivities("yes")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="candy-for-study"
-                  value="no"
-                  checked={candyForStudyActivities === "no"}
-                  onChange={() => setCandyForStudyActivities("no")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-            
-            {candyForStudyActivities === "yes" && (
-              <div className="mt-4">
-                <label className="block text-lg font-medium mb-2">
-                  About what percentage of the candy you've collected over the past year do you estimate will be consumed in support of these study-oriented activities?
-                </label>
-                <div className="w-32">
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={studyCandyPercentage}
-                      onChange={(e) => setStudyCandyPercentage(e.target.value)}
-                      className="w-full p-2 border rounded pr-12"
-                      placeholder="0-100"
-                    />
-                    <span className="absolute right-3 top-2 text-gray-500">%</span>
-                  </div>
-                </div>
-              </div>
+        {beenToDentist === true && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Was any dental work you received performed as a result of eating candy over the last year?
+              <HelpButton onClick={() => setShowDentalWorkHelp(!showDentalWorkHelp)} />
+            </QuestionHeader>
+            {showDentalWorkHelp && (
+              <HelpText title="What is teeth?">
+                Teeth are bones, but in your face. If you ate so much candy that it hurt your face bones,
+                you may have received treatment from a face bone doctor (dentist). Visits to the face bone
+                doctor would be considered appointments for "dental work".
+              </HelpText>
             )}
-          </fieldset>
+            <Select
+              value={dentalWorkFromCandy}
+              onChange={setDentalWorkFromCandy}
+              options={[
+                { value: true, display: "Yes" },
+                { value: false, display: "No" },
+              ]}
+            />
+          </div>
         )}
 
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/12")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            disabled={!isFormValid()}
-            onClick={() => {
-              setTreatReturnState({
-                ...treatReturnState,
-                step12: { 
-                  willStudyNextYear,
-                  candyForStudyActivities,
-                  studyCandyPercentage: candyForStudyActivities === "yes" ? studyCandyPercentage : ""
-                },
-              });
-              navigate("/file/step/14");
-            }}
-            className={`px-4 py-2 rounded ${
-              !isFormValid()
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        {beenToDentist === true && dentalWorkFromCandy === true && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Were you already reimbursed for this dental work?
+              <HelpButton onClick={() => setShowReimbursedHelp(!showReimbursedHelp)} />
+            </QuestionHeader>
+            {showReimbursedHelp && (
+              <HelpText title="How do I know if a dental visit was reimbursed?">
+                Trick or treaters who go to the dentist are usually entitled to compensation in the form of a
+                toy or other small delightful object (like a new toothbrush). If you visited the dentist but
+                did not receive compensation, you are eligible for a tax credit from the TRS.
+              </HelpText>
+            )}
+            <Select
+              value={reimbursedForDental}
+              onChange={setReimbursedForDental}
+              options={[
+                { value: true, display: "Yes" },
+                { value: false, display: "No" },
+              ]}
+            />
+          </div>
+        )}
+
+        <StepPagination disabled={shouldDisableNext()} currentStep={12} />
       </div>
     </main>
   );

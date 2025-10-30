@@ -12,6 +12,16 @@
     </help_text>
     <form_key>first_name</form_key>
   </question>
+  
+  <question id="2a">
+    <text>What is your favorite candy?</text>
+    <type>freeform</type>
+    <category>Personal info</category>
+    <form_key>favorite_candy</form_key>
+    <show_when>
+      <question_id>1</question_id>
+    </show_when>
+  </question>
 
   <question id="3">
     <text>Are you wearing a costume this Halloween season?</text>
@@ -271,7 +281,7 @@
   </question>
 
   <question id="24">
-    <text>Please list each sibling's first name and costume.</text>
+    <text>Please list each sibling's first name, costume, and favorite candy.</text>
     <type>freeform</type>
     <category>Deductions &amp; Credits</category>
     <form_key>dependents_yes, dependents_no</form_key>
@@ -436,7 +446,7 @@
     </options>
     <help_text>
       <question>What is the Sweetwest Airlines treat income tax credit?</question>
-      <content></content>
+      <content>The treat income tax credit is a tax credit that allows you to claim a credit for the candy you spent on Sweetwest Airlines.</content>
     </help_text>
     <form_key>sweetwest_yes, sweetwest_no</form_key>
   </question>
@@ -445,6 +455,36 @@
     <text>What percentage of your candy came from a street other than Arbor?</text>
     <type>freeform</type>
     <form_key>nonarbor_percent</form_key>
+  </question>
+
+   <question id="40">
+    <text>Would you like to donate 1 candy of your treat tax to the SEF (Superintendent Election Fund)? Selecting yes will not change your treat tax or refund.</text>
+    <type>multiple_choice</type>
+     <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>What is the SEF?</question>
+      <content>
+      The SEF is a fund that helps support the superintendent of candy in your district. </content>
+    </help_text>
+    <form_key>sef_fund</form_key>
+  </question>
+
+  <question id="41">
+    <text>Would you like to pay for TurboTreat Premium with 1 candy from your tax refund?</text>
+    <type>multiple_choice</type>
+     <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>What additional benefits does TurboTreat Premium offer?</question>
+      <content>
+      TurboTreat Premium offers additional benefits such as help with tax auditing, more advanced tax preparation, and access to TurboTreat tax professionals. </content>
+    </help_text>
+    <form_key>turbotax_premium</form_key>
   </question>
 
 </turbotreat_questions>

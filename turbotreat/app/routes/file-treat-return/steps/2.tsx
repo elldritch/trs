@@ -15,7 +15,7 @@ import {
 } from "./components.client";
 
 export type Step2State = {
-  wearingCostume: boolean;
+  wearingCostume: boolean | null;
   costumeCategory: CostumeCategory | null;
   costumeName: string | null;
 };
@@ -39,11 +39,11 @@ export type CostumeCategory =
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (typeof treatReturnState.step2.wearingCostume !== "boolean") {
+  if (treatReturnState.step2.wearingCostume === undefined) {
     const initialState = {
       ...treatReturnState,
       step2: {
-        wearingCostume: false,
+        wearingCostume: null,
         costumeCategory: null,
         costumeName: null,
       },
@@ -56,7 +56,8 @@ export function clientLoader() {
 }
 
 export function isStep2Complete(step2: Step2State) {
-  if (step2.wearingCostume) {
+  if (step2.wearingCostume === null) return false;
+  if (step2.wearingCostume === true) {
     return !!step2.costumeCategory && !!step2.costumeName;
   }
   return true;

@@ -4,12 +4,13 @@ import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-import { QuestionHeader, Select, StepPagination, TextInput } from "./components.client";
+import { QuestionHeader, Select, StepPagination, TextInput, NumberInput } from "./components.client";
 
 export type Step4State = {
-  multipleStreets: boolean;
+  multipleStreets: boolean | null;
   streetNames: string | null;
   allFromArborAve: boolean | null;
+  nonArborPercent: number | null;
 };
 
 export function clientLoader() {
@@ -18,10 +19,11 @@ export function clientLoader() {
   if (treatReturnState.step4?.multipleStreets === undefined) {
     const initialState = {
       ...treatReturnState,
-      step4: { 
-        multipleStreets: false,
+      step4: {
+        multipleStreets: null,
         streetNames: null,
         allFromArborAve: null,
+        nonArborPercent: null,
       } as Step4State,
     };
     setTreatReturnState(initialState);
@@ -32,15 +34,20 @@ export function clientLoader() {
 }
 
 export function isStep4Complete(step4: Step4State) {
-  if (step4.multipleStreets === true && !step4.streetNames?.trim()) {
-    return false;
+  if (step4.multipleStreets === null) return false;
+  if (step4.multipleStreets === true) {
+    if (!step4.streetNames?.trim()) return false;
+    if (step4.nonArborPercent === null) return false;
+  } else {
+    if (step4.allFromArborAve === null) return false;
+    if (step4.allFromArborAve === false && step4.nonArborPercent === null) return false;
   }
-  return step4.allFromArborAve !== null;
+  return true;
 }
 
 export default function Step4() {
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [multipleStreets, setMultipleStreets] = useState<boolean>(
+  const [multipleStreets, setMultipleStreets] = useState<boolean | null>(
     treatReturnState.step4.multipleStreets
   );
   const [streetNames, setStreetNames] = useState<string | null>(
@@ -49,19 +56,23 @@ export default function Step4() {
   const [allFromArborAve, setAllFromArborAve] = useState<boolean | null>(
     treatReturnState.step4.allFromArborAve
   );
+  const [nonArborPercent, setNonArborPercent] = useState<number | null>(
+    treatReturnState.step4.nonArborPercent
+  );
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step4: { 
+      step4: {
         multipleStreets,
         streetNames,
         allFromArborAve,
+        nonArborPercent,
       },
     });
-  }, [multipleStreets, streetNames, allFromArborAve, treatReturnState]);
+  }, [multipleStreets, streetNames, allFromArborAve, nonArborPercent, treatReturnState]);
 
-  const isComplete = () => isStep4Complete({ multipleStreets, streetNames, allFromArborAve });
+  const shouldDisableNext = () => !isStep4Complete({ multipleStreets, streetNames, allFromArborAve, nonArborPercent });
 
   return (
     <div className="flex flex-col gap-4">
@@ -92,23 +103,41 @@ export default function Step4() {
         </div>
       )}
 
-     <div className="mt-4">
-        <QuestionHeader>
-          Is all the candy you collected this year from Arbor Ave?
-        </QuestionHeader>
-        <Select
-          value={allFromArborAve}
-          onChange={setAllFromArborAve}
-          options={[
-            { value: true, display: "Yes" },
-            { value: false, display: "No" },
-          ]}
-        />
-      </div>
+      {!multipleStreets && (
+        <div className="animate-fade-in">
+          <QuestionHeader>
+            Is all the candy you collected this year from Arbor Ave?
+          </QuestionHeader>
+          <Select
+            value={allFromArborAve}
+            onChange={setAllFromArborAve}
+            options={[
+              { value: true, display: "Yes" },
+              { value: false, display: "No" },
+            ]}
+          />
+        </div>
+      )}
 
-      <StepPagination 
-        disabled={!isComplete()} 
-        currentStep={4} 
+      {(multipleStreets || (!multipleStreets && allFromArborAve === false)) && (
+        <div className="animate-fade-in">
+          <QuestionHeader>
+            What percentage of your candy came from a street other than Arbor?
+          </QuestionHeader>
+          <NumberInput
+            value={nonArborPercent}
+            onChange={setNonArborPercent}
+            minValue={0}
+            maxValue={100}
+            step={1}
+            placeholderText="Enter percentage (0-100)"
+          />
+        </div>
+      )}
+
+      <StepPagination
+        disabled={shouldDisableNext()}
+        currentStep={4}
       />
     </div>
   );

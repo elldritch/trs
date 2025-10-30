@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-
+import { QuestionHeader, Select, StepPagination, NumberInput } from "./components.client";
 
 export type Step5State = {
-  candyWeight: string;
-  receivedTips: "" | "yes" | "no";
+  candyWeight: number | null;
+  receivedTips: boolean | null;
 };
 
 export function clientLoader() {
@@ -17,7 +17,10 @@ export function clientLoader() {
   if (!treatReturnState.step5) {
     const initialState = {
       ...treatReturnState,
-      step5: { candyWeight: "", receivedTips: "" } as Step5State,
+      step5: { 
+        candyWeight: null, 
+        receivedTips: null,
+      } as Step5State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -26,8 +29,13 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep5Complete(step5: Step5State) {
+  if (step5.candyWeight === null) return false;
+  if (step5.receivedTips === null) return false;
+  return true;
+}
+
 export default function Step5() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
   const [candyWeight, setCandyWeight] = useState(treatReturnState.step5.candyWeight);
   const [receivedTips, setReceivedTips] = useState(treatReturnState.step5.receivedTips);
@@ -35,77 +43,44 @@ export default function Step5() {
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step5: { candyWeight, receivedTips },
+      step5: { 
+        candyWeight, 
+        receivedTips 
+      },
     });
-  }, [candyWeight, receivedTips]);
+  }, [candyWeight, receivedTips, treatReturnState]);
+
+  const shouldDisableNext = () => !isStep5Complete({ candyWeight, receivedTips });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Enter the total weight, in pounds, of the candy you have collected this year.
-          </legend>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={candyWeight}
-            onChange={(e) => setCandyWeight(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Enter weight in pounds"
-          />
-        </fieldset>
+        <QuestionHeader>
+          Enter the total weight, in pounds, of the candy you have collected this year.
+        </QuestionHeader>
+        <NumberInput
+          value={candyWeight}
+          onChange={setCandyWeight}
+          minValue={0}
+          step={0.1}
+          placeholderText="Enter weight in pounds"
+        />
+        <QuestionHeader>
+          Did you receive any candy as tips for services rendered this year?
+        </QuestionHeader>
+        <Select
+          value={receivedTips}
+          onChange={setReceivedTips}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Did you receive any candy as tips for services rendered this year?
-          </legend>
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="tips"
-                value="yes"
-                checked={receivedTips === "yes"}
-                onChange={(e) => setReceivedTips(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="tips"
-                value="no"
-                checked={receivedTips === "no"}
-                onChange={(e) => setReceivedTips(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/5")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/7")}
-            disabled={!candyWeight || !receivedTips}
-            className={`px-4 py-2 rounded ${
-              !candyWeight || !receivedTips
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <StepPagination 
+          disabled={shouldDisableNext()} 
+          currentStep={5} 
+        />
       </div>
     </main>
   );

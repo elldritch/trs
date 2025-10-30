@@ -7,7 +7,7 @@ import {
 import { QuestionHeader, Select, StepPagination } from "./components.client";
 
 export type Step3State = {
-  attendsSchool: boolean;
+  attendsSchool: boolean | null;
   schoolYear: SchoolYear;
   schoolConditions: SchoolCondition;
 };
@@ -17,11 +17,11 @@ export type SchoolCondition = "cannot_attend" | "graduated" | "none" | null;
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
-  if (!treatReturnState.step3 || typeof treatReturnState.step3.attendsSchool !== "boolean") {
+  if (!treatReturnState.step3 || treatReturnState.step3.attendsSchool === undefined) {
     const initialState = {
       ...treatReturnState,
-      step3: { 
-        attendsSchool: false,
+      step3: {
+        attendsSchool: null,
         schoolYear: null,
         schoolConditions: null,
       } as Step3State,
@@ -33,12 +33,12 @@ export function clientLoader() {
 }
 
 export function isStep3Complete(step3: Step3State) {
-  if (step3.attendsSchool) {
+  if (step3.attendsSchool === null) return false;
+  if (step3.attendsSchool === true) {
     return !!step3.schoolYear;
-  } else if (!step3.attendsSchool) {
+  } else {
     return step3.schoolConditions !== null;
   }
-  return false;
 }
 
 export default function Step3() {

@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import {
+  QuestionHeader,
+  Select,
+  PersonList,
+  StepPagination,
+  type PersonItem,
+} from "./components.client";
 
+export type Parent = PersonItem;
 
-type Step11State = {
-  hasCommute: "" | "yes" | "no";
-  transportMethod: string;
+export type Step11State = {
+  livesWithParents: boolean | null;
+  parents: Parent[];
 };
-
-const transportOptions = [
-  "Walking",
-  "Bicycle",
-  "Skateboard/Scooter",
-  "Car (driven by someone else)",
-  "Public Transportation",
-  "Other"
-];
-
-export type { Step11State };
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
@@ -28,7 +25,10 @@ export function clientLoader() {
   if (!treatReturnState.step11) {
     const initialState = {
       ...treatReturnState,
-      step11: { hasCommute: "", transportMethod: "" } as Step11State,
+      step11: {
+        livesWithParents: null,
+        parents: [],
+      } as Step11State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -37,126 +37,65 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isStep11Complete(step11: Step11State) {
+  if (step11.livesWithParents === null) return false;
+  if (step11.livesWithParents === false) return true;
+  if (step11.parents.length === 0) return false;
+  return step11.parents.every(
+    (p) =>
+      p.name.trim() !== "" &&
+      p.costume.trim() !== "" &&
+      p.willEatCandy !== null
+  );
+}
+
 export default function Step11() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [hasCommute, setHasCommute] = useState(treatReturnState.step11.hasCommute);
-  const [transportMethod, setTransportMethod] = useState(treatReturnState.step11.transportMethod);
-  const [showOtherInput, setShowOtherInput] = useState(
-    transportMethod && !transportOptions.includes(transportMethod)
+  const [livesWithParents, setLivesWithParents] = useState(
+    treatReturnState.step11.livesWithParents
+  );
+  const [parents, setParents] = useState<Parent[]>(
+    treatReturnState.step11.parents
   );
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step11: { hasCommute, transportMethod },
+      step11: {
+        livesWithParents,
+        parents,
+      },
     });
-  }, [hasCommute, transportMethod]);
+  }, [livesWithParents, parents, treatReturnState]);
 
-  const handleTransportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setTransportMethod(value);
-    setShowOtherInput(value === "Other");
-    if (value !== "Other") {
-      setTransportMethod(value);
-    } else {
-      setTransportMethod("");
-    }
-  };
-
-  const isFormValid = hasCommute === "no" || (hasCommute === "yes" && transportMethod);
+  const shouldDisableNext = () =>
+    !isStep11Complete({ livesWithParents, parents });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Do you regularly commute to school or work?
-          </legend>
-          <div className="space-x-4 mb-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="has-commute"
-                value="yes"
-                checked={hasCommute === "yes"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="has-commute"
-                value="no"
-                checked={hasCommute === "no"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
+        <QuestionHeader>
+          Do you currently live with any parent or guardian?
+        </QuestionHeader>
+        <Select
+          value={livesWithParents}
+          onChange={setLivesWithParents}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-          {hasCommute === "yes" && (
-            <div className="pl-6 border-l-2 border-gray-200 space-y-4">
-              <div>
-                <label htmlFor="transport-method" className="block text-lg font-medium mb-2">
-                  Which of the following means of transportation do you most frequently use to commute to school or work?
-                </label>
-                <select
-                  id="transport-method"
-                  value={showOtherInput ? "Other" : transportMethod}
-                  onChange={handleTransportChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Select an option</option>
-                  {transportOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {livesWithParents === true && (
+          <PersonList
+            items={parents}
+            onChange={setParents}
+            personType="parent/guardian"
+            headerText="Please list each parent and/or guardian's first name and costume."
+          />
+        )}
 
-              {showOtherInput && (
-                <div>
-                  <label htmlFor="other-transport" className="block text-sm font-medium text-gray-700 mb-1">
-                    Please specify:
-                  </label>
-                  <input
-                    type="text"
-                    id="other-transport"
-                    value={transportMethod}
-                    onChange={(e) => setTransportMethod(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Enter your transportation method"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </fieldset>
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/11")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/13")}
-            disabled={!hasCommute || (hasCommute === "yes" && !transportMethod)}
-            className={`px-4 py-2 rounded ${
-              !hasCommute || (hasCommute === "yes" && !transportMethod)
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <StepPagination disabled={shouldDisableNext()} currentStep={11} />
       </div>
     </main>
   );

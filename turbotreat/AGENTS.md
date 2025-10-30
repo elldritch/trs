@@ -9,7 +9,7 @@ Halloween hackathon project using TypeScript, Vite, React, Prisma, Postgres, and
 
 - Make minimal, targeted changes to address the specific request
 - Do not refactor working code unless explicitly asked
-- Follow existing structure, style, and refer to the questions.xml file for the questions and answers if refactoring
+- Follow existing structure, style, and refer to the questions.xml file for the questions and answers if refactoring. ALWAYS use the exact questions in the questions.xml file.
 - If you see something concerning, mention it but don't fix it unless asked
 
 ### Simplicity Over Cleverness
@@ -28,6 +28,8 @@ Halloween hackathon project using TypeScript, Vite, React, Prisma, Postgres, and
 ### TypeScript
 
 - Use explicit types for function signatures and exported values
+- Use null for optional values
+- Use boolean for binary values
 
 ### React
 
@@ -35,6 +37,7 @@ Halloween hackathon project using TypeScript, Vite, React, Prisma, Postgres, and
 - Keep options in line with the Select component
 - Co-locate state with usage—lift only when necessary
 - Client-side fetching is fine; don't prematurely optimize with loaders
+
 
 ## Change Process
 
