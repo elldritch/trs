@@ -126,10 +126,9 @@ export default function Step2() {
           </h1>
           {showCategoryHelp && (
             <div className="bg-yellow-50 p-4 mb-4 mt-2 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Costume Categories</h4>
+              <h4 className="font-bold mb-2">How do I know if I am wearing a costume?</h4>
               <p className="text-sm">
-                Select the category that best describes your costume. If none of
-                these categories fit, select 'None of these'.
+                A costume consists of article(s) of clothing that you are wearing for a special occasion. If you are dressed in clothes that you don't typically wear every day, you are probably wearing a costume.
               </p>
             </div>
           )}

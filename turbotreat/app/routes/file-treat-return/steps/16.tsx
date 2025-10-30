@@ -85,10 +85,9 @@ export default function Step16() {
           </div>
           {showYearsHelp && (
             <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Trick-or-Treating History</h4>
+              <h4 className="font-bold mb-2">How many years have you trick-or-treated at Arbor Ave on Halloween?</h4>
               <p className="text-sm">
-                Please enter the total number of years you've participated in trick-or-treating on Arbor Ave.
-                This helps us determine your eligibility for certain tax credits.
+                Enter the total number of years you've been trick-or-treating on Arbor Ave. If this is your first year, enter 0.
               </p>
             </div>
           )}
@@ -117,10 +116,9 @@ export default function Step16() {
           </div>
           {showSweetwestHelp && (
             <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Sweetwest Airlines</h4>
+              <h4 className="font-bold mb-2">What is the Sweetwest Airlines treat income tax credit?</h4>
               <p className="text-sm">
-                Sweetwest Airlines offers special tax credits for trick-or-treaters who used their services.
-                Please indicate if you flew with them last year to determine your eligibility.
+                Sweetwest Airlines offers a treat income tax credit for travelers who fly from Arbor Ave. If you flew with Sweetwest Airlines from Arbor Ave in the past year, you may be eligible for this credit on your treat tax return.
               </p>
             </div>
           )}
@@ -165,10 +163,9 @@ export default function Step16() {
           </div>
           {showNonArborHelp && (
             <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Non-Arbor Street Candy</h4>
+              <h4 className="font-bold mb-2">What percentage of your candy came from a street other than Arbor?</h4>
               <p className="text-sm">
-                Please estimate what percentage of your total candy haul came from streets other than Arbor Ave.
-                This helps us understand the distribution of your treat collection.
+                Enter the percentage of your total candy collection that was obtained from streets other than Arbor Ave. This helps us calculate any applicable non-Arbor candy adjustments to your treat tax.
               </p>
             </div>
           )}
