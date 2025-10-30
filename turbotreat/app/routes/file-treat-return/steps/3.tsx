@@ -4,12 +4,16 @@ import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import { HelpButton, QuestionHeader, Select } from "./components.client";
 
 export type Step3State = {
-  attendsSchool: "yes" | "no" | "";
-  schoolYear: "Pre-K" | "Elementary" | "Middle" | "High School" | "Adult" | "";
-  schoolConditions: "cannot_attend" | "graduated" | "none" | "";
+  attendsSchool: boolean;
+  schoolYear: SchoolYear;
+  schoolConditions: SchoolCondition;
 };
+
+export type SchoolYear = "Pre-K" | "Elementary" | "1st Grade" | "2nd Grade" | "3rd Grade" | "4th Grade" | "5th Grade" | "6th Grade" | "7th Grade" | "8th Grade" | "9th Grade" | "10th Grade" | "11th Grade" | "12th Grade" | "College" | "Graduate" | null;
+export type SchoolCondition = "cannot_attend" | "graduated" | "none" | null;
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
@@ -17,9 +21,9 @@ export function clientLoader() {
     const initialState = {
       ...treatReturnState,
       step3: { 
-        attendsSchool: "", 
-        schoolYear: "", 
-        schoolConditions: "", 
+        attendsSchool: false,
+        schoolYear: null,
+        schoolConditions: null,
       } as Step3State,
     };
     setTreatReturnState(initialState);
@@ -60,28 +64,22 @@ export default function Step3() {
   };
 
   return (
-    <main className="max-w-2xl mx-auto p-4">
-      <fieldset className="mb-6">
-        <div className="flex items-center mb-2">
-          <legend className="text-xl font-bold">
-            Do you regularly attend school?
-          </legend>
-          <button 
-            onClick={() => setShowSchoolHelp(!showSchoolHelp)}
-            className="ml-2 w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
-            aria-label="Help with school attendance"
-          >
-            ?
-          </button>
-        </div>
-        {showSchoolHelp && (
-          <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-            <h4 className="font-bold mb-2"></h4>
-            <p className="text-sm">
-              
-            </p>
-          </div>
-        )}
+     <main className="flex flex-col gap-4">
+      <div>
+        <QuestionHeader>
+          Do you regularly attend school?
+        </QuestionHeader>
+        <Select
+          value={attendsSchool}
+          onChange={setAttendsSchool}
+          options={[
+            { value: "yes", display: "Yes" },
+            { value: "no", display: "No" },
+          ]}
+        />
+      </div>
+
+
         <div className="flex gap-4">
           <label className="flex items-center gap-2">
             <input
