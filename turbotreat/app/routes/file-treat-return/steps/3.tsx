@@ -35,6 +35,9 @@ export default function Step3() {
   const [schoolConditions, setSchoolConditions] = useState(
     treatReturnState.step3.schoolConditions
   );
+  const [showSchoolHelp, setShowSchoolHelp] = useState(false);
+  const [showYearHelp, setShowYearHelp] = useState(false);
+  const [showConditionsHelp, setShowConditionsHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
@@ -57,11 +60,28 @@ export default function Step3() {
   };
 
   return (
-    <main>
+    <main className="max-w-2xl mx-auto p-4">
       <fieldset className="mb-6">
-        <legend className="mb-2">
-          <h1>Do you regularly attend school?</h1>
-        </legend>
+        <div className="flex items-center mb-2">
+          <legend className="text-xl font-bold">
+            Do you regularly attend school?
+          </legend>
+          <button 
+            onClick={() => setShowSchoolHelp(!showSchoolHelp)}
+            className="ml-2 w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+            aria-label="Help with school attendance"
+          >
+            ?
+          </button>
+        </div>
+        {showSchoolHelp && (
+          <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
+            <h4 className="font-bold mb-2">What does 'regularly attend school' mean?</h4>
+            <p className="text-sm">
+              This includes any formal educational institution you attend on a regular basis, such as public schools, private schools, or homeschool programs. If you're not sure, select 'No' and we'll ask some follow-up questions.
+            </p>
+          </div>
+        )}
         <div className="flex gap-4">
           <label className="flex items-center gap-2">
             <input
@@ -90,9 +110,26 @@ export default function Step3() {
 
       {attendsSchool === "yes" && (
         <fieldset className="mb-6">
-          <legend className="mb-2">
-            <h1>What is your school year?</h1>
-          </legend>
+          <div className="flex items-center mb-2">
+            <legend className="text-xl font-bold">
+              What is your school year?
+            </legend>
+            <button 
+              onClick={() => setShowYearHelp(!showYearHelp)}
+              className="ml-2 w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+              aria-label="Help with school year"
+            >
+              ?
+            </button>
+          </div>
+          {showYearHelp && (
+            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
+              <h4 className="font-bold mb-2">How to determine your school year</h4>
+              <p className="text-sm">
+                Select the option that best matches your current educational level. If you're in a different type of educational program, choose the closest equivalent.
+              </p>
+            </div>
+          )}
           <div className="grid gap-2">
             {["Pre-K", "Elementary", "Middle", "High School", "Adult"].map((year) => (
               <label key={year} className="flex items-center gap-2">
@@ -112,9 +149,26 @@ export default function Step3() {
       )}
 
         <fieldset className="mb-6">
-          <legend className="mb-2">
-            <h1>Do any of the following conditions apply to you?</h1>
-          </legend>
+          <div className="flex items-center mb-2">
+            <legend className="text-xl font-bold">
+              Do any of the following conditions apply to you?
+            </legend>
+            <button 
+              onClick={() => setShowConditionsHelp(!showConditionsHelp)}
+              className="ml-2 w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+              aria-label="Help with school conditions"
+            >
+              ?
+            </button>
+          </div>
+          {showConditionsHelp && (
+            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
+              <h4 className="font-bold mb-2">About these conditions</h4>
+              <p className="text-sm">
+                These options help us understand why you're not currently in school. Select the option that best describes your situation. If none apply, select 'None of these'.
+              </p>
+            </div>
+          )}
           <div className="grid gap-2">
             {[
               { value: "cannot_attend", label: "Cannot yet attend school" },
@@ -136,10 +190,10 @@ export default function Step3() {
           </div>
         </fieldset>
       
-      <div className="flex flex-col sm:flex-row gap-3 mt-8">
+      <div className="flex justify-between mt-8">
         <button
           onClick={() => navigate("/file/step/2")}
-          className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
         >
           Previous
         </button>
@@ -157,7 +211,11 @@ export default function Step3() {
             });
             navigate("/file/step/4");
           }}
-          className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className={`px-4 py-2 rounded ${
+            !isFormValid()
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-orange-500 text-white hover:bg-orange-600"
+          }`}
         >
           Next
         </button>
