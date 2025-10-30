@@ -43,9 +43,7 @@ export default function Step15() {
     treatReturnState.step15?.reimbursedForDental || ""
   );
   
-  const [showDentistHelp, setShowDentistHelp] = useState(false);
   const [showDentalWorkHelp, setShowDentalWorkHelp] = useState(false);
-  const [showReimbursementHelp, setShowReimbursementHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
@@ -69,26 +67,9 @@ export default function Step15() {
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <fieldset className="mb-6">
-          <div className="flex items-center mb-2">
-            <legend className="text-xl font-bold">
-              Have you been to the dentist in the past year?
-            </legend>
-            <button 
-              onClick={() => setShowDentistHelp(!showDentistHelp)}
-              className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-              aria-label="Help with dentist question"
-            >
-              ?
-            </button>
-          </div>
-          {showDentistHelp && (
-            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About Dental Visits</h4>
-              <p className="text-sm">
-                Regular dental check-ups are important for maintaining good oral health. This includes any visits to the dentist for cleanings, exams, or procedures in the past year.
-              </p>
-            </div>
-          )}
+          <legend className="text-xl font-bold mb-4">
+            Have you been to the dentist in the past year?
+          </legend>
           <div className="space-x-4">
             <label className="inline-flex items-center">
               <input
@@ -181,26 +162,9 @@ export default function Step15() {
 
         {beenToDentist === "yes" && dentalWorkFromCandy === "yes" && (
           <fieldset className="mb-6">
-            <div className="flex items-center mb-2">
-              <legend className="text-lg font-medium">
-                Were you already reimbursed for this dental work?
-              </legend>
-              <button 
-                onClick={() => setShowReimbursementHelp(!showReimbursementHelp)}
-                className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-                aria-label="Help with reimbursement question"
-              >
-                ?
-              </button>
-            </div>
-            {showReimbursementHelp && (
-              <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-                <h4 className="font-bold mb-2">How do I know if a dental visit was reimbursed?</h4>
-                <p className="text-sm">
-                  Trick or treaters who go to the dentist are usually entitled to compensation in the form of a toy or other small delightful object (like a new toothbrush). If you visited the dentist but did not receive compensation, you are eligible for a tax credit from the TRS.
-                </p>
-              </div>
-            )}
+            <legend className="text-lg font-medium mb-2">
+              Were you already reimbursed for this dental work?
+            </legend>
             <div className="space-x-4">
               <label className="inline-flex items-center">
                 <input
@@ -236,7 +200,6 @@ export default function Step15() {
             Previous
           </button>
           <button
-            disabled={!isFormValid()}
             onClick={() => {
               setTreatReturnState({
                 ...treatReturnState,
@@ -248,6 +211,7 @@ export default function Step15() {
               });
               navigate("/file/step/16");
             }}
+            disabled={!isFormValid()}
             className={`px-4 py-2 rounded ${
               !isFormValid()
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -261,3 +225,4 @@ export default function Step15() {
     </main>
   );
 }
+

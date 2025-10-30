@@ -76,9 +76,9 @@ export default function Step3() {
         </div>
         {showSchoolHelp && (
           <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-            <h4 className="font-bold mb-2">What does 'regularly attend school' mean?</h4>
+            <h4 className="font-bold mb-2"></h4>
             <p className="text-sm">
-              This includes any formal educational institution you attend on a regular basis, such as public schools, private schools, or homeschool programs. If you're not sure, select 'No' and we'll ask some follow-up questions.
+              
             </p>
           </div>
         )}
@@ -124,9 +124,9 @@ export default function Step3() {
           </div>
           {showYearHelp && (
             <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">How to determine your school year</h4>
+              <h4 className="font-bold mb-2"></h4>
               <p className="text-sm">
-                Select the option that best matches your current educational level. If you're in a different type of educational program, choose the closest equivalent.
+                
               </p>
             </div>
           )}
@@ -163,9 +163,9 @@ export default function Step3() {
           </div>
           {showConditionsHelp && (
             <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">About these conditions</h4>
+              <h4 className="font-bold mb-2"></h4>
               <p className="text-sm">
-                These options help us understand why you're not currently in school. Select the option that best describes your situation. If none apply, select 'None of these'.
+                
               </p>
             </div>
           )}
