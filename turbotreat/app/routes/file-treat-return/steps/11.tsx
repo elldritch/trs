@@ -90,7 +90,7 @@ export default function Step11() {
           <PersonList
             items={parents}
             onChange={setParents}
-            personType="parent/guardian"
+            personType="Parent or guardian"
             headerText="Please list each parent and/or guardian's first name and costume."
           />
         )}

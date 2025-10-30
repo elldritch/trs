@@ -91,7 +91,7 @@ export default function Step8() {
           <PersonList
             items={siblings}
             onChange={setSiblings as (items: PersonItem[]) => void}
-            personType="sibling"
+            personType="Sibling"
             headerText="Please list each sibling's first name, costume, and favorite candy."
             extraFields={[
               {
