@@ -33,7 +33,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep14Complete(step14: Step14State) {
+export function isCompleted(step14: Step14State) {
   if (step14.donateSEF === null) return false;
   return true;
 }
@@ -52,7 +52,7 @@ export default function Step14() {
     });
   }, [donateSEF, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep14Complete({ donateSEF });
+  const shouldDisableNext = () => !isCompleted({ donateSEF });
 
   return (
     <main className="max-w-2xl mx-auto p-4">

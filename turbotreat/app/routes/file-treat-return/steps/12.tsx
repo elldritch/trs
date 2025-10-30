@@ -37,7 +37,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep12Complete(step12: Step12State) {
+export function isCompleted(step12: Step12State) {
   if (step12.beenToDentist === null) return false;
   if (step12.beenToDentist === false) return true;
   if (step12.dentalWorkFromCandy === null) return false;
@@ -65,7 +65,7 @@ export default function Step12() {
     });
   }, [beenToDentist, dentalWorkFromCandy, reimbursedForDental, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep12Complete({
+  const shouldDisableNext = () => !isCompleted({
     beenToDentist,
     dentalWorkFromCandy,
     reimbursedForDental,

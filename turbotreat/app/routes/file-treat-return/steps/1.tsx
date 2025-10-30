@@ -19,7 +19,7 @@ export type Step1State = {
 };
 
 export function isCompleted(state: Step1State) {
-  return state.firstName.length > 0;
+  return state.firstName != null && state.firstName.length > 0 && state.favoriteCandy != null && state.favoriteCandy.length > 0;
 }
 
 export function clientLoader() {
@@ -38,10 +38,6 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep1Complete(step1: Step1State) {
-  return !!step1.firstName && step1.firstName.length > 0 && !!step1.favoriteCandy && step1.favoriteCandy.length > 0;
-}
-
 export default function Step1({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
   const [firstName, setFirstName] = useState(treatReturnState.step1.firstName);
@@ -52,7 +48,7 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
     setTreatReturnState({ ...treatReturnState, step1: { firstName, favoriteCandy } });
   }, [firstName, favoriteCandy]);
 
-  const shouldDisableNext = () => !isStep1Complete({ firstName, favoriteCandy });
+  const shouldDisableNext = () => !isCompleted({ firstName, favoriteCandy });
 
   return (
     <>

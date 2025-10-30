@@ -42,7 +42,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep6Complete(step6: Step6State) {
+export function isCompleted(step6: Step6State) {
   if (step6.investedPTP === null) return false;
   if (step6.investedREIT === null) return false;
   if (step6.californiaFilm === null) return false;
@@ -76,7 +76,7 @@ export default function Step6() {
     });
   }, [investedPTP, investedREIT, californiaFilm, filed1040TRES, pieces1040TRES, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep6Complete({
+  const shouldDisableNext = () => !isCompleted({
     investedPTP,
     investedREIT,
     californiaFilm,

@@ -48,7 +48,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep9Complete(step9: Step9State) {
+export function isCompleted(step9: Step9State) {
   if (step9.hasCommute === null) return false;
   if (step9.hasCommute === true && step9.transportMethod === null) return false;
   return true;
@@ -69,7 +69,7 @@ export default function Step9() {
     });
   }, [hasCommute, transportMethod, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep9Complete({ hasCommute, transportMethod });
+  const shouldDisableNext = () => !isCompleted({ hasCommute, transportMethod });
 
   return (
     <main className="max-w-2xl mx-auto p-4">

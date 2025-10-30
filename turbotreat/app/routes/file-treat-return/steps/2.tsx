@@ -55,14 +55,6 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep2Complete(step2: Step2State) {
-  if (step2.wearingCostume === null) return false;
-  if (step2.wearingCostume === true) {
-    return !!step2.costumeCategory && !!step2.costumeName;
-  }
-  return true;
-}
-
 export default function Step2({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
 
@@ -77,7 +69,7 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   );
   const [showCostumeHelp, setShowCostumeHelp] = useState(false);
 
-  const shouldDisableNext = () => !isStep2Complete({
+  const shouldDisableNext = () => !isCompleted({
     wearingCostume,
     costumeCategory,
     costumeName

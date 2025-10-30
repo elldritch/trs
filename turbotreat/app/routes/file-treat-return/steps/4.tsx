@@ -33,7 +33,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep4Complete(step4: Step4State) {
+export function isCompleted(step4: Step4State) {
   if (step4.multipleStreets === null) return false;
   if (step4.multipleStreets === true) {
     if (!step4.streetNames?.trim()) return false;
@@ -72,7 +72,7 @@ export default function Step4() {
     });
   }, [multipleStreets, streetNames, allFromArborAve, nonArborPercent, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep4Complete({ multipleStreets, streetNames, allFromArborAve, nonArborPercent });
+  const shouldDisableNext = () => !isCompleted({ multipleStreets, streetNames, allFromArborAve, nonArborPercent });
 
   return (
     <div className="flex flex-col gap-4">

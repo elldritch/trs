@@ -36,7 +36,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep7Complete(step7: Step7State) {
+export function isCompleted(step7: Step7State) {
   if (step7.completedThreeHomework === null) return false;
   if (step7.totalHomeworkCount === null) return false;
   if (step7.homeworkAtHomeCount === null) return false;
@@ -60,7 +60,7 @@ export default function Step7() {
     });
   }, [completedThreeHomework, totalHomeworkCount, homeworkAtHomeCount, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep7Complete({
+  const shouldDisableNext = () => !isCompleted({
     completedThreeHomework,
     totalHomeworkCount,
     homeworkAtHomeCount,

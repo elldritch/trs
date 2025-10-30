@@ -32,7 +32,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep3Complete(step3: Step3State) {
+export function isCompleted(step3: Step3State) {
   if (step3.attendsSchool === null) return false;
   if (step3.attendsSchool === true) {
     return !!step3.schoolYear;
@@ -60,7 +60,7 @@ export default function Step3() {
     });
   }, [attendsSchool, schoolYear, schoolConditions]);
 
-  const shouldDisableNext = () => !isStep3Complete({
+  const shouldDisableNext = () => !isCompleted({
     attendsSchool,
     schoolYear,
     schoolConditions

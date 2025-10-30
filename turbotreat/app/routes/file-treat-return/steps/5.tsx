@@ -29,7 +29,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep5Complete(step5: Step5State) {
+export function isCompleted(step5: Step5State) {
   if (step5.candyWeight === null) return false;
   if (step5.receivedTips === null) return false;
   return true;
@@ -50,7 +50,7 @@ export default function Step5() {
     });
   }, [candyWeight, receivedTips, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep5Complete({ candyWeight, receivedTips });
+  const shouldDisableNext = () => !isCompleted({ candyWeight, receivedTips });
 
   return (
     <main className="max-w-2xl mx-auto p-4">

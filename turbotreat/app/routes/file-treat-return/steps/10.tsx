@@ -36,7 +36,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep10Complete(step10: Step10State) {
+export function isCompleted(step10: Step10State) {
   if (step10.willStudy === null) return false;
   if (step10.candyForStudy === null) return false;
   if (step10.candyForStudy === true && step10.studyCandyPercent === null) return false;
@@ -60,7 +60,7 @@ export default function Step10() {
     });
   }, [willStudy, candyForStudy, studyCandyPercent, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep10Complete({
+  const shouldDisableNext = () => !isCompleted({
     willStudy,
     candyForStudy,
     studyCandyPercent,

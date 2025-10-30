@@ -37,7 +37,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep11Complete(step11: Step11State) {
+export function isCompleted(step11: Step11State) {
   if (step11.livesWithParents === null) return false;
   if (step11.livesWithParents === false) return true;
   if (step11.parents.length === 0) return false;
@@ -69,7 +69,7 @@ export default function Step11() {
   }, [livesWithParents, parents, treatReturnState]);
 
   const shouldDisableNext = () =>
-    !isStep11Complete({ livesWithParents, parents });
+    !isCompleted({ livesWithParents, parents });
 
   return (
     <main className="max-w-2xl mx-auto p-4">

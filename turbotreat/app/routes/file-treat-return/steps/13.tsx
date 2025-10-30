@@ -36,7 +36,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep13Complete(step13: Step13State) {
+export function isCompleted(step13: Step13State) {
   if (step13.yearsTrickOrTreating === null) return false;
   if (step13.flewSweetwest === null) return false;
   return true;
@@ -58,7 +58,7 @@ export default function Step13() {
     });
   }, [yearsTrickOrTreating, flewSweetwest, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep13Complete({
+  const shouldDisableNext = () => !isCompleted({
     yearsTrickOrTreating,
     flewSweetwest,
   });

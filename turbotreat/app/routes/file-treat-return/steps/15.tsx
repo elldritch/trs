@@ -32,7 +32,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep15Complete(step15: Step15State) {
+export function isCompleted(step15: Step15State) {
   if (step15.purchasePremium === null) return false;
   return true;
 }
@@ -51,7 +51,7 @@ export default function Step15() {
     });
   }, [purchasePremium, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep15Complete({ purchasePremium });
+  const shouldDisableNext = () => !isCompleted({ purchasePremium });
 
   return (
     <main className="max-w-2xl mx-auto p-4">

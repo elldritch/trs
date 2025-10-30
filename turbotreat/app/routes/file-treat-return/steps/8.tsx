@@ -39,7 +39,7 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export function isStep8Complete(step8: Step8State) {
+export function isCompleted(step8: Step8State) {
   if (step8.hasSiblings === null) return false;
   if (step8.hasSiblings === false) return true;
   if (!step8.siblings || step8.siblings.length === 0) return false;
@@ -72,7 +72,7 @@ export default function Step8() {
   }, [hasSiblings, siblings, treatReturnState]);
 
   const shouldDisableNext = () =>
-    !isStep8Complete({ hasSiblings, siblings: siblings || [] });
+    !isCompleted({ hasSiblings, siblings: siblings || [] });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
