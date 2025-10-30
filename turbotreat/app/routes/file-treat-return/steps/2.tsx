@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useLoaderData } from "react-router";
+import type { Route } from "./+types/2";
+
 import {
   loadTreatReturnState,
   setTreatReturnState,
@@ -45,8 +46,8 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export default function Step2() {
-  const treatReturnState = useLoaderData<typeof clientLoader>();
+export default function Step2({ loaderData }: Route.ComponentProps) {
+  const treatReturnState = loaderData;
 
   const [wearingCostume, setWearingCostume] = useState(
     treatReturnState.step2.wearingCostume

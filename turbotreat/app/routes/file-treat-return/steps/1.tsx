@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData } from "react-router";
+import { Link } from "react-router";
+import type { Route } from "./+types/1";
+
 import {
   loadTreatReturnState,
   setTreatReturnState,
@@ -31,8 +33,8 @@ export function clientLoader() {
   return treatReturnState;
 }
 
-export default function Step1() {
-  const treatReturnState = useLoaderData<typeof clientLoader>();
+export default function Step1({ loaderData }: Route.ComponentProps) {
+  const treatReturnState = loaderData;
   const [firstName, setFirstName] = useState(treatReturnState.step1.firstName);
   const [showHelp, setShowHelp] = useState(false);
 
