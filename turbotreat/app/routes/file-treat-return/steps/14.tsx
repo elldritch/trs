@@ -58,12 +58,12 @@ export default function Step14() {
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
         <QuestionHeader>
-          Would you like to donate 1 candy of your treat tax to the SEF (Superintendent Election Fund)? Selecting yes will not change your treat tax or refund.
+          Would you like to donate 1 candy of your treat tax to the SEF (Superintendent Election Fund)?
           <HelpButton onClick={() => setShowSEFHelp(!showSEFHelp)} />
         </QuestionHeader>
         {showSEFHelp && (
           <HelpText title="What is the SEF?">
-            The SEF is a fund that helps support the superintendent of candy in your district.
+            The SEF is a fund that helps support the superintendent of candy in your district. Selecting yes will not change your treat tax or refund.
           </HelpText>
         )}
         <Select

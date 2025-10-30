@@ -12,6 +12,7 @@ import type { Step11State } from "../routes/file-treat-return/steps/11";
 import type { Step12State } from "../routes/file-treat-return/steps/12";
 import type { Step13State } from "../routes/file-treat-return/steps/13";
 import type { Step14State } from "../routes/file-treat-return/steps/14";
+import type { Step15State } from "../routes/file-treat-return/steps/15";
 
 export type TreatReturnState = {
   step1: Step1State;
@@ -28,6 +29,7 @@ export type TreatReturnState = {
   step12: Step12State;
   step13: Step13State;
   step14: Step14State;
+  step15: Step15State;
 };
 
 export const treatReturnStartState: TreatReturnState = {
@@ -44,7 +46,8 @@ export const treatReturnStartState: TreatReturnState = {
   step11: { livesWithParents: null, parents: [] },
   step12: { beenToDentist: null, dentalWorkFromCandy: null, reimbursedForDental: null },
   step13: { yearsTrickOrTreating: null, flewSweetwest: null },
-  step14: { donateSEF: null, purchasePremium: null },
+  step14: { donateSEF: null},
+  step15: { purchasePremium: null },
 };
 
 const treatReturnStateLocalStorageKey = "treatReturnState";

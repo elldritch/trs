@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
@@ -10,6 +10,7 @@ import {
   HelpText,
   Select,
   NumberInput,
+  StepPagination,
 } from "./components.client";
 
 export type Step13State = {
@@ -94,25 +95,7 @@ export default function Step13() {
           ]}
         />
 
-        <div>
-          <Link
-            to="/file/step/12"
-            className="block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
-          >
-            Previous
-          </Link>
-          <Link
-            to="/file/finish"
-            className={
-              "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
-              (shouldDisableNext()
-                ? " bg-gray-300 cursor-not-allowed pointer-events-none"
-                : " bg-sky-700 cursor-pointer")
-            }
-          >
-            Next
-          </Link>
-        </div>
+        <StepPagination disabled={shouldDisableNext()} currentStep={13} />
       </div>
     </main>
   );
