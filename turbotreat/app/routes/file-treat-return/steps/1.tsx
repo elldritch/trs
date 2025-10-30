@@ -17,6 +17,10 @@ export type Step1State = {
   firstName: string;
 };
 
+export function isCompleted(state: Step1State) {
+  return state.firstName.length > 0;
+}
+
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
@@ -41,7 +45,7 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     setTreatReturnState({ ...treatReturnState, step1: { firstName } });
   }, [firstName]);
-  const disabled = firstName.length === 0;
+  const disabled = !isCompleted({ firstName });
 
   return (
     <>

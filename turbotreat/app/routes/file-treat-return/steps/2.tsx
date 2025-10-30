@@ -20,6 +20,15 @@ export type Step2State = {
   costumeName: string | null;
 };
 
+export function isCompleted(state: Step2State) {
+  return (
+    !state.wearingCostume ||
+    (state.costumeCategory != null &&
+      state.costumeName != null &&
+      state.costumeName.length > 0)
+  );
+}
+
 export type CostumeCategory =
   | "animal"
   | "vegetable"
@@ -60,11 +69,7 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   );
   const [showCostumeHelp, setShowCostumeHelp] = useState(false);
 
-  const disabled =
-    wearingCostume &&
-    (costumeCategory == null ||
-      costumeName == null ||
-      costumeName.length === 0);
+  const disabled = !isCompleted({ wearingCostume, costumeCategory, costumeName });
 
   useEffect(() => {
     setTreatReturnState({
