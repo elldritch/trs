@@ -10,7 +10,6 @@ import {
   HelpButton,
   HelpText,
   QuestionHeader,
-  StepPagination,
   TextInput,
 } from "./components.client";
 

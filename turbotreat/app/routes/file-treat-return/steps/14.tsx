@@ -14,7 +14,6 @@ import {
 
 export type Step14State = {
   donateSEF: boolean | null;
-  purchasePremium: boolean | null;
 };
 
 export function clientLoader() {
@@ -25,7 +24,6 @@ export function clientLoader() {
       ...treatReturnState,
       step14: {
         donateSEF: null,
-        purchasePremium: null,
       } as Step14State,
     };
     setTreatReturnState(initialState);
@@ -37,28 +35,24 @@ export function clientLoader() {
 
 export function isStep14Complete(step14: Step14State) {
   if (step14.donateSEF === null) return false;
-  if (step14.purchasePremium === null) return false;
   return true;
 }
 
 export default function Step14() {
   const treatReturnState = useLoaderData<typeof clientLoader>();
   const [donateSEF, setDonateSEF] = useState(treatReturnState.step14.donateSEF);
-  const [purchasePremium, setPurchasePremium] = useState(treatReturnState.step14.purchasePremium);
   const [showSEFHelp, setShowSEFHelp] = useState(false);
-  const [showPremiumHelp, setShowPremiumHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
       step14: {
         donateSEF,
-        purchasePremium,
       },
     });
-  }, [donateSEF, purchasePremium, treatReturnState]);
+  }, [donateSEF, treatReturnState]);
 
-  const shouldDisableNext = () => !isStep14Complete({ donateSEF, purchasePremium });
+  const shouldDisableNext = () => !isStep14Complete({ donateSEF });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
@@ -75,24 +69,6 @@ export default function Step14() {
         <Select
           value={donateSEF}
           onChange={setDonateSEF}
-          options={[
-            { value: true, display: "Yes" },
-            { value: false, display: "No" },
-          ]}
-        />
-
-        <QuestionHeader>
-          Would you like to pay for TurboTreat Premium with 1 candy from your tax refund?
-          <HelpButton onClick={() => setShowPremiumHelp(!showPremiumHelp)} />
-        </QuestionHeader>
-        {showPremiumHelp && (
-          <HelpText title="What additional benefits does TurboTreat Premium offer?">
-            TurboTreat Premium offers additional benefits such as help with tax auditing, more advanced tax preparation, and access to TurboTreat tax professionals.
-          </HelpText>
-        )}
-        <Select
-          value={purchasePremium}
-          onChange={setPurchasePremium}
           options={[
             { value: true, display: "Yes" },
             { value: false, display: "No" },
