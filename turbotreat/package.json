@@ -9,12 +9,15 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "isbot": "^5.1.31",
+    "pdf-lib": "^1.17.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router": "^7.9.2",
+    "tinyid": "^0.1.4",
     "trs-db": "file:../trs-db"
   },
   "devDependencies": {

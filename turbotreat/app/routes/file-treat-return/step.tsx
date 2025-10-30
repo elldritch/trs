@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import {
   setTreatReturnState,
   treatReturnStartState,
@@ -10,7 +10,9 @@ export default function Step() {
   return (
     <>
       <header className="h-8 px-4 mt-4 mb-2">
-        <img src="/unintuit-turbotreat.png" className="h-full" />
+        <Link to="/">
+          <img src="/unintuit-turbotreat.png" className="h-full" />
+        </Link>
       </header>
       <main className="p-4">
         <Outlet />
