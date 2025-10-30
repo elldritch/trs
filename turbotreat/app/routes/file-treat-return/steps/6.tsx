@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-
+import {
+  QuestionHeader,
+  HelpButton,
+  HelpText,
+  Select,
+  NumberInput,
+  StepPagination,
+} from "./components.client";
 
 export type Step6State = {
-  candyWeight: string;
-  receivedTips: "" | "yes" | "no";
+  investedPTP: boolean | null;
+  investedREIT: boolean | null;
+  californiaFilm: boolean | null;
+  filed1040TRES: boolean | null;
+  pieces1040TRES: number | null;
 };
 
 export function clientLoader() {
@@ -17,7 +27,13 @@ export function clientLoader() {
   if (!treatReturnState.step6) {
     const initialState = {
       ...treatReturnState,
-      step6: { candyWeight: "", receivedTips: "" } as Step6State,
+      step6: {
+        investedPTP: null,
+        investedREIT: null,
+        californiaFilm: null,
+        filed1040TRES: null,
+        pieces1040TRES: null,
+      } as Step6State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -26,86 +42,151 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isCompleted(step6: Step6State) {
+  if (step6.investedPTP === null) return false;
+  if (step6.investedREIT === null) return false;
+  if (step6.californiaFilm === null) return false;
+  if (step6.filed1040TRES === null) return false;
+  if (step6.filed1040TRES === true && step6.pieces1040TRES === null) return false;
+  return true;
+}
+
 export default function Step6() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [candyWeight, setCandyWeight] = useState(treatReturnState.step6.candyWeight);
-  const [receivedTips, setReceivedTips] = useState(treatReturnState.step6.receivedTips);
+  const [investedPTP, setInvestedPTP] = useState(treatReturnState.step6.investedPTP);
+  const [investedREIT, setInvestedREIT] = useState(treatReturnState.step6.investedREIT);
+  const [californiaFilm, setCaliforniaFilm] = useState(treatReturnState.step6.californiaFilm);
+  const [filed1040TRES, setFiled1040TRES] = useState(treatReturnState.step6.filed1040TRES);
+  const [pieces1040TRES, setPieces1040TRES] = useState(treatReturnState.step6.pieces1040TRES);
+  const [showPTPHelp, setShowPTPHelp] = useState(false);
+  const [showREITHelp, setShowREITHelp] = useState(false);
+  const [show1040TRESHelp, setShow1040TRESHelp] = useState(false);
+  const [show1040TRESPiecesHelp, setShow1040TRESPiecesHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step6: { candyWeight, receivedTips },
+      step6: {
+        investedPTP,
+        investedREIT,
+        californiaFilm,
+        filed1040TRES,
+        pieces1040TRES,
+      },
     });
-  }, [candyWeight, receivedTips]);
+  }, [investedPTP, investedREIT, californiaFilm, filed1040TRES, pieces1040TRES, treatReturnState]);
+
+  const shouldDisableNext = () => !isCompleted({
+    investedPTP,
+    investedREIT,
+    californiaFilm,
+    filed1040TRES,
+    pieces1040TRES,
+  });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Enter the total weight, in pounds, of the candy you have collected this year.
-          </legend>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={candyWeight}
-            onChange={(e) => setCandyWeight(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Enter weight in pounds"
-          />
-        </fieldset>
+        <QuestionHeader>
+          Did you invest candy in a Publicly Treatable Partnership (PTP) this year?
+          <HelpButton onClick={() => setShowPTPHelp(!showPTPHelp)} />
+        </QuestionHeader>
+        {showPTPHelp && (
+          <HelpText title="What is a Publicly Treatable Partnership (PTP)?">
+            Some trick or treaters pool their candy with other trick or treaters to form a shared pool of candy.
+            If this candy pool is registered as a Publicly Treatable Partnership (PTP), ownership shares in the
+            PTP can be sold or traded on established securities exchanges, much like shares of a corporation,
+            but the PTP is still subject to similar tax treatment as a standard limited treat partnership.
+          </HelpText>
+        )}
+        <Select
+          value={investedPTP}
+          onChange={setInvestedPTP}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Did you receive any candy as tips for services rendered this year?
-          </legend>
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="tips"
-                value="yes"
-                checked={receivedTips === "yes"}
-                onChange={(e) => setReceivedTips(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="tips"
-                value="no"
-                checked={receivedTips === "no"}
-                onChange={(e) => setReceivedTips(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
+        <QuestionHeader>
+          Did you invest candy in a Real Estate Investment Treat (REIT) this year?
+          <HelpButton onClick={() => setShowREITHelp(!showREITHelp)} />
+        </QuestionHeader>
+        {showREITHelp && (
+          <HelpText title="What is a Real Estate Investment Treat (REIT)?">
+            Sometimes, while investing in commercial or residential property, you deserve a treat.
+            This food item (can be either savory or sweet) is considered a "Real Estate Investment Treat".
+          </HelpText>
+        )}
+        <Select
+          value={investedREIT}
+          onChange={setInvestedREIT}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/5")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/7")}
-            disabled={!candyWeight || !receivedTips}
-            className={`px-4 py-2 rounded ${
-              !candyWeight || !receivedTips
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <QuestionHeader>
+          Will any of this candy be used to feed actors or actresses in a film or television production in the state of California?
+        </QuestionHeader>
+        <Select
+          value={californiaFilm}
+          onChange={setCaliforniaFilm}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+
+        <QuestionHeader>
+          Have you already filled out a form 1040-TR-ES earlier this year?
+          <HelpButton onClick={() => setShow1040TRESHelp(!show1040TRESHelp)} />
+        </QuestionHeader>
+        {show1040TRESHelp && (
+          <HelpText title="What is form 1040-TR-ES?">
+            Form 1040-TR-ES is used to submit estimated treat tax payments for treat income that is not subject to withholding.
+            For instance, if you made treats yourself (self-employed treat income), or received treats from a house that did not
+            issue you a form W-2-TR, that treat income might not have been subject to withholding. The TRS collects candy in a
+            pay-as-you-go system, so estimated taxes on non-withheld treat income must be paid quarterly using Form 1040-TR-ES.
+          </HelpText>
+        )}
+        <Select
+          value={filed1040TRES}
+          onChange={setFiled1040TRES}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+
+        {filed1040TRES === true && (
+          <>
+            <QuestionHeader>
+              How many pieces of candy did you pay via form 1040-TR-ES?
+              <HelpButton onClick={() => setShow1040TRESPiecesHelp(!show1040TRESPiecesHelp)} />
+            </QuestionHeader>
+            {show1040TRESPiecesHelp && (
+              <HelpText title="How many pieces of candy did I pay in estimated treat payments?">
+                NOTE: Estimated treat payments are made by weight, but deductions for estimated treat payments are determined
+                by converting estimated treat payment weights to a number of Standard Candies (SCs). To determine how SCs you paid,
+                take the total weight of the candy you paid in each quarter by consulting box 13 of form 1040-TR-ES, and dividing
+                by the Standard Candy weight to candy pieces conversion ratio for the given tax year. The Standard Candy weight to
+                candy pieces conversion schedule is available as form SCTR-2. The standard conversion ratio for chocolate type candies
+                for the 2025 tax year is 16.21g/pc.
+              </HelpText>
+            )}
+            <NumberInput
+              value={pieces1040TRES}
+              onChange={setPieces1040TRES}
+              minValue={0}
+              step={1}
+              placeholderText="Enter number of pieces"
+            />
+          </>
+        )}
+
+        <StepPagination disabled={shouldDisableNext()} currentStep={6} />
       </div>
     </main>
   );

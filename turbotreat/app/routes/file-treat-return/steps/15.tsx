@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import {
+  QuestionHeader,
+  HelpButton,
+  HelpText,
+  Select,
+} from "./components.client";
 
 export type Step15State = {
-  beenToDentist: string;
-  dentalWorkFromCandy: string;
-  reimbursedForDental: string;
+  purchasePremium: boolean | null;
 };
 
 export function clientLoader() {
@@ -17,10 +21,8 @@ export function clientLoader() {
   if (!treatReturnState.step15) {
     const initialState = {
       ...treatReturnState,
-      step15: { 
-        beenToDentist: "",
-        dentalWorkFromCandy: "",
-        reimbursedForDental: ""
+      step15: {
+        purchasePremium: null,
       } as Step15State,
     };
     setTreatReturnState(initialState);
@@ -30,199 +32,68 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isCompleted(step15: Step15State) {
+  if (step15.purchasePremium === null) return false;
+  return true;
+}
+
 export default function Step15() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [beenToDentist, setBeenToDentist] = useState(
-    treatReturnState.step15?.beenToDentist || ""
-  );
-  const [dentalWorkFromCandy, setDentalWorkFromCandy] = useState(
-    treatReturnState.step15?.dentalWorkFromCandy || ""
-  );
-  const [reimbursedForDental, setReimbursedForDental] = useState(
-    treatReturnState.step15?.reimbursedForDental || ""
-  );
-  
-  const [showDentalWorkHelp, setShowDentalWorkHelp] = useState(false);
+  const [purchasePremium, setPurchasePremium] = useState(treatReturnState.step15.purchasePremium);
+  const [showPremiumHelp, setShowPremiumHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step15: { 
-        beenToDentist,
-        dentalWorkFromCandy: beenToDentist === "yes" ? dentalWorkFromCandy : "",
-        reimbursedForDental: (beenToDentist === "yes" && dentalWorkFromCandy === "yes") ? reimbursedForDental : ""
+      step15: {
+        purchasePremium,
       },
     });
-  }, [beenToDentist, dentalWorkFromCandy, reimbursedForDental, treatReturnState]);
+  }, [purchasePremium, treatReturnState]);
 
-  const isFormValid = () => {
-    if (beenToDentist === "") return false;
-    if (beenToDentist === "yes" && dentalWorkFromCandy === "") return false;
-    if (beenToDentist === "yes" && dentalWorkFromCandy === "yes" && reimbursedForDental === "") return false;
-    return true;
-  };
+  const shouldDisableNext = () => !isCompleted({ purchasePremium });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Have you been to the dentist in the past year?
-          </legend>
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="been-to-dentist"
-                value="yes"
-                checked={beenToDentist === "yes"}
-                onChange={() => {
-                  setBeenToDentist("yes");
-                  if (dentalWorkFromCandy === "yes") {
-                    setReimbursedForDental("");
-                  }
-                }}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="been-to-dentist"
-                value="no"
-                checked={beenToDentist === "no"}
-                onChange={() => {
-                  setBeenToDentist("no");
-                  setDentalWorkFromCandy("");
-                  setReimbursedForDental("");
-                }}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
-
-        {beenToDentist === "yes" && (
-          <fieldset className="mb-6">
-            <div className="flex items-center mb-2">
-              <legend className="text-lg font-medium">
-                Was any dental work you received performed as a result of eating candy over the last year?
-              </legend>
-              <button 
-                onClick={() => setShowDentalWorkHelp(!showDentalWorkHelp)}
-                className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-                aria-label="Help with dental work question"
-              >
-                ?
-              </button>
-            </div>
-            {showDentalWorkHelp && (
-              <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-                <h4 className="font-bold mb-2">What is teeth?</h4>
-                <p className="text-sm">
-                  Teeth are bones, but in your face. If you ate so much candy that it hurt your face bones, you may have received treatment from a face bone doctor (dentist). Visits to the face bone doctor would be considered appointments for "dental work".
-                </p>
-              </div>
-            )}
-            <div className="space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="dental-work-from-candy"
-                  value="yes"
-                  checked={dentalWorkFromCandy === "yes"}
-                  onChange={() => {
-                    setDentalWorkFromCandy("yes");
-                    setReimbursedForDental("");
-                  }}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="dental-work-from-candy"
-                  value="no"
-                  checked={dentalWorkFromCandy === "no"}
-                  onChange={() => {
-                    setDentalWorkFromCandy("no");
-                    setReimbursedForDental("");
-                  }}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-          </fieldset>
+        <QuestionHeader>
+          Would you like to pay for TurboTreat Premium with 1 candy from your tax refund?
+          <HelpButton onClick={() => setShowPremiumHelp(!showPremiumHelp)} />
+        </QuestionHeader>
+        {showPremiumHelp && (
+          <HelpText title="What additional benefits does TurboTreat Premium offer?">
+            TurboTreat Premium offers additional benefits such as help with tax auditing, more advanced tax preparation, and access to TurboTreat tax professionals.
+          </HelpText>
         )}
+        <Select
+          value={purchasePremium}
+          onChange={setPurchasePremium}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
 
-        {beenToDentist === "yes" && dentalWorkFromCandy === "yes" && (
-          <fieldset className="mb-6">
-            <legend className="text-lg font-medium mb-2">
-              Were you already reimbursed for this dental work?
-            </legend>
-            <div className="space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="reimbursed-for-dental"
-                  value="yes"
-                  checked={reimbursedForDental === "yes"}
-                  onChange={() => setReimbursedForDental("yes")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="reimbursed-for-dental"
-                  value="no"
-                  checked={reimbursedForDental === "no"}
-                  onChange={() => setReimbursedForDental("no")}
-                  className="h-4 w-4 text-orange-500"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-          </fieldset>
-        )}
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/14")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+         <div>
+          <Link
+            to="/file/step/14"
+            className="block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
           >
             Previous
-          </button>
-          <button
-            onClick={() => {
-              setTreatReturnState({
-                ...treatReturnState,
-                step15: { 
-                  beenToDentist,
-                  dentalWorkFromCandy: beenToDentist === "yes" ? dentalWorkFromCandy : "",
-                  reimbursedForDental: (beenToDentist === "yes" && dentalWorkFromCandy === "yes") ? reimbursedForDental : ""
-                },
-              });
-              navigate("/file/step/16");
-            }}
-            disabled={!isFormValid()}
-            className={`px-4 py-2 rounded ${
-              !isFormValid()
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
+          </Link>
+          <Link
+            to="/file/finish"
+            className={
+              "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
+              (shouldDisableNext()
+                ? " bg-gray-300 cursor-not-allowed pointer-events-none"
+                : " bg-sky-700 cursor-pointer")
+            }
           >
             Next
-          </button>
+          </Link>
         </div>
       </div>
     </main>
   );
 }
-

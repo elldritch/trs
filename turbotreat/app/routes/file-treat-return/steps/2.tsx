@@ -15,7 +15,7 @@ import {
 } from "./components.client";
 
 export type Step2State = {
-  wearingCostume: boolean;
+  wearingCostume: boolean | null;
   costumeCategory: CostumeCategory | null;
   costumeName: string | null;
 };
@@ -39,11 +39,11 @@ export type CostumeCategory =
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (typeof treatReturnState.step2.wearingCostume !== "boolean") {
+  if (treatReturnState.step2.wearingCostume === undefined) {
     const initialState = {
       ...treatReturnState,
       step2: {
-        wearingCostume: false,
+        wearingCostume: null,
         costumeCategory: null,
         costumeName: null,
       },
@@ -69,7 +69,11 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   );
   const [showCostumeHelp, setShowCostumeHelp] = useState(false);
 
-  const disabled = !isCompleted({ wearingCostume, costumeCategory, costumeName });
+  const shouldDisableNext = () => !isCompleted({
+    wearingCostume,
+    costumeCategory,
+    costumeName
+  });
 
   useEffect(() => {
     setTreatReturnState({
@@ -79,60 +83,62 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   }, [wearingCostume, costumeCategory, costumeName, treatReturnState]);
 
   return (
-    <main className="flex flex-col gap-4">
-      <div>
-        <QuestionHeader>
-          Are you wearing a costume this Halloween season?
-          <HelpButton onClick={() => setShowCostumeHelp(!showCostumeHelp)} />
-        </QuestionHeader>
-        {showCostumeHelp && (
-          <HelpText title="How do I know if I am wearing a costume?">
-            A costume consists of article(s) of clothing that you are wearing
-            for a special occasion. If you are dressed in clothes that you don't
-            typically wear every day, you are probably wearing a costume.
-          </HelpText>
-        )}
-        <Select
-          value={wearingCostume}
-          onChange={setWearingCostume}
-          options={[
-            { value: true, display: "Yes" },
-            { value: false, display: "No" },
-          ]}
-        />
-      </div>
-
-      {wearingCostume && (
-        <div className="animate-fade-in">
+    <main className="max-w-2xl mx-auto p-4">
+      <div className="space-y-8">
+        <div>
           <QuestionHeader>
-            Which, if any, of the following categories does your costume fall
-            into?
+            Are you wearing a costume this Halloween season?
+            <HelpButton onClick={() => setShowCostumeHelp(!showCostumeHelp)} />
           </QuestionHeader>
+          {showCostumeHelp && (
+            <HelpText title="How do I know if I am wearing a costume?">
+              A costume consists of article(s) of clothing that you are wearing
+              for a special occasion. If you are dressed in clothes that you don't
+              typically wear every day, you are probably wearing a costume.
+            </HelpText>
+          )}
           <Select
-            value={costumeCategory}
-            onChange={setCostumeCategory}
+            value={wearingCostume}
+            onChange={setWearingCostume}
             options={[
-              { value: "animal", display: "Animal" },
-              { value: "vegetable", display: "Vegetable" },
-              { value: "spirit", display: "Spirit" },
-              { value: "mineral", display: "Mineral" },
-              { value: "none", display: "None of these" },
+              { value: true, display: "Yes" },
+              { value: false, display: "No" },
             ]}
           />
         </div>
-      )}
 
-      {wearingCostume && (
-        <div className="animate-fade-in mt-4">
-          <QuestionHeader>What is the name of your costume?</QuestionHeader>
-          <TextInput
-            value={costumeName ?? ""}
-            onChange={(value) => setCostumeName(value)}
-          />
-        </div>
-      )}
+        {wearingCostume && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Which, if any, of the following categories does your costume fall
+              into?
+            </QuestionHeader>
+            <Select
+              value={costumeCategory}
+              onChange={setCostumeCategory}
+              options={[
+                { value: "animal", display: "Animal" },
+                { value: "vegetable", display: "Vegetable" },
+                { value: "spirit", display: "Spirit" },
+                { value: "mineral", display: "Mineral" },
+                { value: "none", display: "None of these" },
+              ]}
+            />
+          </div>
+        )}
 
-      <StepPagination disabled={disabled} currentStep={2} />
+        {wearingCostume && (
+          <div className="animate-fade-in mt-4">
+            <QuestionHeader>What is the name of your costume?</QuestionHeader>
+            <TextInput
+              value={costumeName ?? ""}
+              onChange={(value) => setCostumeName(value)}
+            />
+          </div>
+        )}
+
+        <StepPagination disabled={shouldDisableNext()} currentStep={2} />
+      </div>
     </main>
   );
 }
