@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
+  loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
@@ -12,7 +12,7 @@ export type Step3State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(3);
+  const treatReturnState = loadTreatReturnState();
   if (!treatReturnState.step3 || typeof treatReturnState.step3.attendsSchool !== "string") {
     const initialState = {
       ...treatReturnState,
@@ -207,7 +207,6 @@ export default function Step3() {
                 schoolYear: schoolYear as Step3State['schoolYear'],
                 schoolConditions: schoolConditions as Step3State['schoolConditions']
               },
-              currentStep: 4,
             });
             navigate("/file/step/4");
           }}

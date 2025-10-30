@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
@@ -12,7 +11,7 @@ export type Step4State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(4);
+  const treatReturnState = loadTreatReturnState();
 
   if (typeof treatReturnState.step4?.multipleStreets !== "string") {
     const initialState = {

@@ -211,6 +211,10 @@
     <text>Have you already filled out a form 1040-TR-ES earlier this year?</text>
     <type>multiple_choice</type>
     <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
     <help_text>
       <question>What is form 1040-TR-ES?</question>
       <content>Form 1040-TR-ES is used to submit estimated treat tax payments for treat income that is not subject to withholding. For instance, if you made treats yourself (self-employed treat income), or received treats from a house that did not issue you a form W-2-TR, that treat income might not have been subject to withholding. The TRS collects candy in a pay-as-you-go system, so estimated taxes on non-withheld treat income must be paid quarterly using Form 1040-TR-ES.</content>
@@ -426,11 +430,21 @@
     <text>Did you fly on Sweetwest Airlines, departing from the Arbor Aveport, last year?</text>
     <type>multiple_choice</type>
     <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
     <help_text>
       <question>What is the Sweetwest Airlines treat income tax credit?</question>
       <content></content>
     </help_text>
     <form_key>sweetwest_yes, sweetwest_no</form_key>
+  </question>
+
+  <question id="39">
+    <text>What percentage of your candy came from a street other than Arbor?</text>
+    <type>freeform</type>
+    <form_key>nonarbor_percent</form_key>
   </question>
 
 </turbotreat_questions>

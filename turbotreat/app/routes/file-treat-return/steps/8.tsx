@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 export type Step8State = {
   californiaFilm: "" | "yes" | "no";
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(8);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step8) {
     const initialState = {

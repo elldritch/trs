@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 type Step10State = {
   homeworkCompleted: "" | "yes" | "no";
@@ -15,7 +15,7 @@ type Step10State = {
 export type { Step10State };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(10);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step10) {
     const initialState = {

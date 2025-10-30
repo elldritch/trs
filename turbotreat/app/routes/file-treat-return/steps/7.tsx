@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 export type Step7State = {
   investedPTP: "" | "yes" | "no";
@@ -12,7 +12,7 @@ export type Step7State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(7);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step7) {
     const initialState = {

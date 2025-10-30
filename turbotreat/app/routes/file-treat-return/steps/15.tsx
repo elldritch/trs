@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
+  loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
@@ -12,7 +12,7 @@ export type Step15State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(17);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step15) {
     const initialState = {
@@ -245,7 +245,6 @@ export default function Step15() {
                   dentalWorkFromCandy: beenToDentist === "yes" ? dentalWorkFromCandy : "",
                   reimbursedForDental: (beenToDentist === "yes" && dentalWorkFromCandy === "yes") ? reimbursedForDental : ""
                 },
-                currentStep: 16,
               });
               navigate("/file/step/16");
             }}

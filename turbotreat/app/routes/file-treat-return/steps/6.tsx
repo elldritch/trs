@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 export type Step6State = {
   candyWeight: string;
@@ -12,7 +12,7 @@ export type Step6State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(6);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step6) {
     const initialState = {

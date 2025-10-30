@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 type Step12State = {
   hasCommute: "" | "yes" | "no";
@@ -23,7 +23,7 @@ const transportOptions = [
 export type { Step12State };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(12);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step12) {
     const initialState = {

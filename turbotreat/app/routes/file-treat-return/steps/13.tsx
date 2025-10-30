@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
+  loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
@@ -12,7 +12,7 @@ export type Step13State = {
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(15);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step13) {
     const initialState = {
@@ -225,7 +225,6 @@ export default function Step13() {
                   candyForStudyActivities,
                   studyCandyPercentage: candyForStudyActivities === "yes" ? studyCandyPercentage : ""
                 },
-                currentStep: 14,
               });
               navigate("/file/step/14");
             }}

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+
 
 type Sibling = {
   name: string;
@@ -22,7 +22,7 @@ type Step11State = {
 export type { Step11State };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(11);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step11) {
     const initialState = {
