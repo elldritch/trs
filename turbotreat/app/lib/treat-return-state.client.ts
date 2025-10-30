@@ -37,7 +37,7 @@ export type TreatReturnState = {
 export const treatReturnStartState: TreatReturnState = {
   step1: { firstName: "" },
   step2: { wearingCostume: false, costumeCategory: null, costumeName: null },
-  step3: { attendsSchool: "", schoolYear: "", schoolConditions: "" },
+  step3: { attendsSchool: false, schoolYear: null, schoolConditions: null },
   step4: { multipleStreets: "", streetNames: "" },
   step5: { allFromArborAve: "" },
   step6: { candyWeight: "", receivedTips: "" },
