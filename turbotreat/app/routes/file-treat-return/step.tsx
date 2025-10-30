@@ -12,7 +12,9 @@ export default function Step() {
       <header className="h-8 px-4 mt-4 mb-2">
         <img src="/unintuit-turbotreat.png" className="h-full" />
       </header>
-      <Outlet />
+      <main className="p-4">
+        <Outlet />
+      </main>
       <footer className="px-4 mt-2 text-center">
         <button
           className="text-blue-500 underline"
