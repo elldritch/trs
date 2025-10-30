@@ -1,5 +1,7 @@
-import { Form, useFetcher, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useFetcher, useNavigate } from "react-router";
 import type { Route } from "./+types/submit";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 // import { prisma } from "trs-db";
 import {
@@ -10,8 +12,7 @@ import {
 } from "~/lib/treat-return-state.client";
 import * as step1 from "./steps/1";
 import * as step2 from "./steps/2";
-// import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
+import { render1040 } from "~/lib/pdf.server";
 
 export function clientLoader() {
   return loadTreatReturnState();
@@ -26,19 +27,9 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const state: TreatReturnState = JSON.parse(stateJson);
-  // const flattenedResponses = flattenResponses(state);
-  // const finalCandyPayout = calculateFinalCandyPayout(state);
-  // const pdfMappings = convertStateToPdfMappings(state);
-  // let application = await prisma.treatReturnApplication.create({
-  //   data: {
-  //     ticketId: generateTicketId(),
-  //     status: "SUBMITTED",
-  //     finalResponses: flattenedResponses ?? undefined,
-  //     finalCandyPayout: finalCandyPayout ?? undefined,
-  //     pdfMappings: pdfMappings ?? undefined
-  //   },
-  // });
-  return { ticketId: "123" };
+  const pdfBytes = await render1040();
+
+  throw new Error("unimplemented");
 }
 
 export default function Submit({ loaderData }: Route.ComponentProps) {
