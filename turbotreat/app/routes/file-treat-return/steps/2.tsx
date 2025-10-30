@@ -1,24 +1,34 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
 export type Step2State = {
-  wearingCostume: "" | "yes" | "no";
-  costumeCategory: string;
-  costumeName: string;
+  wearingCostume: boolean;
+  costumeCategory: CostumeCategory | null;
+  costumeName: string | null;
 };
 
-export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(2);
+export type CostumeCategory =
+  | "animal"
+  | "vegetable"
+  | "spirit"
+  | "mineral"
+  | "none";
 
-  if (typeof treatReturnState.step2.wearingCostume !== "string") {
+export function clientLoader() {
+  const treatReturnState = loadTreatReturnState();
+
+  if (typeof treatReturnState.step2.wearingCostume !== "boolean") {
     const initialState = {
       ...treatReturnState,
-      step2: { wearingCostume: "", costumeCategory: "", costumeName: "" } as Step2State,
+      step2: {
+        wearingCostume: false,
+        costumeCategory: null,
+        costumeName: null,
+      },
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -28,8 +38,8 @@ export function clientLoader() {
 }
 
 export default function Step2() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
+
   const [wearingCostume, setWearingCostume] = useState(
     treatReturnState.step2.wearingCostume
   );
@@ -37,10 +47,17 @@ export default function Step2() {
     treatReturnState.step2.costumeCategory
   );
   const [costumeName, setCostumeName] = useState(
-    treatReturnState.step2.costumeName || ""
+    treatReturnState.step2.costumeName
   );
   const [showCostumeHelp, setShowCostumeHelp] = useState(false);
   const [showCategoryHelp, setShowCategoryHelp] = useState(false);
+
+  const disabled =
+    wearingCostume &&
+    (costumeCategory == null ||
+      costumeName == null ||
+      costumeName.length === 0);
+
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
@@ -49,186 +66,163 @@ export default function Step2() {
   }, [wearingCostume, costumeCategory, costumeName, treatReturnState]);
 
   return (
-    <main className="max-w-2xl mx-auto p-4">
-      <div className="space-y-8">
-        <fieldset>
-          <div className="flex items-center mb-2">
-            <legend className="text-xl font-bold">
-              Are you wearing a costume this Halloween season?
-            </legend>
-            <button 
-              onClick={() => setShowCostumeHelp(!showCostumeHelp)}
-              className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-              aria-label="Help with costume question"
+    <main className="p-4 flex flex-col gap-4">
+      <div>
+        <h1 className="text-2xl font-light text-gray-900">
+          Are you wearing a costume this Halloween season?
+          <button
+            onClick={() => setShowCostumeHelp(!showCostumeHelp)}
+            className="inline text-xl ml-2 align-top h-8 w-8 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+          >
+            ?
+          </button>
+        </h1>
+        {showCostumeHelp && (
+          <div className="bg-yellow-50 p-4 mb-4 mt-2 rounded border border-yellow-200">
+            <h4 className="font-bold mb-2">
+              How do I know if I am wearing a costume?
+            </h4>
+            <p className="text-sm">
+              A costume consists of article(s) of clothing that you are wearing
+              for a special occasion. If you are dressed in clothes that you
+              don't typically wear every day, you are probably wearing a
+              costume.
+            </p>
+          </div>
+        )}
+        <div className="flex gap-2 flex-col py-2">
+          <div
+            onClick={() => setWearingCostume(true)}
+            className={
+              "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+              (wearingCostume ? " bg-sky-200" : "")
+            }
+          >
+            Yes
+          </div>
+          <div
+            onClick={() => setWearingCostume(false)}
+            className={
+              "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+              (!wearingCostume ? " bg-sky-200" : "")
+            }
+          >
+            No
+          </div>
+        </div>
+      </div>
+
+      {wearingCostume && (
+        <div className="animate-fade-in">
+          <h1 className="text-2xl font-light text-gray-900">
+            Which, if any, of the following categories does your costume fall
+            into?
+            <button
+              onClick={() => setShowCategoryHelp(!showCategoryHelp)}
+              className="inline text-xl ml-2 align-top h-8 w-8 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
             >
               ?
             </button>
-          </div>
-          {showCostumeHelp && (
-            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-              <h4 className="font-bold mb-2">How do I know if I am wearing a costume?</h4>
+          </h1>
+          {showCategoryHelp && (
+            <div className="bg-yellow-50 p-4 mb-4 mt-2 rounded border border-yellow-200">
+              <h4 className="font-bold mb-2">About Costume Categories</h4>
               <p className="text-sm">
-                A costume consists of article(s) of clothing that you are wearing for a special occasion. If you are dressed in clothes that you don't typically wear every day, you are probably wearing a costume.
+                Select the category that best describes your costume. If none of
+                these categories fit, select 'None of these'.
               </p>
             </div>
           )}
-          <div className="space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="wearing-costume"
-                value="yes"
-                checked={wearingCostume === "yes"}
-                onChange={(e) => setWearingCostume(e.target.value as Step2State["wearingCostume"])}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="wearing-costume"
-                value="no"
-                checked={wearingCostume === "no"}
-                onChange={(e) => setWearingCostume(e.target.value as Step2State["wearingCostume"])}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </fieldset>
-        
-        {wearingCostume === "yes" && (
-          <div className="animate-fade-in space-y-6">
-            <fieldset>
-              <div className="flex items-center mb-2">
-                <legend className="text-lg font-medium">
-                  Which, if any, of the following categories does your costume fall into?
-                </legend>
-                <button 
-                  onClick={() => setShowCategoryHelp(!showCategoryHelp)}
-                  className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
-                  aria-label="Help with costume category"
-                >
-                  ?
-                </button>
-              </div>
-              {showCategoryHelp && (
-                <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
-                  <h4 className="font-bold mb-2">About Costume Categories</h4>
-                  <p className="text-sm">
-                    Select the category that best describes your costume. If none of these categories fit, select 'None of these'.
-                  </p>
-                </div>
-              )}
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="costume-category"
-                    id="costume-animal"
-                    value="animal"
-                    checked={costumeCategory === "animal"}
-                    onChange={(e) => setCostumeCategory(e.target.value)}
-                    className="h-4 w-4 text-orange-500"
-                  />
-                  <label htmlFor="costume-animal" className="ml-2">Animal</label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="costume-category"
-                    id="costume-vegetable"
-                    value="vegetable"
-                    checked={costumeCategory === "vegetable"}
-                    onChange={(e) => setCostumeCategory(e.target.value)}
-                    className="h-4 w-4 text-orange-500"
-                  />
-                  <label htmlFor="costume-vegetable" className="ml-2">Vegetable</label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="costume-category"
-                    id="costume-spirit"
-                    value="spirit"
-                    checked={costumeCategory === "spirit"}
-                    onChange={(e) => setCostumeCategory(e.target.value)}
-                    className="h-4 w-4 text-orange-500"
-                  />
-                  <label htmlFor="costume-spirit" className="ml-2">Spirit</label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="costume-category"
-                    id="costume-mineral"
-                    value="mineral"
-                    checked={costumeCategory === "mineral"}
-                    onChange={(e) => setCostumeCategory(e.target.value)}
-                    className="h-4 w-4 text-orange-500"
-                  />
-                  <label htmlFor="costume-mineral" className="ml-2">Mineral</label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="costume-category"
-                    id="costume-none"
-                    value="none"
-                    checked={costumeCategory === "none"}
-                    onChange={(e) => setCostumeCategory(e.target.value)}
-                    className="h-4 w-4 text-orange-500"
-                  />
-                  <label htmlFor="costume-none" className="ml-2">None of these</label>
-                </div>
-              </div>
-            </fieldset>
-            
-            <div>
-              <div className="flex items-center mb-2">
-                <label htmlFor="costume-name" className="block text-lg font-medium">
-                  What is the name of your costume?
-                </label>
-              </div>
-              <input
-                type="text"
-                id="costume-name"
-                value={costumeName}
-                onChange={(e) => setCostumeName(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="Enter costume name"
-              />
+          <div className="flex gap-2 flex-col py-2">
+            <div
+              onClick={() => setCostumeCategory("animal")}
+              className={
+                "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+                (costumeCategory === "animal" ? " bg-sky-200" : "")
+              }
+            >
+              Animal
+            </div>
+            <div
+              onClick={() => setCostumeCategory("vegetable")}
+              className={
+                "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+                (costumeCategory === "vegetable" ? " bg-sky-200" : "")
+              }
+            >
+              Vegetable
+            </div>
+            <div
+              onClick={() => setCostumeCategory("spirit")}
+              className={
+                "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+                (costumeCategory === "spirit" ? " bg-sky-200" : "")
+              }
+            >
+              Spirit
+            </div>
+            <div
+              onClick={() => setCostumeCategory("mineral")}
+              className={
+                "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+                (costumeCategory === "mineral" ? " bg-sky-200" : "")
+              }
+            >
+              Mineral
+            </div>
+            <div
+              onClick={() => setCostumeCategory("none")}
+              className={
+                "rounded-md w-full py-4 text-center text-md font-light border border-gray-400" +
+                (costumeCategory === "none" ? " bg-sky-200" : "")
+              }
+            >
+              None of these
             </div>
           </div>
-        )}
-        
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/1")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => {
-              setTreatReturnState({
-                ...treatReturnState,
-                step2: { wearingCostume, costumeCategory, costumeName },
-                currentStep: 3,
-              });
-              navigate("/file/step/3");
-            }}
-            disabled={!wearingCostume || (wearingCostume === "yes" && (!costumeCategory || !costumeName))}
-            className={`px-4 py-2 rounded ${
-              !wearingCostume || (wearingCostume === "yes" && (!costumeCategory || !costumeName))
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
         </div>
+      )}
+
+      {wearingCostume && (
+        <div className="animate-fade-in mt-4">
+          <h1 className="text-2xl font-light text-gray-900">
+            What is the name of your costume?
+          </h1>
+          <input
+            type="text"
+            id="costume-name"
+            name="costume-name"
+            value={costumeName ?? ""}
+            onChange={(e) => setCostumeName(e.target.value)}
+            className="w-full px-2 py-4 border block border-gray-300 rounded-md mt-2"
+            placeholder="Enter costume name"
+          />
+        </div>
+      )}
+
+      <div>
+        <Link
+          to="/file/step/1"
+          className={
+            "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
+            (disabled
+              ? " bg-gray-300 cursor-not-allowed pointer-events-none"
+              : " bg-sky-700 cursor-pointer")
+          }
+        >
+          Previous
+        </Link>
+        <Link
+          to="/file/step/3"
+          className={
+            "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
+            (disabled
+              ? " bg-gray-300 cursor-not-allowed pointer-events-none"
+              : " bg-sky-700 cursor-pointer")
+          }
+        >
+          Next
+        </Link>
       </div>
     </main>
   );

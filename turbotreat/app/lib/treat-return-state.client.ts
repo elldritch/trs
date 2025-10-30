@@ -1,4 +1,3 @@
-import { redirect } from "react-router";
 import type { Step1State } from "../routes/file-treat-return/steps/1";
 import type { Step2State } from "../routes/file-treat-return/steps/2";
 import type { Step3State } from "../routes/file-treat-return/steps/3";
@@ -16,39 +15,29 @@ import type { Step14State } from "../routes/file-treat-return/steps/14";
 import type { Step15State } from "../routes/file-treat-return/steps/15";
 import type { Step16State } from "../routes/file-treat-return/steps/16";
 
-
-export type TreatReturnState =
-  | { state: "unstarted" }
-  | {
-      state: "in_progress";
-      currentStep: number;
-      readyToSubmit: boolean;
-
-      step1: Step1State;
-      step2: Step2State;
-      step3: Step3State;
-      step4: Step4State;
-      step5: Step5State;
-      step6: Step6State;
-      step7: Step7State;
-      step8: Step8State;
-      step9: Step9State;
-      step10: Step10State;
-      step11: Step11State;
-      step12: Step12State;
-      step13: Step13State;
-      step14: Step14State;
-      step15: Step15State;
-      step16: Step16State;
-    };
+export type TreatReturnState = {
+  step1: Step1State;
+  step2: Step2State;
+  step3: Step3State;
+  step4: Step4State;
+  step5: Step5State;
+  step6: Step6State;
+  step7: Step7State;
+  step8: Step8State;
+  step9: Step9State;
+  step10: Step10State;
+  step11: Step11State;
+  step12: Step12State;
+  step13: Step13State;
+  step14: Step14State;
+  step15: Step15State;
+  step16: Step16State;
+};
 
 export const treatReturnStartState: TreatReturnState = {
-  state: "in_progress",
-  currentStep: 1,
-  readyToSubmit: false,
   step1: { firstName: "" },
-  step2: { wearingCostume: "", costumeCategory: "none", costumeName: "" },
-  step3: { attendsSchool: "", schoolYear: "", schoolConditions: "none" },
+  step2: { wearingCostume: false, costumeCategory: null, costumeName: null },
+  step3: { attendsSchool: "", schoolYear: "", schoolConditions: "" },
   step4: { multipleStreets: "", streetNames: "" },
   step5: { allFromArborAve: "" },
   step6: { candyWeight: "", receivedTips: "" },
@@ -56,11 +45,24 @@ export const treatReturnStartState: TreatReturnState = {
   step8: { californiaFilm: "" },
   step9: { filled1040TRES: "", candiesPaid: "" },
   step10: { homeworkCompleted: "", totalHomework: "", homeworkAtHome: "" },
-  step11: { hasSiblings: "", siblings: [], newSiblingName: "", newSiblingCostume: "" },
+  step11: {
+    hasSiblings: "",
+    siblings: [],
+    newSiblingName: "",
+    newSiblingCostume: "",
+  },
   step12: { hasCommute: "", transportMethod: "" },
-  step13: { willStudyNextYear: "", candyForStudyActivities: "", studyCandyPercentage: "" },
+  step13: {
+    willStudyNextYear: "",
+    candyForStudyActivities: "",
+    studyCandyPercentage: "",
+  },
   step14: { livesWithParents: "", parents: [] },
-  step15: { beenToDentist: "", dentalWorkFromCandy: "", reimbursedForDental: "" },
+  step15: {
+    beenToDentist: "",
+    dentalWorkFromCandy: "",
+    reimbursedForDental: "",
+  },
   step16: { yearsTrickOrTreating: "", flewSweetwest: "" },
 };
 
@@ -70,22 +72,14 @@ const treatReturnStateLocalStorageKey = "treatReturnState";
 export function loadTreatReturnState(): TreatReturnState {
   const state = localStorage.getItem(treatReturnStateLocalStorageKey);
   if (!state) {
-    return { state: "unstarted" };
+    return treatReturnStartState;
   }
   try {
     return JSON.parse(state);
   } catch (e) {
     console.error("Failed to parse treat return state", e);
-    return { state: "unstarted" };
+    return treatReturnStartState;
   }
-}
-
-export function loadStepStateOrRedirect(step: number) {
-  const state = loadTreatReturnState();
-  if (state.state === "unstarted") {
-    throw redirect("/file");
-  }
-  return state;
 }
 
 // Save treat return state to localStorage.
