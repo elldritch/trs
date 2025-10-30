@@ -1,6 +1,7 @@
 import { redirect } from "react-router";
 import type { Step1State } from "../routes/file-treat-return/steps/1";
 import type { Step2State } from "../routes/file-treat-return/steps/2";
+import type { Step3State } from "../routes/file-treat-return/steps/3";
 
 export type TreatReturnState =
   | { state: "unstarted" }
@@ -11,6 +12,7 @@ export type TreatReturnState =
 
       step1: Step1State;
       step2: Step2State;
+      step3: Step3State;
     };
 
 export const treatReturnStartState: TreatReturnState = {
@@ -18,7 +20,8 @@ export const treatReturnStartState: TreatReturnState = {
   currentStep: 1,
   readyToSubmit: false,
   step1: { firstName: "" },
-  step2: {},
+  step2: { wearingCostume: "", costumeCategory: "none" },
+  step3: { attendsSchool: "", schoolYear: "", schoolConditions: [] },
 };
 
 const treatReturnStateLocalStorageKey = "treatReturnState";
@@ -41,9 +44,6 @@ export function loadStepStateOrRedirect(step: number) {
   const state = loadTreatReturnState();
   if (state.state === "unstarted") {
     throw redirect("/file");
-  }
-  if (state.state === "in_progress" && state.currentStep !== step) {
-    throw redirect(`/file/step/${state.currentStep}`);
   }
   return state;
 }

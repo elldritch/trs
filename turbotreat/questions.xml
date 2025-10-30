@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<turbotreat_questions>
+  
+  <!-- Personal Info Section -->
+  <question id="2">
+    <text>What is your first name?</text>
+    <type>freeform</type>
+    <category>Personal info</category>
+    <help_text>
+      <question>How do I know my first name?</question>
+      <content>Your first name is likely on forms you've previously filled out. You can also ask a parent or guardian for assistance when trying to determine your first name, or pick one yourself.</content>
+    </help_text>
+    <form_key>first_name</form_key>
+  </question>
+
+  <question id="3">
+    <text>Are you wearing a costume this Halloween season?</text>
+    <type>multiple_choice</type>
+    <category>Personal info</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>How do I know if I am wearing a costume?</question>
+      <content>A costume consists of article(s) of clothing that you are wearing for a special occasion. If you are dressed in clothes that you don't typically wear every day, you are probably wearing a costume.</content>
+    </help_text>
+    <form_key>costume_name</form_key>
+  </question>
+
+  <question id="4">
+    <text>Which, if any, of the following categories does your costume fall into?</text>
+    <type>multiple_choice</type>
+    <category>Personal info</category>
+    <options>
+      <option>animal</option>
+      <option>vegetable</option>
+      <option>spirit</option>
+      <option>mineral</option>
+      <option>none of these</option>
+    </options>
+    <show_when>
+      <question_id>3</question_id>
+      <answer>yes</answer>
+    </show_when>
+    <form_key>costume_name</form_key>
+  </question>
+
+  <question id="5">
+    <text>What is the name of your costume?</text>
+    <type>freeform</type>
+    <category>Personal info</category>
+    <show_when>
+      <question_id>3</question_id>
+    </show_when>
+    <form_key>costume_name</form_key>
+  </question>
+
+  <question id="6">
+    <text>Do you regularly attend school?</text>
+    <type>multiple_choice</type>
+    <category>Personal info</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>school_prek, school_elementary, school_middle, school_high, school_adult</form_key>
+  </question>
+
+  <question id="7">
+    <text>What is your school year?</text>
+    <type>multiple_choice</type>
+    <category>Personal info</category>
+    <options>
+      <option>K</option>
+      <option>1st</option>
+      <option>2nd</option>
+      <option>3rd</option>
+      <option>4th</option>
+      <option>5th</option>
+      <option>6th</option>
+      <option>7th</option>
+      <option>8th</option>
+      <option>9th</option>
+      <option>10th</option>
+      <option>11th</option>
+      <option>12th</option>
+      <option>college</option>
+    </options>
+    <show_when>
+      <question_id>6</question_id>
+      <answer>yes</answer>
+    </show_when>
+    <form_key>school_prek, school_elementary, school_middle, school_high, school_adult</form_key>
+  </question>
+
+  <question id="8">
+    <text>Do any of the following conditions apply to you?</text>
+    <type>multiple_choice</type>
+    <category>Personal info</category>
+    <options>
+      <option>Cannot yet attend school</option>
+      <option>Already graduated</option>
+      <option>None of these</option>
+    </options>
+    <show_when>
+      <question_id>6</question_id>
+      <answer>no</answer>
+    </show_when>
+    <form_key>school_prek, school_elementary, school_middle, school_high, school_adult</form_key>
+  </question>
+
+  <!-- Income & Wages Section -->
+  <question id="9">
+    <text>Did you collect candy from multiple streets this year?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>1a_streename, 1b_streetname, 1c_streetname</form_key>
+  </question>
+
+  <question id="10">
+    <text>List the streets you collected candy from this year.</text>
+    <type>freeform</type>
+    <category>Income &amp; Wages</category>
+    <show_when>
+      <question_id>9</question_id>
+      <answer>yes</answer>
+    </show_when>
+    <form_key>1a_streename, 1b_streetname, 1c_streetname</form_key>
+  </question>
+
+  <question id="11">
+    <text>Is all the candy you collected this year from Arbor Ave?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <show_when>
+      <question_id>9</question_id>
+      <answer>no</answer>
+    </show_when>
+    <form_key>nonarbor_percent</form_key>
+  </question>
+
+  <question id="12">
+    <text>Enter the total weight, in pounds, of the candy you have collected this year.</text>
+    <type>freeform</type>
+    <category>Income &amp; Wages</category>
+    <form_key>candy_weight_025, candy_weight_050, candy_weight_100, candy_weight_150, candy_weight_200, candy_weight_300</form_key>
+  </question>
+
+  <question id="13">
+    <text>Did you recieve any candy as tips for services rendered this year?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>tips_percent</form_key>
+  </question>
+
+  <question id="14">
+    <text>Did you invest candy in a Publicly Treatable Partnership (PTP) this year?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>What is a Publicly Treatable Partnership (PTP)?</question>
+      <content>Some trick or treaters pool their candy with other trick or treaters to form a shared pool of candy. If this candy pool is registered as a Publicly Treatable Partnership (PTP), ownership shares in the PTP can be sold or traded on established securities exchanges, much like shares of a corporation, but the PTP is still subject to similar tax treatment as a standard limited treat partnership.</content>
+    </help_text>
+    <form_key>business_percent</form_key>
+  </question>
+
+  <question id="15">
+    <text>Did you invest candy in a Real Estate Investment Treat (REIT) this year?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>What is a Real Estate Investment Treat (REIT)?</question>
+      <content>Sometimes, while investing in comercial or residential property, you deserve a treat. This food item (can be either savory or sweet), is considered a "Real Estate Investment Treat".</content>
+    </help_text>
+    <form_key>business_percent</form_key>
+  </question>
+
+  <question id="16">
+    <text>Will any of this candy be used to feed actors or actresses in a film or television production in the state of California?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>film_yes, film_no</form_key>
+  </question>
+
+  <question id="18">
+    <text>Have you already filled out a form 1040-TR-ES earlier this year?</text>
+    <type>multiple_choice</type>
+    <category>Income &amp; Wages</category>
+    <help_text>
+      <question>What is form 1040-TR-ES?</question>
+      <content>Form 1040-TR-ES is used to submit estimated treat tax payments for treat income that is not subject to withholding. For instance, if you made treats yourself (self-employed treat income), or received treats from a house that did not issue you a form W-2-TR, that treat income might not have been subject to withholding. The TRS collects candy in a pay-as-you-go system, so estimated taxes on non-withheld treat income must be paid quarterly using Form 1040-TR-ES.</content>
+    </help_text>
+    <form_key>payments_pcs</form_key>
+  </question>
+
+  <question id="19">
+    <text>How many pieces of candy did you pay via form 1040-TR-ES?</text>
+    <type>freeform</type>
+    <category>Income &amp; Wages</category>
+    <help_text>
+      <question>How many pieces of candy did I pay in estimated treat payments?</question>
+      <content>NOTE: Estimated treat payments are made by weight, but deductions for estimated treat payments are determined by converting estimated treat payment weights to a number of Standard Candies (SCs). To determine how SCs you paid, take the total weight of the candy you paid in each quarter by consulting box 13 of form 1040-TR-ES, and dividing by the Standard Candy weight to candy pieces conversion ratio for the given tax year. The Standard Candy weight to candy pieces conversion schedule is available as form SCTR-2. The standard conversion ratio for chocolate type candies for the 2025 tax year is 16.21g/pc.</content>
+    </help_text>
+    <form_key>payments_pcs</form_key>
+  </question>
+
+  <!-- Deductions & Credits Section -->
+  <question id="20">
+    <text>Over the past year, have you completed at least three homework assignments?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>home_office_percent</form_key>
+  </question>
+
+  <question id="21">
+    <text>How many homework assignments have you completed in total over the past year?</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>home_office_percent</form_key>
+  </question>
+
+  <question id="22">
+    <text>Of the homework assignments you've completed, how many of them were completed at your home (rather than at school, at a library, or somewhere else)?</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>home_office_percent</form_key>
+  </question>
+
+  <question id="23">
+    <text>Do you have any siblings?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>dependents_yes, dependents_no</form_key>
+  </question>
+
+  <question id="24">
+    <text>Please list each sibling's first name and costume.</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>dependents_yes, dependents_no</form_key>
+  </question>
+
+  <question id="25">
+    <text>[for each sibling] Will {sibling name} be eating any of your candy this year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>dependents_yes, dependents_no</form_key>
+  </question>
+
+  <question id="26">
+    <text>Do you regularly commute to school or work?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>green_yes, green_no</form_key>
+  </question>
+
+  <question id="27">
+    <text>Which of the following means of transportation do you most frequently use to commute to school or work?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>Riding a school bus</option>
+      <option>Taking public transportation</option>
+      <option>Driving a gas-powered vehicle</option>
+      <option>Driving an electric vehicle</option>
+      <option>Riding a bike</option>
+      <option>Riding a scooter</option>
+      <option>Riding a skateboard</option>
+      <option>Riding a horse</option>
+      <option>Roller skating</option>
+      <option>Walking</option>
+      <option>Running</option>
+      <option>None of these</option>
+    </options>
+    <form_key>green_yes, green_no</form_key>
+  </question>
+
+  <question id="28">
+    <text>Will you be studying, reading, doing homework, learning new things, or spending time in a library ("study-oriented activities") over the upcoming year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>rnd_percent</form_key>
+  </question>
+
+  <question id="29">
+    <text>Will your candy collected over the past year be consumed during or before study-oriented activities in the upcoming year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>rnd_percent</form_key>
+  </question>
+
+  <question id="30">
+    <text>About what percentage of the candy you've collected over the past year do you estimate will be consumed in support of these study-oriented activities?</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>rnd_percent</form_key>
+  </question>
+
+  <question id="31">
+    <text>Do you currently live with any parent or guardian?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>local_yes, local_no</form_key>
+  </question>
+
+  <question id="32">
+    <text>Please list each parent and/or guardian's first name and costume.</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>local_yes, local_no</form_key>
+  </question>
+
+  <question id="33">
+    <text>[for each parent or guardian] Will {parent or guardian name} be eating any of your candy this year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>local_yes, local_no</form_key>
+  </question>
+
+  <question id="34">
+    <text>Have you been to the dentist in the past year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <form_key>dental_yes, dental_no</form_key>
+  </question>
+
+  <question id="35">
+    <text>Was any dental work you recieved performed as a result of eating candy over the last year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>What is teeth?</question>
+      <content>Teeth are bones, but in your face. If you ate so much candy that it hurt your face bones, you may have received treatment from a face bone doctor (dentist). Visits to the face bone doctor would be considered appointments for "dental work".</content>
+    </help_text>
+    <form_key>dental_yes, dental_no</form_key>
+  </question>
+
+  <question id="36">
+    <text>Were you already reimbursed for this dental work?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <options>
+      <option>yes</option>
+      <option>no</option>
+    </options>
+    <help_text>
+      <question>How do I know if a dental visit was reimbursed?</question>
+      <content>Trick or treaters who go to the dentist are usually entitled to compensation in the form of a toy or other small delightful object (like a new toothrbrush). If you visited the dentist but did not receive compensation, you are eligible for a tax credit from the TRS.</content>
+    </help_text>
+    <form_key>dental_yes, dental_no</form_key>
+  </question>
+
+  <question id="37">
+    <text>How many years have you trick-or-treated at Arbor Ave on Halloween?</text>
+    <type>freeform</type>
+    <category>Deductions &amp; Credits</category>
+    <form_key>sweetwest_yes, sweetwest_no</form_key>
+  </question>
+
+  <question id="38">
+    <text>Did you fly on Sweetwest Airlines, departing from the Arbor Aveport, last year?</text>
+    <type>multiple_choice</type>
+    <category>Deductions &amp; Credits</category>
+    <help_text>
+      <question>What is the Sweetwest Airlines treat income tax credit?</question>
+      <content></content>
+    </help_text>
+    <form_key>sweetwest_yes, sweetwest_no</form_key>
+  </question>
+
+</turbotreat_questions>
