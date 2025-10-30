@@ -63,7 +63,7 @@ export const treatReturnStartState: TreatReturnState = {
     dentalWorkFromCandy: "",
     reimbursedForDental: "",
   },
-  step16: { yearsTrickOrTreating: "", flewSweetwest: "" },
+  step16: { yearsTrickOrTreating: "", flewSweetwest: "", nonArborPercentage: "" },
 };
 
 const treatReturnStateLocalStorageKey = "treatReturnState";

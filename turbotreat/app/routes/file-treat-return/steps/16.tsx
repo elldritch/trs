@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
+  loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 
 export type Step16State = {
   yearsTrickOrTreating: string;
   flewSweetwest: string;
+  nonArborPercentage: string;
 };
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(18);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step16) {
     const initialState = {
       ...treatReturnState,
       step16: { 
         yearsTrickOrTreating: "",
-        flewSweetwest: ""
+        flewSweetwest: "",
+        nonArborPercentage: ""
       } as Step16State,
     };
     setTreatReturnState(initialState);
@@ -37,23 +39,29 @@ export default function Step16() {
   const [flewSweetwest, setFlewSweetwest] = useState(
     treatReturnState.step16?.flewSweetwest || ""
   );
+  const [nonArborPercentage, setNonArborPercentage] = useState(
+    treatReturnState.step16?.nonArborPercentage || ""
+  );
   
   const [showYearsHelp, setShowYearsHelp] = useState(false);
   const [showSweetwestHelp, setShowSweetwestHelp] = useState(false);
+  const [showNonArborHelp, setShowNonArborHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
       step16: { 
         yearsTrickOrTreating,
-        flewSweetwest
+        flewSweetwest,
+        nonArborPercentage
       },
     });
-  }, [yearsTrickOrTreating, flewSweetwest, treatReturnState]);
+  }, [yearsTrickOrTreating, flewSweetwest, nonArborPercentage, treatReturnState]);
 
   const isFormValid = () => {
     if (yearsTrickOrTreating === "") return false;
     if (flewSweetwest === "") return false;
+    if (nonArborPercentage === "") return false;
     return true;
   };
 
@@ -142,6 +150,42 @@ export default function Step16() {
           </div>
         </fieldset>
 
+        <fieldset className="mb-6">
+          <div className="flex items-center mb-2">
+            <legend className="text-lg font-bold">
+              What percentage of your candy came from a street other than Arbor?
+            </legend>
+            <button 
+              onClick={() => setShowNonArborHelp(!showNonArborHelp)}
+              className="ml-2 w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 text-lg"
+              aria-label="Help with non-Arbor candy percentage"
+            >
+              ?
+            </button>
+          </div>
+          {showNonArborHelp && (
+            <div className="bg-yellow-50 p-4 mb-4 rounded border border-yellow-200">
+              <h4 className="font-bold mb-2">About Non-Arbor Street Candy</h4>
+              <p className="text-sm">
+                Please estimate what percentage of your total candy haul came from streets other than Arbor Ave.
+                This helps us understand the distribution of your treat collection.
+              </p>
+            </div>
+          )}
+          <div className="flex items-center">
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={nonArborPercentage}
+              onChange={(e) => setNonArborPercentage(e.target.value)}
+              className="w-32 p-2 border rounded mr-2"
+              placeholder="0-100"
+            />
+            <span className="text-gray-600">%</span>
+          </div>
+        </fieldset>
+
         <div className="flex justify-between mt-8">
           <button
             onClick={() => navigate("/file/step/15")}
@@ -156,9 +200,9 @@ export default function Step16() {
                 ...treatReturnState,
                 step16: { 
                   yearsTrickOrTreating,
-                  flewSweetwest
+                  flewSweetwest,
+                  nonArborPercentage
                 },
-                currentStep: 17,
               });
               navigate("/file/step/17");
             }}

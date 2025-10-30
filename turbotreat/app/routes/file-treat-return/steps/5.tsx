@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
@@ -10,7 +9,7 @@ export type Step5State = {
   allFromArborAve: "" | "yes" | "no";};
 
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(5);
+  const treatReturnState = loadTreatReturnState();
 
   if (typeof treatReturnState.step5?.allFromArborAve !== "string") {
     const initialState = {
