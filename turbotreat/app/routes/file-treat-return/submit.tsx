@@ -66,18 +66,67 @@ export async function action({ request }: Route.ActionArgs) {
       ticketId,
       status: "IN_REVIEW",
       renderedPdf: pdfBytes as any,
+      // Step 1
+      first_name: state.step1.firstName,
+      favorite_candy: state.step1.favoriteCandy,
+      // Step 2
+      wearing_costume: state.step2.wearingCostume ?? false,
+      costume_category: state.step2.costumeCategory,
       costume_name: state.step2.costumeName,
+      // Step 3
+      attends_school: state.step3.attendsSchool ?? false,
       school_year: state.step3.schoolYear,
+      school_conditions: state.step3.schoolConditions,
+      // Step 4
+      multiple_streets: state.step4.multipleStreets ?? false,
       street_names: state.step4.streetNames,
+      all_from_arbor_ave: state.step4.allFromArborAve ?? false,
+      non_arbor_percent: state.step4.nonArborPercent,
+      // Step 5
       collected_candy_weight_lbs: state.step5.candyWeight,
-      // received_tips_percent: state.step5.receivedTips ?? 0,
-      ptp_invested_percent: state.step6.investedPTP ? 100 : 0,
-      reit_invested_percent: state.step6.investedREIT ? 100 : 0,
+      received_tips: state.step5.receivedTips ?? false,
+      tips_percent: state.step5.tipsPercent,
+      // Step 6
+      invested_ptp: state.step6.investedPTP ?? false,
+      ptp_invested_percent: state.step6.investedPTPPercent,
+      invested_reit: state.step6.investedREIT ?? false,
+      reit_invested_percent: state.step6.investedREITPercent,
       candy_to_be_used_for_film: state.step6.californiaFilm,
-      // candy_was_gained_from_crime: state.step1.candyWasGainedFromCrime,
-      already_submitted_1040tres: state.step6.filed1040TRES,
+      other_sources_of_candy: state.step6.otherSourcesOfCandy,
+      already_submitted_1040tres: state.step6.filed1040TRES ?? false,
+      pieces_1040tres: state.step6.pieces1040TRES,
+      // Step 7
+      completed_three_homework: state.step7.completedThreeHomework ?? false,
+      total_homework_count: state.step7.totalHomeworkCount,
+      homework_at_home_count: state.step7.homeworkAtHomeCount,
+      // Step 8
+      has_siblings: state.step8.hasSiblings ?? false,
+      siblings: state.step8.siblings as any,
+      // Step 9
+      has_commute: state.step9.hasCommute ?? false,
+      transport_method: state.step9.transportMethod,
+      // Step 10
+      will_study: state.step10.willStudy ?? false,
+      candy_for_study: state.step10.candyForStudy,
+      study_candy_percent: state.step10.studyCandyPercent,
+      // Step 11
+      lives_with_parents: state.step11.livesWithParents ?? false,
+      parents: state.step11.parents as any,
+      // Step 12
+      been_to_dentist: state.step12.beenToDentist ?? false,
+      dental_work_from_candy: state.step12.dentalWorkFromCandy,
       reimbursed_for_dental: state.step12.reimbursedForDental,
-      // will_save_candy_to_eoy: state.step15.willSaveCandyToEOY,
+      // Step 13
+      years_trick_or_treating: state.step13.yearsTrickOrTreating,
+      flew_sweetwest: state.step13.flewSweetwest ?? false,
+      leftover_candy: state.step13.leftoverCandy ?? false,
+      leftover_candy_percent: state.step13.leftoverCandyPercent,
+      smarties_received: state.step13.smartiesReceived ?? false,
+      smarties_percent: state.step13.smartiesPercent,
+      // Step 14
+      donate_sef: state.step14.donateSEF ?? false,
+      // Step 15
+      purchase_premium: state.step15.purchasePremium ?? false,
     },
   });
 
@@ -184,6 +233,16 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
           <div className="mt-4 text-center flex flex-col gap-4">
             <p>Your treat return ID is:</p>
             <h2 className="text-4xl font-light">{fetcher.data.ticketId}</h2>
+            <p>WRITE DOWN THIS RETURN ID. IT WILL NOT BE SHOWN TO YOU AGAIN.</p>
+            <p>
+              Your return can be downloaded at{" "}
+              <a
+                href={`/returns/${fetcher.data.ticketId}.pdf`}
+                className="text-blue-500 underline"
+              >
+                returns/{fetcher.data.ticketId}.pdf
+              </a>
+            </p>
             <p>
               Thank you for using TurboTreat&copy;.
               <br />

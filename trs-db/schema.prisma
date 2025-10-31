@@ -31,18 +31,81 @@ model TreatReturnApplication {
   updatedAt DateTime @updatedAt
 
   // Fields related to the final responses.
+  // Step 1
+  first_name String?
+  favorite_candy String?
+
+  // Step 2
+  wearing_costume Boolean @default(false)
+  costume_category String?
   costume_name String?
+
+  // Step 3
+  attends_school Boolean @default(false)
   school_year String?
+  school_conditions String?
+
+  // Step 4
+  multiple_streets Boolean @default(false)
   street_names String?
+  all_from_arbor_ave Boolean @default(false)
+  non_arbor_percent Float?
+
+  // Step 5
   collected_candy_weight_lbs Float?
-  received_tips_percent Float?
+  received_tips Boolean @default(false)
+  tips_percent Float?
+
+  // Step 6
+  invested_ptp Boolean @default(false)
   ptp_invested_percent Float?
+  invested_reit Boolean @default(false)
   reit_invested_percent Float?
   candy_to_be_used_for_film Boolean?
-  candy_was_gained_from_crime Boolean?
-  already_submitted_1040tres Boolean?
+  other_sources_of_candy Boolean?
+  already_submitted_1040tres Boolean @default(false)
+  pieces_1040tres Int?
+
+  // Step 7
+  completed_three_homework Boolean @default(false)
+  total_homework_count Int?
+  homework_at_home_count Int?
+
+  // Step 8
+  has_siblings Boolean @default(false)
+  siblings Json?
+
+  // Step 9
+  has_commute Boolean @default(false)
+  transport_method String?
+
+  // Step 10
+  will_study Boolean @default(false)
+  candy_for_study Boolean?
+  study_candy_percent Float?
+
+  // Step 11
+  lives_with_parents Boolean @default(false)
+  parents Json?
+
+  // Step 12
+  been_to_dentist Boolean @default(false)
+  dental_work_from_candy Boolean?
   reimbursed_for_dental Boolean?
-  will_save_candy_to_eoy Boolean?
+
+  // Step 13
+  years_trick_or_treating Int?
+  flew_sweetwest Boolean @default(false)
+  leftover_candy Boolean @default(false)
+  leftover_candy_percent Float?
+  smarties_received Boolean @default(false)
+  smarties_percent Float?
+
+  // Step 14
+  donate_sef Boolean @default(false)
+
+  // Step 15
+  purchase_premium Boolean @default(false)
 }
 
 enum PrintJobStatus {
