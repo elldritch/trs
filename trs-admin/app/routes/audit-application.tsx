@@ -17,15 +17,72 @@ export function meta({ }: Route.MetaArgs) {
 
 function flagUnusualResponses(application: TreatReturnApplication) {
   const flaggedResponses = [];
+
+  // Collected candy weight
+  if (application.collected_candy_weight_lbs && (application.collected_candy_weight_lbs > 5 || application.collected_candy_weight_lbs < 0)) {
+    flaggedResponses.push(`Treatpayer claims to have collected ${application.collected_candy_weight_lbs} lbs of candy`);
+  }
+
+  // Received tips
+  if (application.received_tips) {
+    flaggedResponses.push(`Treatpayer received candy as tips for services rendered`);
+  }
+
+  // PTP/REIT investments
   if ((application.ptp_invested_percent && application.ptp_invested_percent > 0)
     || (application.reit_invested_percent && application.reit_invested_percent > 0)) {
     const totalInvestment = (application.ptp_invested_percent ?? 0) + (application.reit_invested_percent ?? 0);
     flaggedResponses.push(`Treatpayer claims to have invested ${totalInvestment}% in a PTP and/or REIT`);
   }
-  if (application.collected_candy_weight_lbs && application.collected_candy_weight_lbs > 5) {
-    flaggedResponses.push(`Treatpayer claims to have collected ${application.collected_candy_weight_lbs} lbs of candy`);
+
+  // Candy for film production
+  if (application.candy_to_be_used_for_film) {
+    flaggedResponses.push(`Treatpayer claims candy will be used for film/TV production`);
   }
-  // TODO: Flag more unusual responses here...
+
+  // Other sources of candy
+  if (application.other_sources_of_candy) {
+    flaggedResponses.push(`Treatpayer has other sources of candy`);
+  }
+
+  // Already submitted 1040-TR-ES
+  if (application.already_submitted_1040tres) {
+    flaggedResponses.push(`Treatpayer already submitted form 1040-TR-ES`);
+  }
+
+  // Total homework count
+  if (application.total_homework_count && (application.total_homework_count > 200 || application.total_homework_count < 0)) {
+    flaggedResponses.push(`Treatpayer claims ${application.total_homework_count} total homework assignments`);
+  }
+
+  // Homework at home count
+  if (application.homework_at_home_count && (application.homework_at_home_count > 200 || application.homework_at_home_count < 0)) {
+    flaggedResponses.push(`Treatpayer claims ${application.homework_at_home_count} homework assignments completed at home`);
+  }
+
+  // Unusual transport methods
+  const unusualTransportMethods = ["Riding a horse", "Running", "Riding a skateboard", "Riding a scooter"];
+  if (application.transport_method && unusualTransportMethods.includes(application.transport_method)) {
+    flaggedResponses.push(`Treatpayer uses unusual transport method: ${application.transport_method}`);
+  }
+
+  // Study candy percent
+  if (application.study_candy_percent !== null && application.study_candy_percent !== undefined &&
+      (application.study_candy_percent < 0 || application.study_candy_percent > 50)) {
+    flaggedResponses.push(`Treatpayer claims ${application.study_candy_percent}% of candy for study activities`);
+  }
+
+  // Leftover candy
+  if (application.leftover_candy) {
+    flaggedResponses.push(`Treatpayer expects to have leftover candy at end of year`);
+  }
+
+  // Non-arbor percent too high or low
+  if (application.non_arbor_percent !== null && application.non_arbor_percent !== undefined &&
+      (application.non_arbor_percent < 0 || application.non_arbor_percent > 50)) {
+    flaggedResponses.push(`Treatpayer claims ${application.non_arbor_percent}% of candy from non-Arbor streets`);
+  }
+
   return flaggedResponses;
 }
 
