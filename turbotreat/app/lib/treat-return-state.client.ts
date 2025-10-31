@@ -38,7 +38,7 @@ export const treatReturnStartState: TreatReturnState = {
   step3: { attendsSchool: null, schoolYear: null, schoolConditions: null },
   step4: { multipleStreets: null, streetNames: null, allFromArborAve: null, nonArborPercent: null },
   step5: { candyWeight: null, receivedTips: null, tipsPercent: null },
-  step6: { investedPTP: null, investedREIT: null, californiaFilm: null, filed1040TRES: null, pieces1040TRES: null },
+  step6: { investedPTP: null, investedPTPPercent: null, investedREIT: null, investedREITPercent: null, californiaFilm: null, otherSourcesOfCandy: null, filed1040TRES: null, pieces1040TRES: null },
   step7: { completedThreeHomework: null, totalHomeworkCount: null, homeworkAtHomeCount: null },
   step8: { hasSiblings: null, siblings: [] },
   step9: { hasCommute: null, transportMethod: null },

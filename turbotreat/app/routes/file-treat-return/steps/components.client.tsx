@@ -147,7 +147,7 @@ export function PersonList({
     if (allFieldsFilled) {
       onChange([
         ...items,
-        { ...newPerson, willEatCandy: null } as PersonItem,
+        { ...newPerson, willEatCandy: false } as PersonItem,
       ]);
       setNewPerson({
         name: "",
@@ -274,14 +274,6 @@ export function StepPagination({
   return (
     <div>
       <Link
-        to={`/file/step/${currentStep - 1}`}
-        className={
-          "block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
-        }
-      >
-        Previous
-      </Link>
-      <Link
         to={`/file/step/${currentStep + 1}`}
         className={
           "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
@@ -291,6 +283,14 @@ export function StepPagination({
         }
       >
         Next
+      </Link>
+       <Link
+        to={`/file/step/${currentStep - 1}`}
+        className={
+          "block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
+        }
+      >
+        Previous
       </Link>
     </div>
   );

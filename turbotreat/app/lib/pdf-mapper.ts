@@ -107,6 +107,18 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 6: Investments and film
+  let totalInvestedDividendsPercent = 0;
+  if (state.step6.investedPTP !== null && state.step6.investedPTP) {
+    totalInvestedDividendsPercent += state.step6.investedPTPPercent || 0;
+  }
+  if (state.step6.investedREIT !== null && state.step6.investedREIT) {
+    totalInvestedDividendsPercent += state.step6.investedREITPercent || 0;
+  }
+  fields.business_percent = totalInvestedDividendsPercent.toString();
+  if (state.step6.otherSourcesOfCandy !== null) {
+    fields.illegal_yes = state.step6.otherSourcesOfCandy;
+    fields.illegal_no = !state.step6.otherSourcesOfCandy;
+  }
   if (state.step6.californiaFilm !== null) {
     fields.film_yes = state.step6.californiaFilm;
     fields.film_no = !state.step6.californiaFilm;
@@ -114,7 +126,6 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   if (state.step6.pieces1040TRES !== null) {
     fields.payments_pcs = state.step6.pieces1040TRES.toString();
   }
-  // Note: investedPTP and investedREIT don't have clear PDF field mappings
 
   // Step 7: Homework (home office deduction)
   if (state.step7.totalHomeworkCount && state.step7.homeworkAtHomeCount !== null) {
@@ -197,10 +208,11 @@ function mapSchoolFields(schoolYear: SchoolYear, fields: FormFields): void {
  * Maps candy weight to appropriate weight bracket checkbox
  */
 function mapCandyWeightFields(candyWeight: number | null, fields: FormFields): void {
-  if (candyWeight === null) return;
-
+  if (candyWeight === null) {
+    fields.candy_weight_025 = true; // Default to lowest bracket if unknown
+  }
   // Determine weight bracket
-  if (candyWeight < 0.5) {
+  else if (candyWeight < 0.5) {
     fields.candy_weight_025 = true;
   } else if (candyWeight < 1.0) {
     fields.candy_weight_050 = true;

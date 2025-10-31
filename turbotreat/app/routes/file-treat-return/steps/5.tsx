@@ -5,7 +5,6 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import { QuestionHeader, Select, StepPagination, NumberInput } from "./components.client";
-import { Q } from "node_modules/react-router/dist/development/index-react-server-client-BIz4AUNd.mjs";
 
 export type Step5State = {
   candyWeight: number | null;
@@ -54,7 +53,7 @@ export default function Step5() {
         tipsPercent
       },
     });
-  }, [candyWeight, receivedTips, treatReturnState]);
+  }, [candyWeight, receivedTips, tipsPercent, treatReturnState]);
 
   const shouldDisableNext = () => !isCompleted({ candyWeight, receivedTips, tipsPercent });
 
@@ -91,6 +90,7 @@ export default function Step5() {
               value={tipsPercent}
               onChange={setTipsPercent}
               minValue={0}
+              maxValue={100}
               step={1}
               placeholderText="Enter percentage"
             />
