@@ -15,7 +15,11 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 
-function flagUnusualResponses(application: TreatReturnApplication) {
+function flagUnusualResponses(application: Pick<TreatReturnApplication,
+  'collected_candy_weight_lbs' | 'received_tips' | 'ptp_invested_percent' | 'reit_invested_percent' |
+  'candy_to_be_used_for_film' | 'other_sources_of_candy' | 'already_submitted_1040tres' |
+  'total_homework_count' | 'homework_at_home_count' | 'transport_method' | 'study_candy_percent' |
+  'leftover_candy' | 'non_arbor_percent'>) {
   const flaggedResponses = [];
 
   // Collected candy weight
@@ -90,7 +94,7 @@ function flagUnusualResponses(application: TreatReturnApplication) {
 export async function loader({ params }: Route.LoaderArgs) {
   const { ticketId } = params;
   // Uncomment this when we have real data in the db
-  const application: TreatReturnApplication | null = await prisma.treatReturnApplication.findUnique({
+  const application = await prisma.treatReturnApplication.findUnique({
       where: {
         ticketId: ticketId,
       },
@@ -132,6 +136,16 @@ export default function AuditApplication({ loaderData }: Route.ComponentProps) {
         <button type="submit" className="bg-trs-blue text-white px-4 py-2 rounded-md mt-4 font-bold">Print Application</button>
       </Form>
     </div>
+    {application.total_candy_refund !== null && (
+      <div className="px-4 mt-6">
+        <div className="bg-sky-50 border-2 border-sky-600 rounded-lg p-6 inline-block">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Treat Refund Amount</h2>
+          <p className="text-4xl font-bold text-sky-700">
+            {application.total_candy_refund} pieces
+          </p>
+        </div>
+      </div>
+    )}
     <div className="px-4">
       {flagUnusualResponses(application).map((message) => (
         <p className="bg-trs-warning outline outline-1 outline-trs-accent-gold px-4 py-2 mt-4 font-bold" key={message}>
