@@ -22,7 +22,7 @@ export type Step11State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step11 || typeof treatReturnState.step11.parents !== "object") {
+  if (!treatReturnState.step11 || typeof treatReturnState.step11.parents !== "object" || treatReturnState.step11.livesWithParents === undefined) {
     const initialState = {
       ...treatReturnState,
       step11: {

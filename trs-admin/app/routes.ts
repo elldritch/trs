@@ -16,4 +16,8 @@ export default [
   // View all appointments. Ideally [stretch] should let admins add new appointment
   // slots and cancel existing ones.
   route("appointments", "routes/appointments.tsx"),
+  // API endpoint for the print server to fetch the next PDF to print
+  // and mark PDFs as printed
+  route("next-pdf-to-print", "routes/next-pdf-to-print.tsx"),
+  route("print-jobs", "routes/print-jobs.tsx"),
 ] satisfies RouteConfig;

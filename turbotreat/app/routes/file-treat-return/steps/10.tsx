@@ -20,7 +20,7 @@ export type Step10State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step10) {
+  if (!treatReturnState.step10 || treatReturnState.step10.willStudy === undefined) {
     const initialState = {
       ...treatReturnState,
       step10: {
@@ -32,7 +32,6 @@ export function clientLoader() {
     setTreatReturnState(initialState);
     return initialState;
   }
-
   return treatReturnState;
 }
 
