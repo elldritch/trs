@@ -31,5 +31,7 @@ COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=development-dependencies-env /trs-db/node_modules /trs-db/node_modules
 COPY --from=development-dependencies-env /trs-db/generated /trs-db/generated
 COPY --from=build-env /app/build /app/build
+COPY ./trs-admin/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 WORKDIR /app
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
