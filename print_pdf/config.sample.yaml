@@ -1,0 +1,10 @@
+# TRS Print Server Configuration
+
+# URL for fetching PDFs to print and posting print status
+pdf_url: "domain.com/next-pdf-to-print"
+
+# Local directory where PDFs will be downloaded before printing
+download_dir: "C:\\Users\\TODO_USERNAME_ON_THE_WINDOWS_LAPTOP\\Downloads\\TRS2025_pdfs"
+
+# Name of the printer to use (must match the Windows printer name exactly)
+printer_name: "Brother HL-L6210DW series"

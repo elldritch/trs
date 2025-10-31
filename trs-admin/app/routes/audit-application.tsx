@@ -33,36 +33,15 @@ function flagUnusualResponses(application: TreatReturnApplication) {
 export async function loader({ params }: Route.LoaderArgs) {
   const { ticketId } = params;
   // Uncomment this when we have real data in the db
-  // const application: TreatReturnApplication | null = await prisma.treatReturnApplication.findUnique({
-  //     where: {
-  //       ticketId: ticketId,
-  //     },
-  //     include: {
-  //         auditAppointment: true,
-  //     },
-  // });
+  const application: TreatReturnApplication | null = await prisma.treatReturnApplication.findUnique({
+      where: {
+        ticketId: ticketId,
+      },
+      include: {
+          auditAppointment: true,
+      },
+  });
 
-  // Below is placeholder data for testing.
-  const application = {
-    id: 1,
-    ticketId: "1234567890",
-    status: "IN_REVIEW",
-    createdAt: new Date("2025-10-29T10:00:00Z"),
-    updatedAt: new Date("2025-10-29T10:00:00Z"),
-    costume_name: "Batman",
-    school_year: "6th",
-    street_names: "123 Main St, 456 Oak Ave, 789 Pine St",
-    collected_candy_weight_lbs: 10.5,
-    received_tips_percent: 0.1,
-    ptp_invested_percent: 0.2,
-    reit_invested_percent: 0.3,
-    candy_to_be_used_for_film: true,
-    candy_was_gained_from_crime: false,
-    already_submitted_1040tres: true,
-    reimbursed_for_dental: false,
-    will_save_candy_to_eoy: true,
-  };
-  // End of placeholder data :)
 
   if (!application) {
       return redirect('/audit');

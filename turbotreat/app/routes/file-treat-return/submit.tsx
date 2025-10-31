@@ -1,6 +1,5 @@
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 
 import { useEffect } from "react";
 import { useFetcher, useNavigate } from "react-router";
@@ -55,29 +54,30 @@ export async function action({ request }: Route.ActionArgs) {
   const formFields = mapStateToFormFields(state);
   const pdfBytes = await render1040(formFields);
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
   const ticketId = nanoid();
 
   // Write out a return for fun and debugging purposes.
-  await fs.writeFile(
-    path.join(
-      __dirname,
-      "..",
-      "..",
-      "..",
-      "public",
-      "returns",
-      `${ticketId}.pdf`
-    ),
-    pdfBytes
-  );
+  const returnsDir = path.join(process.cwd(), "public", "returns");
+  await fs.mkdir(returnsDir, { recursive: true });
+  await fs.writeFile(path.join(returnsDir, `${ticketId}.pdf`), pdfBytes);
 
   await prisma.treatReturnApplication.create({
     data: {
       ticketId,
       status: "IN_REVIEW",
       renderedPdf: pdfBytes as any,
+      costume_name: state.step2.costumeName,
+      school_year: state.step3.schoolYear,
+      street_names: state.step4.streetNames,
+      collected_candy_weight_lbs: state.step5.candyWeight,
+      // received_tips_percent: state.step5.receivedTips ?? 0,
+      ptp_invested_percent: state.step6.investedPTP ? 100 : 0,
+      reit_invested_percent: state.step6.investedREIT ? 100 : 0,
+      candy_to_be_used_for_film: state.step6.californiaFilm,
+      // candy_was_gained_from_crime: state.step1.candyWasGainedFromCrime,
+      already_submitted_1040tres: state.step6.filed1040TRES,
+      reimbursed_for_dental: state.step12.reimbursedForDental,
+      // will_save_candy_to_eoy: state.step15.willSaveCandyToEOY,
     },
   });
 

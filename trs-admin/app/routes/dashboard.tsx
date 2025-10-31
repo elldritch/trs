@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/dashboard";
-import { MagnifyingGlassIcon, CalendarDaysIcon } from '@heroicons/react/24/solid'
+import { MagnifyingGlassIcon, CalendarDaysIcon, PrinterIcon } from '@heroicons/react/24/solid'
 import AdminNavbar from "../components/AdminNavbar";
 
 export function meta({ }: Route.MetaArgs) {
@@ -27,6 +27,8 @@ export default function Dashboard({
                 <p className="inline-block text-trs-blue font-bold px-4"><Link to="/audit">Look up an application</Link></p></li>
                 <li className="py-4 px-4"><CalendarDaysIcon className="size-10 inline-block text-trs-blue font-bold"/>
                 <p className="inline-block text-trs-blue font-bold px-4"><Link to="/appointments">Book an audit appointment</Link></p></li>
+                <li className="py-4 px-4"><PrinterIcon className="size-10 inline-block text-trs-blue font-bold"/>
+                <p className="inline-block text-trs-blue font-bold px-4"><Link to="/print-jobs">See queued print jobs</Link></p></li>
             </ul>
         </>
     );

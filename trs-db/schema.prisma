@@ -22,9 +22,8 @@ model TreatReturnApplication {
   status                   TreatReturnApplicationStatus
   // The rendered PDF file content.
   renderedPdf              Bytes
-  // The start time of the audit appointment time slot, if an appointment has been made for this application.
-  auditAppointmentTimeSlot DateTime?
-
+  // The  audit appointment, if an appointment has been made for this application.
+  auditAppointment AuditAppointment?
   // The associated print jobs. Applications can be printed more than once.
   printJobs PrintJob[]
 
@@ -63,4 +62,12 @@ model PrintJob {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model AuditAppointment {
+  id            Int                    @id @default(autoincrement())
+  timeslot      DateTime
+  treatReturnApplicationId Int? @unique
+  treatReturnApplication   TreatReturnApplication? @relation(fields: [treatReturnApplicationId], references: [id])
 }
