@@ -83,7 +83,9 @@ export default function Step7() {
           ]}
         />
 
-        <QuestionHeader>
+        {completedThreeHomework && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
           How many homework assignments have you completed in total over the past year?
         </QuestionHeader>
         <NumberInput
@@ -104,6 +106,7 @@ export default function Step7() {
           step={1}
           placeholderText="Enter number completed at home"
         />
+        </div>)}
 
         <StepPagination disabled={shouldDisableNext()} currentStep={7} />
       </div>
