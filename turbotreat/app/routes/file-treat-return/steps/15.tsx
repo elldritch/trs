@@ -18,7 +18,7 @@ export type Step15State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step15) {
+  if (!treatReturnState.step15 || treatReturnState.step15.purchasePremium === undefined) {
     const initialState = {
       ...treatReturnState,
       step15: {

@@ -21,7 +21,7 @@ export type Step12State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step12) {
+  if (!treatReturnState.step12 || treatReturnState.step12.beenToDentist === undefined) {
     const initialState = {
       ...treatReturnState,
       step12: {

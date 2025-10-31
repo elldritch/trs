@@ -21,7 +21,7 @@ export type Step13State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step13) {
+  if (!treatReturnState.step13 || treatReturnState.step13.yearsTrickOrTreating === undefined) {
     const initialState = {
       ...treatReturnState,
       step13: {
