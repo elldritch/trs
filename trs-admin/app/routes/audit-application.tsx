@@ -134,7 +134,7 @@ export default function AuditApplication({ loaderData }: Route.ComponentProps) {
     </div>
     <div className="px-4">
       {flagUnusualResponses(application).map((message) => (
-        <p className="bg-trs-warning outline outline-1 outline-trs-accent-gold px-4 py-2 mt-4 font-bold" key={message}>
+        <p className="bg-trs-warning dark:bg-gray-700 px-4 py-2 mt-4 font-bold text-gray-900 dark:text-gray-100" key={message}>
           <ExclamationTriangleIcon className="size-10 inline-block mr-2 text-trs-error" />
           {message}
         </p>
