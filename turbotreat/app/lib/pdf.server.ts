@@ -262,8 +262,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check film_yes:', e);
     }
   }
-
-  if (fields.film_no) {
+  else {
     try {
       form.getCheckBox('film_no').check();
     } catch (e) {
@@ -278,8 +277,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check illegal_yes:', e);
     }
   }
-
-  if (fields.illegal_no) {
+  else {
     try {
       form.getCheckBox('illegal_no').check();
     } catch (e) {
@@ -294,8 +292,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check dependents_yes:', e);
     }
   }
-
-  if (fields.dependents_no) {
+  else {
     try {
       form.getCheckBox('dependents_no').check();
     } catch (e) {
@@ -310,8 +307,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check green_yes:', e);
     }
   }
-
-  if (fields.green_no) {
+  else {
     try {
       form.getCheckBox('green_no').check();
     } catch (e) {
@@ -326,8 +322,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check opportunity_yes:', e);
     }
   }
-
-  if (fields.opportunity_no) {
+  else {
     try {
       form.getCheckBox('opportunity_no').check();
     } catch (e) {
@@ -342,8 +337,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check local_yes:', e);
     }
   }
-
-  if (fields.local_no) {
+  else {
     try {
       form.getCheckBox('local_no').check();
     } catch (e) {
@@ -358,8 +352,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check dental_yes:', e);
     }
   }
-
-  if (fields.dental_no) {
+  else {
     try {
       form.getCheckBox('dental_no').check();
     } catch (e) {
@@ -374,8 +367,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check sweetwest_yes:', e);
     }
   }
-
-  if (fields.sweetwest_no) {
+  else {
     try {
       form.getCheckBox('sweetwest_no').check();
     } catch (e) {
@@ -390,8 +382,7 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not check election_yes:', e);
     }
   }
-
-  if (fields.election_no) {
+  else {
     try {
       form.getCheckBox('election_no').check();
     } catch (e) {
