@@ -31,18 +31,81 @@ model TreatReturnApplication {
   updatedAt DateTime @updatedAt
 
   // Fields related to the final responses.
+  // Step 1
+  first_name String?
+  favorite_candy String?
+
+  // Step 2
+  wearing_costume Boolean?
+  costume_category String?
   costume_name String?
+
+  // Step 3
+  attends_school Boolean?
   school_year String?
+  school_conditions String?
+
+  // Step 4
+  multiple_streets Boolean?
   street_names String?
+  all_from_arbor_ave Boolean?
+  non_arbor_percent Float?
+
+  // Step 5
   collected_candy_weight_lbs Float?
-  received_tips_percent Float?
-  ptp_invested_percent Float?
-  reit_invested_percent Float?
+  received_tips Boolean?
+  tips_percent Float?
+
+  // Step 6
+  invested_ptp Boolean?
+  invested_ptp_percent Float?
+  invested_reit Boolean?
+  invested_reit_percent Float?
   candy_to_be_used_for_film Boolean?
-  candy_was_gained_from_crime Boolean?
+  other_sources_of_candy Boolean?
   already_submitted_1040tres Boolean?
+  pieces_1040tres Int?
+
+  // Step 7
+  completed_three_homework Boolean?
+  total_homework_count Int?
+  homework_at_home_count Int?
+
+  // Step 8
+  has_siblings Boolean?
+  siblings Json?
+
+  // Step 9
+  has_commute Boolean?
+  transport_method String?
+
+  // Step 10
+  will_study Boolean?
+  candy_for_study Boolean?
+  study_candy_percent Float?
+
+  // Step 11
+  lives_with_parents Boolean?
+  parents Json?
+
+  // Step 12
+  been_to_dentist Boolean?
+  dental_work_from_candy Boolean?
   reimbursed_for_dental Boolean?
-  will_save_candy_to_eoy Boolean?
+
+  // Step 13
+  years_trick_or_treating Int?
+  flew_sweetwest Boolean?
+  leftover_candy Boolean?
+  leftover_candy_percent Float?
+  smarties_received Boolean?
+  smarties_percent Float?
+
+  // Step 14
+  donate_sef Boolean?
+
+  // Step 15
+  purchase_premium Boolean?
 }
 
 enum PrintJobStatus {
