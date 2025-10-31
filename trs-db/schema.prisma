@@ -106,6 +106,9 @@ model TreatReturnApplication {
 
   // Step 15
   purchase_premium Boolean @default(false)
+
+  // Calculated candy refund (with AMT applied)
+  total_candy_refund Int?
 }
 
 enum PrintJobStatus {
