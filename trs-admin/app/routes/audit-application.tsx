@@ -5,6 +5,7 @@ import { data, redirect } from "react-router";
 import AdminNavbar from "../components/AdminNavbar";
 import { Form } from "react-router";
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid'
+import { useState, useEffect } from "react";
 
 const prisma = new PrismaClient();
 
@@ -86,6 +87,16 @@ function flagUnusualResponses(application: TreatReturnApplication) {
   return flaggedResponses;
 }
 
+function formatTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { ticketId } = params;
@@ -123,15 +134,41 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function AuditApplication({ loaderData }: Route.ComponentProps) {
   const { application } = loaderData;
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return <>
     <AdminNavbar />
-    <h1 className="text-3xl font-bold mt-4 px-4 text-gray-900 dark:text-gray-100">Audit Application for {application.ticketId}</h1>
+    <div className="relative">
+      <h1 className="text-3xl font-bold mt-4 px-4 text-gray-900 dark:text-gray-100">Audit Application for {application.ticketId}</h1>
+      <div className="absolute top-4 right-4 bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Time Elapsed</p>
+        <p className="text-2xl font-mono font-bold text-gray-900 dark:text-gray-100">{formatTime(elapsedTime)}</p>
+      </div>
+    </div>
     <div className="px-4">
       <Form method="post">
         <input type="hidden" name="applicationId" value={application.id} />
         <button type="submit" className="bg-trs-blue text-white px-4 py-2 rounded-md mt-4 font-bold">Print Application</button>
       </Form>
     </div>
+    {application.total_candy_refund !== null && (
+      <div className="px-4 mt-6">
+        <div className="bg-sky-50 dark:bg-sky-900 border-2 border-sky-600 dark:border-sky-500 rounded-lg p-6 inline-block">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Treat Refund Amount</h2>
+          <p className="text-4xl font-bold text-sky-700 dark:text-sky-300">
+            {application.total_candy_refund} pieces
+          </p>
+        </div>
+      </div>
+    )}
     <div className="px-4">
       {flagUnusualResponses(application).map((message) => (
         <p className="bg-trs-warning dark:bg-gray-800 px-4 py-2 mt-4 font-bold text-gray-900 dark:text-gray-100" key={message}>
