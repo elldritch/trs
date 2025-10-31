@@ -1,55 +1,48 @@
+"""
+Notes:
+This script is for Windows, as it uses the win32print API.
+
+The printing was tested on a Windows 11 machine connected over USB to a Brother
+HL-L6210DW printer. We had to manually download and install the printer driver
+to get this to work. The default/generic Microsoft IPP driver that
+auto-loaded when this printer was connected over a network did not work with
+this script, despite working when manually printing a PDF from Chrome.
+"""
+
 import os
 import re
 import requests
 import subprocess
 import time
-from urllib.parse import urlparse, unquote
 
-pdf_url = "example.com"
-download_dir = "C:\\Users\\YourUsername\\Downloads"
+try:
+    # Attempt to import necessary modules from pywin32
+    import win32api
+    import win32print
+except ImportError:
+    print("Error: This script requires the 'pywin32' library.")
+    print("Please install it using: pip install pywin32")
+    sys.exit(1)
+
+pdf_url = "trs.arborhalloween.com/next-pdf-to-print"
+download_dir = "C:\\Users\\TODO_JOHNS_USERNAME_ON_THE_WINDOWS_LAPTOP\\Downloads\\TRS2025_pdfs"
 printer_name = "Brother HL-L6210DW series"
 
-# The function below will attempt to extract a filename from the "Content-Disposition" HTTP header, if present.
-# If the "Content-Disposition" header or a valid filename are not present, it tries to determine a filename from the URL path
-# by extracting the last component after the final '/'. If the URL path does not provide a valid filename (e.g., it ends with a slash),
-# the function will generate a default filename using the pattern "download_<timestamp>.pdf", where <timestamp> is the current UNIX time in seconds.
-def derive_filename(response, request_url, default_ext=".pdf"):
+def get_filename(response): 
     cd = response.headers.get("Content-Disposition") or response.headers.get("content-disposition")
-    filename = None
 
-    if cd:
-        # Try RFC 5987: filename*=UTF-8''encoded-name.pdf
-        m = re.search(r'filename\*\s*=\s*([^;]+)', cd, flags=re.IGNORECASE)
-        if m:
-            v = m.group(1).strip().strip('"').strip()
-            if "''" in v:
-                charset, rest = v.split("''", 1)
-                try:
-                    filename = unquote(rest, encoding=charset, errors="strict")
-                except LookupError:
-                    filename = unquote(rest)
-            else:
-                filename = unquote(v.strip("'"))
-        # Fallback: filename="name.pdf" or filename=name.pdf
-        if not filename:
-            m = re.search(r'filename\s*=\s*(?:"([^"]+)"|([^;]+))', cd, flags=re.IGNORECASE)
-            if m:
-                filename = (m.group(1) or m.group(2)).strip()
+    if not cd:
+        print("ERROR: no Content-Disposition header found, cannot extract filename")
+        return ""
 
-    if not filename:
-        # Fallback to URL path
-        url_for_name = response.url or request_url
-        path_name = os.path.basename(urlparse(url_for_name).path)
-        filename = path_name if path_name else f"download_{int(time.time())}{default_ext}"
+    try:
+        pdf_filename = response.headers.get("Content-Disposition").split("filename=")[1]
+        print(f"found filename: {pdf_filename}")
+    except IndexError:
+        print("ERROR: could not extract filename from Content-Disposition header (IndexError)")
+        return ""
 
-    # Sanitize: remove path components and NULs
-    filename = os.path.basename(filename).replace("\x00", "")
-    # Ensure extension if missing and content-type implies PDF
-    if not os.path.splitext(filename)[1]:
-        ct = (response.headers.get("Content-Type") or "").lower()
-        if "pdf" in ct and default_ext:
-            filename += default_ext
-    return filename
+    return pdf_filename
 
 
 def get_next_pdf(pdf_url):
@@ -71,38 +64,151 @@ def get_next_pdf(pdf_url):
         os.makedirs(download_dir, exist_ok=True)
 
     # extract the pdf filename from the response header
-    pdf_filename = derive_filename(response, pdf_url, default_ext=".pdf")
+    pdf_filename =  get_filename(response)
+    if not pdf_filename:
+        print("Error: no filename, skipping this print")
+        return ""
+
+    # create a filepath based on the name
     target_path = os.path.join(download_dir, pdf_filename)
+
     # save the pdf to the download directory (streamed)
     with open(target_path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
+
     return target_path
 
 
 def mark_pdf_as_printed(pdf_path):
     # extract the pdf filename from the path
     pdf_filename = os.path.basename(pdf_path)
+
     # send the filename to the pdf_url with a POST request
     response = requests.post(pdf_url, data={"filename": pdf_filename})
     if response.status_code != 200:
         print(f"Error marking pdf as printed: {response.status_code}")
         return False
+
     return True
+
+
+def print_pdf_and_wait(filepath, printer_name):
+    """
+    Sends a PDF file to a specific printer using raw data transfer and blocks
+    until the print queue is clear.
+
+    Note: This function works by polling the specified printer's job queue.
+    If other print jobs are in the queue (from this or other users),
+    this script will wait for ALL jobs to complete, not just the one it sent.
+
+    This is OK for TRS use-case since this script will be the only source of
+    print jobs being sent to the printer.
+
+    Note: This method sends the file in "RAW" mode, which relies on the printer
+    being able to interpret the file type directly (e.g., a PostScript printer
+    for a PS file, or a modern printer that can handle PDF).
+    """
+
+    abs_filepath = os.path.abspath(filepath)
+
+    if not os.path.exists(abs_filepath):
+        print(f"Error: File not found at '{abs_filepath}'")
+        return
+
+    print(f"Attempting to print file: {abs_filepath}")
+
+    print(f"Using printer: {printer_name}")
+
+    hPrinter = None
+    try:
+        # Open a handle to the printer
+        # PRINTER_ACCESS_USE is required to EnumJobs
+        hPrinter = win32print.OpenPrinter(printer_name, {"DesiredAccess": win32print.PRINTER_ACCESS_USE})
+
+        # Check queue status *before* adding our job
+        try:
+            jobs = win32print.EnumJobs(hPrinter, 0, -1, 2)
+            if jobs:
+                print(f"Warning: {len(jobs)} job(s) already in the queue. This script will add a new job to the queue.")
+        except Exception as e:
+            # EnumJobs can fail for permissions reasons
+            print(f"Warning: Could not read job queue. Monitoring may be unreliable. {e}")
+
+        print("Sending print job to spooler...")
+        try:
+            # Open the PDF file in binary read mode
+            with open(abs_filepath, 'rb') as f:
+                pdf_data = f.read()
+        except Exception as e:
+            print(f"Error: Failed to open pdf in binary read mode. {e}")
+            return
+
+        try:
+            # Start a print job. The job title is the filename.
+            # The "RAW" datatype indicates the data is sent without modification.
+            job_id = win32print.StartDocPrinter(hPrinter, 1, (os.path.basename(abs_filepath), None, "RAW"))
+            if job_id == 0:
+                print("Error: StartDocPrinter failed. Could not start print job.")
+                return
+
+            # Start the page
+            win32print.StartPagePrinter(hPrinter)
+            # Write the file content to the printer
+            win32print.WritePrinter(hPrinter, pdf_data)
+            # End the page
+            win32print.EndPagePrinter(hPrinter)
+
+            # End the print job
+            win32print.EndDocPrinter(hPrinter)
+            print("Print job sent successfully.")
+        except Exception as e:
+            print(f"Error: Failed to send job to printer. {e}")
+            return
+
+        # Give the spooler a moment to register the new job
+        print("Waiting for job to appear in queue...")
+        # This 3-second wait seems excessive, but for our use case
+        # (expecting 9 print jobs every four minutes), it should be fine.
+        time.sleep(3)
+
+        # Start polling the print queue
+        print("Monitoring print queue... Script will block until queue is clear.")
+        while True:
+            try:
+                jobs = win32print.EnumJobs(hPrinter, 0, -1, 2)
+                if len(jobs) == 0:
+                    print("Print queue is clear. Assuming job is complete.")
+                    break
+                print(f"Waiting for {len(jobs)} job(s) to finish...")
+                time.sleep(2) # Poll every 2 seconds
+            except Exception as e:
+                print(f"Error while polling queue (job may still be printing): {e}")
+                print("Stopping monitoring loop.")
+                # We can't poll, so we have to break
+                break
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        # Always close the printer handle
+        if hPrinter:
+            win32print.ClosePrinter(hPrinter)
+            print("Closed printer handle.")
 
 
 if __name__ == "__main__":
     while True:
         pdf_path = get_next_pdf(pdf_url)
+
         if pdf_path:
             print(f"Downloaded pdf: {pdf_path}")
-            # print the pdf using win_print_pdf.py. This will block until
-            # win_print_pdf.py exits, which occurs after the PDF has finished
-            # printing.
-            # Potential TODO: add a timeout to win_print_pdf.py 
-            subprocess.run(["python", "win_print_pdf.py", pdf_path, printer_name])
+
+            # blocks until the print is complete
+            print_pdf_and_wait(pdf_path, printer_name)
             print(f"Printed pdf: {pdf_path}")
+
             # update the database to mark the pdf as printed
             mark_pdf_as_printed(pdf_path)
         else:
