@@ -12,7 +12,21 @@ import {
 } from "~/lib/treat-return-state.client";
 import * as step1 from "./steps/1";
 import * as step2 from "./steps/2";
+import * as step3 from "./steps/3";
+import * as step4 from "./steps/4";
+import * as step5 from "./steps/5";
+import * as step6 from "./steps/6";
+import * as step7 from "./steps/7";
+import * as step8 from "./steps/8";
+import * as step9 from "./steps/9";
+import * as step10 from "./steps/10";
+import * as step11 from "./steps/11";
+import * as step12 from "./steps/12";
+import * as step13 from "./steps/13";
+import * as step14 from "./steps/14";
+import * as step15 from "./steps/15";
 import { render1040 } from "~/lib/pdf.server";
+import { mapStateToFormFields } from "~/lib/pdf-mapper";
 
 export function clientLoader() {
   return loadTreatReturnState();
@@ -27,9 +41,18 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const state: TreatReturnState = JSON.parse(stateJson);
-  const pdfBytes = await render1040();
 
-  throw new Error("unimplemented");
+  // Map the state to PDF form fields
+  const formFields = mapStateToFormFields(state);
+
+  // Render the PDF with the mapped fields
+  const pdfBytes = await render1040(formFields);
+  console.log(new TextDecoder().decode(pdfBytes));
+  
+  // TODO: Send pdf to backend 
+  // Save form elements to backend?
+  
+  // return state;
 }
 
 export default function Submit({ loaderData }: Route.ComponentProps) {
@@ -42,6 +65,45 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
     }
     if (!step2.isCompleted(treatReturnState.step2)) {
       navigate("/file/step/2");
+    }
+    if (!step3.isCompleted(treatReturnState.step3)) {
+      navigate("/file/step/3");
+    }
+    if (!step4.isCompleted(treatReturnState.step4)) {
+      navigate("/file/step/4");
+    }
+    if (!step5.isCompleted(treatReturnState.step5)) {
+      navigate("/file/step/5");
+    }
+    if (!step6.isCompleted(treatReturnState.step6)) {
+      navigate("/file/step/6");
+    }
+    if (!step7.isCompleted(treatReturnState.step7)) {
+      navigate("/file/step/7");
+    }
+    if (!step8.isCompleted(treatReturnState.step8)) {
+      navigate("/file/step/8");
+    }
+    if (!step9.isCompleted(treatReturnState.step9)) {
+      navigate("/file/step/9");
+    }
+    if (!step10.isCompleted(treatReturnState.step10)) {
+      navigate("/file/step/10");
+    }
+    if (!step11.isCompleted(treatReturnState.step11)) {
+      navigate("/file/step/11");
+    }
+    if (!step12.isCompleted(treatReturnState.step12)) {
+      navigate("/file/step/12");
+    }
+    if (!step13.isCompleted(treatReturnState.step13)) {
+      navigate("/file/step/13");
+    }
+    if (!step14.isCompleted(treatReturnState.step14)) {
+      navigate("/file/step/14");
+    }
+    if (!step15.isCompleted(treatReturnState.step15)) {
+      navigate("/file/step/15");
     }
   }, [treatReturnState]);
 
