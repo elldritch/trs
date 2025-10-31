@@ -19,7 +19,7 @@ export default function Step() {
       </main>
       <footer className="px-4 mt-2 text-center">
         <button
-          className="text-blue-500 underline"
+          className="rounded-md font-medium text-white bg-gray-300 hover:bg-red-700 px-4 py-1.5 text-sm"
           onClick={() => {
             const confirmed = window.confirm(
               "Are you sure? This will clear your answers to every question!"
