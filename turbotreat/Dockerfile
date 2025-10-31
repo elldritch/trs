@@ -31,5 +31,6 @@ COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=development-dependencies-env /trs-db/node_modules /trs-db/node_modules
 COPY --from=development-dependencies-env /trs-db/generated /trs-db/generated
 COPY --from=build-env /app/build /app/build
+COPY ./turbotreat/static /app/static
 WORKDIR /app
 CMD ["npm", "run", "start"]
