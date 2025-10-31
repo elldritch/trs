@@ -93,7 +93,7 @@ export default function Step5() {
               minValue={0}
               maxValue={100}
               step={1}
-              placeholderText="Enter percentage"
+              placeholderText="Enter percentage (0-100)"
             />
         </div>
         ) } 
