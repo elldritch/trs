@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import {
   setTreatReturnState,
   treatReturnStartState,
@@ -10,12 +10,16 @@ export default function Step() {
   return (
     <>
       <header className="h-8 px-4 mt-4 mb-2">
-        <img src="/unintuit-turbotreat.png" className="h-full" />
+        <Link to="/">
+          <img src="/unintuit-turbotreat.png" className="h-full" />
+        </Link>
       </header>
-      <Outlet />
+      <main className="p-4">
+        <Outlet />
+      </main>
       <footer className="px-4 mt-2 text-center">
         <button
-          className="text-blue-500 underline"
+          className="rounded-md font-medium text-white bg-gray-300 hover:bg-red-700 px-4 py-1.5 text-sm"
           onClick={() => {
             const confirmed = window.confirm(
               "Are you sure? This will clear your answers to every question!"

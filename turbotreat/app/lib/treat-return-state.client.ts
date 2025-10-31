@@ -13,7 +13,6 @@ import type { Step12State } from "../routes/file-treat-return/steps/12";
 import type { Step13State } from "../routes/file-treat-return/steps/13";
 import type { Step14State } from "../routes/file-treat-return/steps/14";
 import type { Step15State } from "../routes/file-treat-return/steps/15";
-import type { Step16State } from "../routes/file-treat-return/steps/16";
 
 export type TreatReturnState = {
   step1: Step1State;
@@ -31,39 +30,24 @@ export type TreatReturnState = {
   step13: Step13State;
   step14: Step14State;
   step15: Step15State;
-  step16: Step16State;
 };
 
 export const treatReturnStartState: TreatReturnState = {
-  step1: { firstName: "" },
-  step2: { wearingCostume: false, costumeCategory: null, costumeName: null },
-  step3: { attendsSchool: "", schoolYear: "", schoolConditions: "" },
-  step4: { multipleStreets: "", streetNames: "" },
-  step5: { allFromArborAve: "" },
-  step6: { candyWeight: "", receivedTips: "" },
-  step7: { investedPTP: "", investedREIT: "" },
-  step8: { californiaFilm: "" },
-  step9: { filled1040TRES: "", candiesPaid: "" },
-  step10: { homeworkCompleted: "", totalHomework: "", homeworkAtHome: "" },
-  step11: {
-    hasSiblings: "",
-    siblings: [],
-    newSiblingName: "",
-    newSiblingCostume: "",
-  },
-  step12: { hasCommute: "", transportMethod: "" },
-  step13: {
-    willStudyNextYear: "",
-    candyForStudyActivities: "",
-    studyCandyPercentage: "",
-  },
-  step14: { livesWithParents: "", parents: [] },
-  step15: {
-    beenToDentist: "",
-    dentalWorkFromCandy: "",
-    reimbursedForDental: "",
-  },
-  step16: { yearsTrickOrTreating: "", flewSweetwest: "" },
+  step1: { firstName: null, favoriteCandy: null },
+  step2: { wearingCostume: null, costumeCategory: null, costumeName: null },
+  step3: { attendsSchool: null, schoolYear: null, schoolConditions: null },
+  step4: { multipleStreets: null, streetNames: null, allFromArborAve: null, nonArborPercent: null },
+  step5: { candyWeight: null, receivedTips: null },
+  step6: { investedPTP: null, investedREIT: null, californiaFilm: null, filed1040TRES: null, pieces1040TRES: null },
+  step7: { completedThreeHomework: null, totalHomeworkCount: null, homeworkAtHomeCount: null },
+  step8: { hasSiblings: null, siblings: [] },
+  step9: { hasCommute: null, transportMethod: null },
+  step10: { willStudy: null, candyForStudy: null, studyCandyPercent: null },
+  step11: { livesWithParents: null, parents: [] },
+  step12: { beenToDentist: null, dentalWorkFromCandy: null, reimbursedForDental: null },
+  step13: { yearsTrickOrTreating: null, flewSweetwest: null },
+  step14: { donateSEF: null},
+  step15: { purchasePremium: null },
 };
 
 const treatReturnStateLocalStorageKey = "treatReturnState";

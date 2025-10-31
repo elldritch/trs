@@ -1,34 +1,34 @@
 import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import {
-  loadStepStateOrRedirect,
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
+import {
+  QuestionHeader,
+  HelpButton,
+  HelpText,
+  Select,
+  StepPagination,
+} from "./components.client";
 
-type Step12State = {
-  hasCommute: "" | "yes" | "no";
-  transportMethod: string;
+export type Step12State = {
+  beenToDentist: boolean | null;
+  dentalWorkFromCandy: boolean | null;
+  reimbursedForDental: boolean | null;
 };
 
-const transportOptions = [
-  "Walking",
-  "Bicycle",
-  "Skateboard/Scooter",
-  "Car (driven by someone else)",
-  "Public Transportation",
-  "Other"
-];
-
-export type { Step12State };
-
 export function clientLoader() {
-  const treatReturnState = loadStepStateOrRedirect(12);
+  const treatReturnState = loadTreatReturnState();
 
   if (!treatReturnState.step12) {
     const initialState = {
       ...treatReturnState,
-      step12: { hasCommute: "", transportMethod: "" } as Step12State,
+      step12: {
+        beenToDentist: null,
+        dentalWorkFromCandy: null,
+        reimbursedForDental: null,
+      } as Step12State,
     };
     setTreatReturnState(initialState);
     return initialState;
@@ -37,126 +37,104 @@ export function clientLoader() {
   return treatReturnState;
 }
 
+export function isCompleted(step12: Step12State) {
+  if (step12.beenToDentist === null) return false;
+  if (step12.beenToDentist === false) return true;
+  if (step12.dentalWorkFromCandy === null) return false;
+  if (step12.dentalWorkFromCandy === false) return true;
+  if (step12.reimbursedForDental === null) return false;
+  return true;
+}
+
 export default function Step12() {
-  const navigate = useNavigate();
   const treatReturnState = useLoaderData<typeof clientLoader>();
-  const [hasCommute, setHasCommute] = useState(treatReturnState.step12.hasCommute);
-  const [transportMethod, setTransportMethod] = useState(treatReturnState.step12.transportMethod);
-  const [showOtherInput, setShowOtherInput] = useState(
-    transportMethod && !transportOptions.includes(transportMethod)
-  );
+  const [beenToDentist, setBeenToDentist] = useState(treatReturnState.step12.beenToDentist);
+  const [dentalWorkFromCandy, setDentalWorkFromCandy] = useState(treatReturnState.step12.dentalWorkFromCandy);
+  const [reimbursedForDental, setReimbursedForDental] = useState(treatReturnState.step12.reimbursedForDental);
+  const [showDentalWorkHelp, setShowDentalWorkHelp] = useState(false);
+  const [showReimbursedHelp, setShowReimbursedHelp] = useState(false);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
-      step12: { hasCommute, transportMethod },
+      step12: {
+        beenToDentist,
+        dentalWorkFromCandy,
+        reimbursedForDental,
+      },
     });
-  }, [hasCommute, transportMethod]);
+  }, [beenToDentist, dentalWorkFromCandy, reimbursedForDental, treatReturnState]);
 
-  const handleTransportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setTransportMethod(value);
-    setShowOtherInput(value === "Other");
-    if (value !== "Other") {
-      setTransportMethod(value);
-    } else {
-      setTransportMethod("");
-    }
-  };
-
-  const isFormValid = hasCommute === "no" || (hasCommute === "yes" && transportMethod);
+  const shouldDisableNext = () => !isCompleted({
+    beenToDentist,
+    dentalWorkFromCandy,
+    reimbursedForDental,
+  });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
-        <fieldset className="mb-6">
-          <legend className="text-xl font-bold mb-4">
-            Do you regularly commute to school or work?
-          </legend>
-          <div className="space-x-4 mb-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="has-commute"
-                value="yes"
-                checked={hasCommute === "yes"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="has-commute"
-                value="no"
-                checked={hasCommute === "no"}
-                onChange={(e) => setHasCommute(e.target.value as "yes" | "no")}
-                className="h-4 w-4 text-orange-500"
-              />
-              <span className="ml-2">No</span>
-            </label>
+        <QuestionHeader>
+          Have you been to the dentist in the past year?
+        </QuestionHeader>
+        <Select
+          value={beenToDentist}
+          onChange={setBeenToDentist}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+
+        {beenToDentist === true && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Was any dental work you received performed as a result of eating candy over the last year?
+              <HelpButton onClick={() => setShowDentalWorkHelp(!showDentalWorkHelp)} />
+            </QuestionHeader>
+            {showDentalWorkHelp && (
+              <HelpText title="What is teeth?">
+                Teeth are bones, but in your face. If you ate so much candy that it hurt your face bones,
+                you may have received treatment from a face bone doctor (dentist). Visits to the face bone
+                doctor would be considered appointments for "dental work".
+              </HelpText>
+            )}
+            <Select
+              value={dentalWorkFromCandy}
+              onChange={setDentalWorkFromCandy}
+              options={[
+                { value: true, display: "Yes" },
+                { value: false, display: "No" },
+              ]}
+            />
           </div>
+        )}
 
-          {hasCommute === "yes" && (
-            <div className="pl-6 border-l-2 border-gray-200 space-y-4">
-              <div>
-                <label htmlFor="transport-method" className="block text-lg font-medium mb-2">
-                  Which of the following means of transportation do you most frequently use to commute to school or work?
-                </label>
-                <select
-                  id="transport-method"
-                  value={showOtherInput ? "Other" : transportMethod}
-                  onChange={handleTransportChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Select an option</option>
-                  {transportOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {beenToDentist === true && dentalWorkFromCandy === true && (
+          <div className="animate-fade-in">
+            <QuestionHeader>
+              Were you already reimbursed for this dental work?
+              <HelpButton onClick={() => setShowReimbursedHelp(!showReimbursedHelp)} />
+            </QuestionHeader>
+            {showReimbursedHelp && (
+              <HelpText title="How do I know if a dental visit was reimbursed?">
+                Trick or treaters who go to the dentist are usually entitled to compensation in the form of a
+                toy or other small delightful object (like a new toothbrush). If you visited the dentist but
+                did not receive compensation, you are eligible for a tax credit from the TRS.
+              </HelpText>
+            )}
+            <Select
+              value={reimbursedForDental}
+              onChange={setReimbursedForDental}
+              options={[
+                { value: true, display: "Yes" },
+                { value: false, display: "No" },
+              ]}
+            />
+          </div>
+        )}
 
-              {showOtherInput && (
-                <div>
-                  <label htmlFor="other-transport" className="block text-sm font-medium text-gray-700 mb-1">
-                    Please specify:
-                  </label>
-                  <input
-                    type="text"
-                    id="other-transport"
-                    value={transportMethod}
-                    onChange={(e) => setTransportMethod(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Enter your transportation method"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-        </fieldset>
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => navigate("/file/step/11")}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => navigate("/file/step/13")}
-            disabled={!hasCommute || (hasCommute === "yes" && !transportMethod)}
-            className={`px-4 py-2 rounded ${
-              !hasCommute || (hasCommute === "yes" && !transportMethod)
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        <StepPagination disabled={shouldDisableNext()} currentStep={12} />
       </div>
     </main>
   );
