@@ -1,9 +1,15 @@
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import { useEffect } from "react";
 import { useFetcher, useNavigate } from "react-router";
 import type { Route } from "./+types/submit";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
-// import { prisma } from "trs-db";
+import { customAlphabet } from "nanoid";
+
+import { prisma } from "~/lib/db.server";
 import {
   loadTreatReturnState,
   setTreatReturnState,
@@ -32,6 +38,10 @@ export function clientLoader() {
   return loadTreatReturnState();
 }
 
+const ticketIdAlphabet =
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const nanoid = customAlphabet(ticketIdAlphabet, 7);
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const stateJson = formData.get("state");
@@ -40,19 +50,38 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Error("Application state not provided");
   }
 
-  const state: TreatReturnState = JSON.parse(stateJson);
-
   // Map the state to PDF form fields
+  const state: TreatReturnState = JSON.parse(stateJson);
   const formFields = mapStateToFormFields(state);
-
-  // Render the PDF with the mapped fields
   const pdfBytes = await render1040(formFields);
-  console.log(new TextDecoder().decode(pdfBytes));
-  
-  // TODO: Send pdf to backend 
-  // Save form elements to backend?
-  
-  // return state;
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const ticketId = nanoid();
+
+  // Write out a return for fun and debugging purposes.
+  await fs.writeFile(
+    path.join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "public",
+      "returns",
+      `${ticketId}.pdf`
+    ),
+    pdfBytes
+  );
+
+  await prisma.treatReturnApplication.create({
+    data: {
+      ticketId,
+      status: "IN_REVIEW",
+      renderedPdf: pdfBytes as any,
+    },
+  });
+
+  return { ticketId };
 }
 
 export default function Submit({ loaderData }: Route.ComponentProps) {
@@ -62,48 +91,63 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (!step1.isCompleted(treatReturnState.step1)) {
       navigate("/file/step/1");
+      return;
     }
     if (!step2.isCompleted(treatReturnState.step2)) {
       navigate("/file/step/2");
+      return;
     }
     if (!step3.isCompleted(treatReturnState.step3)) {
       navigate("/file/step/3");
+      return;
     }
     if (!step4.isCompleted(treatReturnState.step4)) {
       navigate("/file/step/4");
+      return;
     }
     if (!step5.isCompleted(treatReturnState.step5)) {
       navigate("/file/step/5");
+      return;
     }
     if (!step6.isCompleted(treatReturnState.step6)) {
       navigate("/file/step/6");
+      return;
     }
     if (!step7.isCompleted(treatReturnState.step7)) {
       navigate("/file/step/7");
+      return;
     }
     if (!step8.isCompleted(treatReturnState.step8)) {
       navigate("/file/step/8");
+      return;
     }
     if (!step9.isCompleted(treatReturnState.step9)) {
       navigate("/file/step/9");
+      return;
     }
     if (!step10.isCompleted(treatReturnState.step10)) {
       navigate("/file/step/10");
+      return;
     }
     if (!step11.isCompleted(treatReturnState.step11)) {
       navigate("/file/step/11");
+      return;
     }
     if (!step12.isCompleted(treatReturnState.step12)) {
       navigate("/file/step/12");
+      return;
     }
     if (!step13.isCompleted(treatReturnState.step13)) {
       navigate("/file/step/13");
+      return;
     }
     if (!step14.isCompleted(treatReturnState.step14)) {
       navigate("/file/step/14");
+      return;
     }
     if (!step15.isCompleted(treatReturnState.step15)) {
       navigate("/file/step/15");
+      return;
     }
   }, [treatReturnState]);
 
@@ -157,7 +201,7 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
               </button>
             ) : (
               <div className="mt-2">
-                {/* <ArrowPathIcon className="animate-spin h-20 mx-auto" /> */}
+                <ArrowPathIcon className="animate-spin h-20 mx-auto" />
               </div>
             )}
           </>
