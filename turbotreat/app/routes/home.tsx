@@ -47,7 +47,7 @@ export default function Home() {
           </Link>
         </div>
       </main>
-      <main className="p-4">
+      {/* <main className="p-4">
         <div className="rounded-lg bg-stone-100 py-10 px-8 text-center">
           <h1 className="text-2xl font-light">
             Already filed your return? Check your return status online.
@@ -61,7 +61,7 @@ export default function Home() {
             </button>
           </Link>
         </div>
-      </main>
+      </main> */}
     </>
   );
 }
