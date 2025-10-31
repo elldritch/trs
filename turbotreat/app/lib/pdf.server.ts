@@ -98,6 +98,13 @@ export async function render1040(fields: FormFields): Promise<Uint8Array> {
       console.warn('Could not set 1c_streetname:', e);
     }
   }
+  if (!fields["1a_streetname"] && !fields["1b_streetname"] && !fields["1c_streetname"]) {
+    try {
+      form.getTextField('1a_streetname').setText("Arbor Ave");
+    } catch (e) {
+      console.warn('Could not set 1a_streetname to "Arbor Ave":', e);
+    }
+  }
 
   // Percentage fields
   if (fields.tips_percent) {
