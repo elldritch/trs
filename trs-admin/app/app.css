@@ -3,6 +3,10 @@
 @theme {
   --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-trs-blue: #00599c;
+  --color-trs-accent-gold: #c7a97b;
+  --color-trs-warning: #fff5de;
+  --color-trs-error: #d11242;
 }
 
 html,

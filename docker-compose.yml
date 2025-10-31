@@ -15,8 +15,8 @@ services:
 
   trs-admin:
     build:
-      context: ./trs-admin
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./trs-admin/Dockerfile
     ports:
       - "5174:3000"
     environment:
@@ -26,8 +26,8 @@ services:
 
   turbotreat:
     build:
-      context: ./turbotreat
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./turbotreat/Dockerfile
     ports:
       - "5173:3000"
     environment:
