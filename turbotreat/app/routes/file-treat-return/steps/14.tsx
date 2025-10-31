@@ -19,7 +19,7 @@ export type Step14State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step14) {
+  if (!treatReturnState.step14 || treatReturnState.step14.donateSEF === undefined) {
     const initialState = {
       ...treatReturnState,
       step14: {

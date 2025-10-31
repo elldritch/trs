@@ -20,7 +20,7 @@ export type Step7State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step7) {
+  if (!treatReturnState.step7 || treatReturnState.step7.completedThreeHomework === undefined) {
     const initialState = {
       ...treatReturnState,
       step7: {

@@ -147,7 +147,7 @@ export function PersonList({
     if (allFieldsFilled) {
       onChange([
         ...items,
-        { ...newPerson, willEatCandy: null } as PersonItem,
+        { ...newPerson, willEatCandy: false } as PersonItem,
       ]);
       setNewPerson({
         name: "",
@@ -161,7 +161,7 @@ export function PersonList({
     onChange(items.filter((_, i) => i !== index));
   };
 
-  const updateWillEatCandy = (index: number, willEat: boolean | null) => {
+  const updateWillEatCandy = (index: number, willEat: boolean) => {
     onChange(
       items.map((item, i) =>
         i === index ? { ...item, willEatCandy: willEat } : item
@@ -210,7 +210,7 @@ export function PersonList({
                   Will {person.name} be eating any of your candy this year?
                 </p>
                 <Select
-                  value={person.willEatCandy}
+                  value={person.willEatCandy ?? false}
                   onChange={(value) => updateWillEatCandy(index, value)}
                   options={[
                     { value: true, display: "Yes" },
@@ -257,7 +257,7 @@ export function PersonList({
               : "bg-sky-700 cursor-pointer hover:bg-sky-800")
           }
         >
-          Add {personType}
+          Save {personType}
         </button>
       </div>
     </div>
@@ -274,14 +274,6 @@ export function StepPagination({
   return (
     <div>
       <Link
-        to={`/file/step/${currentStep - 1}`}
-        className={
-          "block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
-        }
-      >
-        Previous
-      </Link>
-      <Link
         to={`/file/step/${currentStep + 1}`}
         className={
           "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
@@ -291,6 +283,14 @@ export function StepPagination({
         }
       >
         Next
+      </Link>
+       <Link
+        to={`/file/step/${currentStep - 1}`}
+        className={
+          "block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
+        }
+      >
+        Previous
       </Link>
     </div>
   );

@@ -9,17 +9,19 @@ import { QuestionHeader, Select, StepPagination, NumberInput } from "./component
 export type Step5State = {
   candyWeight: number | null;
   receivedTips: boolean | null;
+  tipsPercent: number | null;
 };
 
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step5) {
+  if (!treatReturnState.step5 || treatReturnState.step5 === undefined) {
     const initialState = {
       ...treatReturnState,
       step5: { 
         candyWeight: null, 
         receivedTips: null,
+        tipsPercent: null
       } as Step5State,
     };
     setTreatReturnState(initialState);
@@ -32,6 +34,7 @@ export function clientLoader() {
 export function isCompleted(step5: Step5State) {
   if (step5.candyWeight === null) return false;
   if (step5.receivedTips === null) return false;
+  if (step5.receivedTips && (step5.tipsPercent === null)) return false;
   return true;
 }
 
@@ -39,18 +42,20 @@ export default function Step5() {
   const treatReturnState = useLoaderData<typeof clientLoader>();
   const [candyWeight, setCandyWeight] = useState(treatReturnState.step5.candyWeight);
   const [receivedTips, setReceivedTips] = useState(treatReturnState.step5.receivedTips);
+  const [tipsPercent, setTipsPercent] = useState(treatReturnState.step5.tipsPercent);
 
   useEffect(() => {
     setTreatReturnState({
       ...treatReturnState,
       step5: { 
         candyWeight, 
-        receivedTips 
+        receivedTips,
+        tipsPercent
       },
     });
-  }, [candyWeight, receivedTips, treatReturnState]);
+  }, [candyWeight, receivedTips, tipsPercent, treatReturnState]);
 
-  const shouldDisableNext = () => !isCompleted({ candyWeight, receivedTips });
+  const shouldDisableNext = () => !isCompleted({ candyWeight, receivedTips, tipsPercent });
 
   return (
     <main className="max-w-2xl mx-auto p-4">
@@ -76,6 +81,21 @@ export default function Step5() {
             { value: false, display: "No" },
           ]}
         />
+        { receivedTips && (
+           <div className="animate-fade-in">
+          <QuestionHeader>
+            What percentage of your total candy weight was received as tips?
+            </QuestionHeader>
+            <NumberInput
+              value={tipsPercent}
+              onChange={setTipsPercent}
+              minValue={0}
+              maxValue={100}
+              step={1}
+              placeholderText="Enter percentage"
+            />
+        </div>
+        ) } 
 
         <StepPagination 
           disabled={shouldDisableNext()} 

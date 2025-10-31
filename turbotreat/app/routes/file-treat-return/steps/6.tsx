@@ -15,8 +15,11 @@ import {
 
 export type Step6State = {
   investedPTP: boolean | null;
+  investedPTPPercent: number | null;
   investedREIT: boolean | null;
+  investedREITPercent: number | null;
   californiaFilm: boolean | null;
+  otherSourcesOfCandy: boolean | null;
   filed1040TRES: boolean | null;
   pieces1040TRES: number | null;
 };
@@ -24,13 +27,16 @@ export type Step6State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step6) {
+  if (!treatReturnState.step6 || treatReturnState.step6 === undefined) {
     const initialState = {
       ...treatReturnState,
       step6: {
         investedPTP: null,
+        investedPTPPercent: null,
         investedREIT: null,
+        investedREITPercent: null,
         californiaFilm: null,
+        otherSourcesOfCandy: null,
         filed1040TRES: null,
         pieces1040TRES: null,
       } as Step6State,
@@ -44,8 +50,11 @@ export function clientLoader() {
 
 export function isCompleted(step6: Step6State) {
   if (step6.investedPTP === null) return false;
+  if (step6.investedPTP === true && step6.investedPTPPercent === null) return false;
   if (step6.investedREIT === null) return false;
+  if (step6.investedREIT === true && step6.investedREITPercent === null) return false;
   if (step6.californiaFilm === null) return false;
+  if (step6.otherSourcesOfCandy === null) return false;
   if (step6.filed1040TRES === null) return false;
   if (step6.filed1040TRES === true && step6.pieces1040TRES === null) return false;
   return true;
@@ -54,8 +63,11 @@ export function isCompleted(step6: Step6State) {
 export default function Step6() {
   const treatReturnState = useLoaderData<typeof clientLoader>();
   const [investedPTP, setInvestedPTP] = useState(treatReturnState.step6.investedPTP);
+  const [investedPTPPercent, setInvestedPTPPercent] = useState(treatReturnState.step6.investedPTPPercent);
   const [investedREIT, setInvestedREIT] = useState(treatReturnState.step6.investedREIT);
+  const [investedREITPercent, setInvestedREITPercent] = useState(treatReturnState.step6.investedREITPercent);
   const [californiaFilm, setCaliforniaFilm] = useState(treatReturnState.step6.californiaFilm);
+  const [otherSourcesOfCandy, setOtherSourcesOfCandy] = useState(treatReturnState.step6.otherSourcesOfCandy);
   const [filed1040TRES, setFiled1040TRES] = useState(treatReturnState.step6.filed1040TRES);
   const [pieces1040TRES, setPieces1040TRES] = useState(treatReturnState.step6.pieces1040TRES);
   const [showPTPHelp, setShowPTPHelp] = useState(false);
@@ -68,18 +80,24 @@ export default function Step6() {
       ...treatReturnState,
       step6: {
         investedPTP,
+        investedPTPPercent,
         investedREIT,
+        investedREITPercent,
         californiaFilm,
+        otherSourcesOfCandy,
         filed1040TRES,
         pieces1040TRES,
       },
     });
-  }, [investedPTP, investedREIT, californiaFilm, filed1040TRES, pieces1040TRES, treatReturnState]);
+  }, [investedPTP, investedPTPPercent, investedREIT, investedREITPercent, californiaFilm, otherSourcesOfCandy, filed1040TRES, pieces1040TRES, treatReturnState]);
 
   const shouldDisableNext = () => !isCompleted({
     investedPTP,
+    investedPTPPercent,
     investedREIT,
+    investedREITPercent,
     californiaFilm,
+    otherSourcesOfCandy,
     filed1040TRES,
     pieces1040TRES,
   });
@@ -107,6 +125,21 @@ export default function Step6() {
             { value: false, display: "No" },
           ]}
         />
+        {investedPTP && (
+           <div className="animate-fade-in">
+          <QuestionHeader>
+            What percentage of your total candy weight this year was received as dividends from a PTP?
+          </QuestionHeader>
+          <NumberInput
+            value={investedPTPPercent}
+            onChange={setInvestedPTPPercent}
+            minValue={0}
+            maxValue={100}
+            step={1}
+            placeholderText="Enter percentage"
+          />
+            </div>
+         ) }
 
         <QuestionHeader>
           Did you invest candy in a Real Estate Investment Treat (REIT) this year?
@@ -126,6 +159,21 @@ export default function Step6() {
             { value: false, display: "No" },
           ]}
         />
+        {investedREIT && (
+           <div className="animate-fade-in">
+          <QuestionHeader>
+            What percentage of your total candy weight this year was received as dividends from an REIT?
+          </QuestionHeader>
+          <NumberInput
+            value={investedREITPercent}
+            onChange={setInvestedREITPercent}
+            minValue={0}
+            maxValue={100}
+            step={1}
+            placeholderText="Enter percentage"
+          />
+            </div>
+         ) }
 
         <QuestionHeader>
           Will any of this candy be used to feed actors or actresses in a film or television production in the state of California?
@@ -138,6 +186,19 @@ export default function Step6() {
             { value: false, display: "No" },
           ]}
         />
+
+        <QuestionHeader>
+          Was any of your candy received from unreported sources, other than trick-or-treating?
+        </QuestionHeader>
+        <Select
+          value={otherSourcesOfCandy}
+          onChange={setOtherSourcesOfCandy}
+          options={[
+            { value: true, display: "Yes" },
+            { value: false, display: "No" },
+          ]}
+        />
+
 
         <QuestionHeader>
           Have you already filled out a form 1040-TR-ES earlier this year?
