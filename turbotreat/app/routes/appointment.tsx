@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "TurboTreat� - Book Appointment" },
+    { title: "TurboTreat® - Book Appointment" },
     {
       name: "description",
       content: "Book your TRS audit appointment",

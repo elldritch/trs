@@ -38,6 +38,17 @@ export function clientLoader() {
   return loadTreatReturnState();
 }
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Thank you for using TurboTreat®!" },
+    {
+      name: "description",
+      content: "Thank you for using TurboTreat®!",
+    },
+  ];
+}
+
+
 const ticketIdAlphabet =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const nanoid = customAlphabet(ticketIdAlphabet, 7);
