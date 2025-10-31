@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, Form, data, useActionData } from "react-router";
 import type { Route } from "./+types/appointments";
 import { PrismaClient } from 'trs-db'
 import AdminNavbar from "../components/AdminNavbar";
@@ -20,30 +20,178 @@ export async function loader() {
         include: {
             treatReturnApplication: true,
         },
+        orderBy: {
+            timeslot: 'asc',
+        },
     });
     return { appointments };
+}
+
+export async function action({ request }: Route.ActionArgs) {
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+
+    if (intent === "createSlots") {
+        const timeslot = formData.get("timeslot");
+        const count = formData.get("count");
+
+        if (!timeslot || typeof timeslot !== "string") {
+            return data({ error: "Please enter a time slot" }, { status: 400 });
+        }
+
+        if (!count || typeof count !== "string") {
+            return data({ error: "Please enter a slot count" }, { status: 400 });
+        }
+
+        const countNum = parseInt(count, 10);
+        if (isNaN(countNum) || countNum < 1) {
+            return data({ error: "Slot count must be a positive number" }, { status: 400 });
+        }
+
+        const timeslotDate = new Date(timeslot);
+        if (isNaN(timeslotDate.getTime())) {
+            return data({ error: "Invalid time slot format" }, { status: 400 });
+        }
+
+        // Create multiple appointment slots with the same timeslot
+        const createPromises = Array.from({ length: countNum }, () =>
+            prisma.auditAppointment.create({
+                data: {
+                    timeslot: timeslotDate,
+                },
+            })
+        );
+
+        await Promise.all(createPromises);
+
+        return data({ success: `Created ${countNum} appointment slot(s) for ${timeslotDate.toLocaleString()}` });
+    }
+
+    return data({ error: "Invalid action" }, { status: 400 });
 }
 
 
 export default function Appointments({
     loaderData,
 }: Route.ComponentProps) {
+    const actionData = useActionData<typeof action>();
+
     return (
         <>
             <AdminNavbar />
-            <h1 className="text-3xl font-bold mt-4 px-4">Appointments</h1>
-            <ul>
-                {loaderData.appointments.map((appointment) => (
-                    <li key={appointment.id}>
-                        <span suppressHydrationWarning data-timestamp={appointment.timeslot}>
-                            {new Date(appointment.timeslot).toISOString()}
-                        </span> - {appointment.treatReturnApplication?.ticketId}
-                        {appointment.treatReturnApplication && (
-                            <Link to={`/audit/${appointment.treatReturnApplication.ticketId}`}> View Application</Link>
+            <div className="px-4">
+                <h1 className="text-3xl font-bold mt-4 mb-6">Appointments</h1>
+
+                {/* Create New Slots Form */}
+                <div className="mb-8 bg-white border border-gray-300 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold mb-4">Create New Appointment Slots</h2>
+                    <Form method="post" className="flex flex-col gap-4">
+                        <input type="hidden" name="intent" value="createSlots" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="timeslot" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Time Slot
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    id="timeslot"
+                                    name="timeslot"
+                                    required
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="count" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Number of Slots
+                                </label>
+                                <input
+                                    type="number"
+                                    id="count"
+                                    name="count"
+                                    min="1"
+                                    defaultValue="1"
+                                    required
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className="bg-trs-blue text-white px-6 py-2 rounded-md hover:bg-blue-700 font-medium"
+                            >
+                                Create Slots
+                            </button>
+                        </div>
+                        {actionData && 'error' in actionData && (
+                            <p className="text-red-600 text-sm">{actionData.error}</p>
                         )}
-                    </li>
-                ))}
-            </ul>
+                        {actionData && 'success' in actionData && (
+                            <p className="text-green-600 text-sm">{actionData.success}</p>
+                        )}
+                    </Form>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr className="bg-gray-100 border-b">
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                                    Time Slot
+                                </th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                                    Status
+                                </th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                                    Ticket ID
+                                </th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loaderData.appointments.map((appointment) => {
+                                const isAvailable = !appointment.treatReturnApplication;
+                                return (
+                                    <tr key={appointment.id} className="border-b hover:bg-gray-50">
+                                        <td className="px-6 py-4 text-sm text-gray-900" suppressHydrationWarning data-timestamp={appointment.timeslot}>
+                                            {new Date(appointment.timeslot).toLocaleString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {isAvailable ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Available
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    Claimed
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-900">
+                                            {appointment.treatReturnApplication?.ticketId || '-'}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {appointment.treatReturnApplication && (
+                                                <Link
+                                                    to={`/audit/${appointment.treatReturnApplication.ticketId}`}
+                                                    className="text-trs-blue hover:text-blue-700 font-medium"
+                                                >
+                                                    View Audit
+                                                </Link>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                    {loaderData.appointments.length === 0 && (
+                        <p className="text-gray-500 text-center py-8">No appointments found.</p>
+                    )}
+                </div>
+            </div>
         </>
     );
 }
