@@ -13,6 +13,7 @@ import os
 import requests
 import sys
 import time
+import yaml
 
 try:
     # Attempt to import necessary modules from pywin32
@@ -22,10 +23,24 @@ except ImportError:
     print("Please install it using: pip install pywin32")
     sys.exit(1)
 
-# Note this URL is for both GETting the pdf and POSTing the pdf status
-pdf_url = "https://trs.arborhalloween.com/next-pdf-to-print"
-download_dir = "C:\\Users\\TODO_JOHNS_USERNAME_ON_THE_WINDOWS_LAPTOP\\Downloads\\TRS2025_pdfs"
-printer_name = "Brother HL-L6210DW series"
+# Load configuration from config.yaml
+config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
+try:
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+    pdf_url = config["pdf_url"]
+    download_dir = config["download_dir"]
+    printer_name = config["printer_name"]
+except FileNotFoundError:
+    print(f"Error: Configuration file not found at '{config_path}'")
+    print("Please create a config.yaml file with the required settings.")
+    sys.exit(1)
+except KeyError as e:
+    print(f"Error: Missing required configuration key: {e}")
+    sys.exit(1)
+except yaml.YAMLError as e:
+    print(f"Error: Invalid YAML in configuration file: {e}")
+    sys.exit(1)
 
 def get_filename(response): 
     cd = response.headers.get("Content-Disposition") or response.headers.get("content-disposition")
