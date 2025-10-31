@@ -32,7 +32,6 @@ export function clientLoader() {
     setTreatReturnState(initialState);
     return initialState;
   }
-
   return treatReturnState;
 }
 

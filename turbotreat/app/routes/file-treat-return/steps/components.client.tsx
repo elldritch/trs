@@ -161,7 +161,7 @@ export function PersonList({
     onChange(items.filter((_, i) => i !== index));
   };
 
-  const updateWillEatCandy = (index: number, willEat: boolean | null) => {
+  const updateWillEatCandy = (index: number, willEat: boolean) => {
     onChange(
       items.map((item, i) =>
         i === index ? { ...item, willEatCandy: willEat } : item
@@ -210,7 +210,7 @@ export function PersonList({
                   Will {person.name} be eating any of your candy this year?
                 </p>
                 <Select
-                  value={person.willEatCandy}
+                  value={person.willEatCandy ?? false}
                   onChange={(value) => updateWillEatCandy(index, value)}
                   options={[
                     { value: true, display: "Yes" },
