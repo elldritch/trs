@@ -1,11 +1,31 @@
 import { PrismaClient } from "trs-db";
 import type { Route } from "./+types/audit";
 import { redirect, data, Form, useActionData } from "react-router";
+import type { TreatReturnApplication } from "node_modules/trs-db/generated/prisma/client";
 import AdminNavbar from "../components/AdminNavbar";
 
 const prisma = new PrismaClient();
 
 
+export function meta({ }: Route.MetaArgs) {
+    return [
+        { title: "TRS Admin - Look up an application" },
+        {
+            name: "description",
+            content: "Look up an application by ticket ID",
+        },
+    ];
+}
+
+
+export async function loader() {
+    const applications: TreatReturnApplication[] = await prisma.treatReturnApplication.findMany({
+        include: {
+            auditAppointment: true,
+        },
+    });
+    return { applications };
+}
 
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
@@ -27,7 +47,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 
-export default function Audit() {
+export default function Audit({ loaderData }: Route.ComponentProps) {
     const actionData = useActionData<typeof action>();
 
     return <>
@@ -47,5 +67,12 @@ export default function Audit() {
                 <p className="text-red-600 text-sm">{actionData.error}</p>
             )}
         </Form>
+        <ul>
+            {/* {loaderData.applications.map((application: TreatReturnApplication & { auditAppointment: AuditAppointment[] }) => (
+            <li key={application.id}>{application.ticketId} -
+            <Link to={`/audit/${application.ticketId}`}>View Application</Link>
+            </li>
+        ))} */}
+        </ul>
     </>;
 }

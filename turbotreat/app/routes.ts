@@ -26,5 +26,7 @@ export default [
       route("15", "routes/file-treat-return/steps/15.tsx"),
     ]),
     route("finish", "routes/file-treat-return/submit.tsx"),
-  ]),
+  ]
+),
+route("appointment", "routes/appointment.tsx"),
 ] satisfies RouteConfig;
