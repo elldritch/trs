@@ -95,11 +95,16 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
   if (state.step4.nonArborPercent !== null) {
     fields.nonarbor_percent = state.step4.nonArborPercent.toString();
+  } else {
+    fields.nonarbor_percent = "0";
   }
 
   // Step 5: Candy weight and tips
   mapCandyWeightFields(state.step5.candyWeight, fields);
   // Tips received - no direct field match in PDF, skipping for now
+  if (state.step5.tipsPercent !== null) {
+    fields.tips_percent = state.step5.tipsPercent.toString();
+  }
 
   // Step 6: Investments and film
   if (state.step6.californiaFilm !== null) {

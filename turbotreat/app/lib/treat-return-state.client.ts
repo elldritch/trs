@@ -37,7 +37,7 @@ export const treatReturnStartState: TreatReturnState = {
   step2: { wearingCostume: null, costumeCategory: null, costumeName: null },
   step3: { attendsSchool: null, schoolYear: null, schoolConditions: null },
   step4: { multipleStreets: null, streetNames: null, allFromArborAve: null, nonArborPercent: null },
-  step5: { candyWeight: null, receivedTips: null },
+  step5: { candyWeight: null, receivedTips: null, tipsPercent: null },
   step6: { investedPTP: null, investedREIT: null, californiaFilm: null, filed1040TRES: null, pieces1040TRES: null },
   step7: { completedThreeHomework: null, totalHomeworkCount: null, homeworkAtHomeCount: null },
   step8: { hasSiblings: null, siblings: [] },
