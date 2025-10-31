@@ -85,6 +85,10 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 3: School
   mapSchoolFields(state.step3.schoolYear, fields);
+  if (state.step3.attendsSchool !== null) {
+    fields.opportunity_yes = state.step3.attendsSchool;
+    fields.opportunity_no = !state.step3.attendsSchool;
+  }
 
   // Step 4: Streets and non-Arbor percentage
   if (state.step4.multipleStreets && state.step4.streetNames) {
@@ -135,8 +139,15 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 8: Siblings (dependents)
   if (state.step8.hasSiblings !== null) {
-    fields.dependents_yes = state.step8.hasSiblings;
-    fields.dependents_no = !state.step8.hasSiblings;
+    // Check each sibling to see if any of them eat your candy
+    state.step8.siblings?.forEach(sibling => {
+      if (sibling.willEatCandy) {
+        fields.dependents_yes = true;
+      }
+    });
+    if (!fields.dependents_yes) {
+      fields.dependents_no = true;
+    }
   }
   if (state.step8.siblings && state.step8.siblings.length > 0) {
     fields.sibling_first_names = state.step8.siblings.map(s => s.name).join(', ');
@@ -154,10 +165,23 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 10: Study candy (education/R&D credit)
   if (state.step10.studyCandyPercent !== null) {
-    fields.savers_percent = state.step10.studyCandyPercent.toString();
+    fields.rnd_percent = state.step10.studyCandyPercent.toString();
+  } else {
+    fields.rnd_percent = "0";
   }
 
   // Step 11: Parents/guardians - no direct PDF field mapping
+   if (state.step11.livesWithParents !== null) {
+    // Check each parent to see if any of them eat your candy
+    state.step11.parents?.forEach(parent => {
+      if (parent.willEatCandy) {
+        fields.local_yes = true;
+      }
+    });
+    if (!fields.local_yes) {
+      fields.local_no = true;
+    }
+  }
 
   // Step 12: Dental
   if (state.step12.dentalWorkFromCandy !== null) {
@@ -169,6 +193,20 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   if (state.step13.flewSweetwest !== null) {
     fields.sweetwest_yes = state.step13.flewSweetwest;
     fields.sweetwest_no = !state.step13.flewSweetwest;
+  }
+
+  // Step 13: Leftover candy
+  if (state.step13.leftoverCandyPercent !== null) {
+    fields.savers_percent = state.step13.leftoverCandyPercent.toString();
+  } else {
+    fields.savers_percent = "0";
+  }
+
+  // Step 13: Smarties
+  if (state.step13.smartiesPercent !== null) {
+    fields.smarties_percent = state.step13.smartiesPercent.toString();
+  } else {
+    fields.smarties_percent = "0";
   }
 
   // Step 14: Election fund donation

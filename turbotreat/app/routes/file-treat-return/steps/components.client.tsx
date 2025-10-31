@@ -257,7 +257,7 @@ export function PersonList({
               : "bg-sky-700 cursor-pointer hover:bg-sky-800")
           }
         >
-          Add {personType}
+          Save {personType}
         </button>
       </div>
     </div>

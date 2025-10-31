@@ -45,7 +45,7 @@ export const treatReturnStartState: TreatReturnState = {
   step10: { willStudy: null, candyForStudy: null, studyCandyPercent: null },
   step11: { livesWithParents: null, parents: [] },
   step12: { beenToDentist: null, dentalWorkFromCandy: null, reimbursedForDental: null },
-  step13: { yearsTrickOrTreating: null, flewSweetwest: null },
+  step13: { yearsTrickOrTreating: null, flewSweetwest: null, leftoverCandy: null, leftoverCandyPercent: null, smartiesReceived: null, smartiesPercent: null },
   step14: { donateSEF: null},
   step15: { purchasePremium: null },
 };
