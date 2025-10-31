@@ -184,6 +184,16 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
           <div className="mt-4 text-center flex flex-col gap-4">
             <p>Your treat return ID is:</p>
             <h2 className="text-4xl font-light">{fetcher.data.ticketId}</h2>
+            <p>WRITE DOWN THIS RETURN ID. IT WILL NOT BE SHOWN TO YOU AGAIN.</p>
+            <p>
+              Your return can be downloaded at{" "}
+              <a
+                href={`/returns/${fetcher.data.ticketId}.pdf`}
+                className="text-blue-500 underline"
+              >
+                returns/{fetcher.data.ticketId}.pdf
+              </a>
+            </p>
             <p>
               Thank you for using TurboTreat&copy;.
               <br />

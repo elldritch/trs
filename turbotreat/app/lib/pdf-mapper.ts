@@ -87,7 +87,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 3: School
   mapSchoolFields(state.step3.schoolYear, fields);
-  if (state.step3.attendsSchool !== null) {
+  if (state.step3.attendsSchool) {
     fields.opportunity_yes = state.step3.attendsSchool;
     fields.opportunity_no = !state.step3.attendsSchool;
   }
@@ -99,7 +99,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
     if (streets[1]) fields["1b_streetname"] = streets[1];
     if (streets[2]) fields["1c_streetname"] = streets[2];
   }
-  if (state.step4.nonArborPercent !== null) {
+  if (state.step4.nonArborPercent) {
     fields.nonarbor_percent = state.step4.nonArborPercent.toString();
   } else {
     fields.nonarbor_percent = "0";
@@ -108,7 +108,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   // Step 5: Candy weight and tips
   mapCandyWeightFields(state.step5.candyWeight, fields);
   // Tips received - no direct field match in PDF, skipping for now
-  if (state.step5.tipsPercent !== null) {
+  if (state.step5.tipsPercent) {
     fields.tips_percent = state.step5.tipsPercent.toString();
   } else {
     fields.tips_percent = "0";
@@ -116,35 +116,35 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 6: Investments and film
   let totalInvestedDividendsPercent = 0;
-  if (state.step6.investedPTP !== null && state.step6.investedPTP) {
+  if (state.step6.investedPTP && state.step6.investedPTP) {
     totalInvestedDividendsPercent += state.step6.investedPTPPercent || 0;
   }
-  if (state.step6.investedREIT !== null && state.step6.investedREIT) {
+  if (state.step6.investedREIT && state.step6.investedREIT) {
     totalInvestedDividendsPercent += state.step6.investedREITPercent || 0;
   }
   fields.business_percent = totalInvestedDividendsPercent.toString();
-  if (state.step6.otherSourcesOfCandy !== null) {
+  if (state.step6.otherSourcesOfCandy) {
     fields.illegal_yes = state.step6.otherSourcesOfCandy;
     fields.illegal_no = !state.step6.otherSourcesOfCandy;
   }
-  if (state.step6.californiaFilm !== null) {
+  if (state.step6.californiaFilm) {
     fields.film_yes = state.step6.californiaFilm;
     fields.film_no = !state.step6.californiaFilm;
   }
-  if (state.step6.pieces1040TRES !== null) {
+  if (state.step6.pieces1040TRES) {
     fields.payments_pcs = state.step6.pieces1040TRES.toString();
   } else {
     fields.payments_pcs = "0";
   }
 
   // Step 7: Homework (home office deduction)
-  if (state.step7.totalHomeworkCount && state.step7.homeworkAtHomeCount !== null) {
+  if (state.step7.totalHomeworkCount && state.step7.homeworkAtHomeCount) {
     const homeOfficePercent = (state.step7.homeworkAtHomeCount / state.step7.totalHomeworkCount) * 100;
     fields.home_office_percent = homeOfficePercent.toFixed(2);
   }
 
   // Step 8: Siblings (dependents)
-  if (state.step8.hasSiblings !== null) {
+  if (state.step8.hasSiblings) {
     // Check each sibling to see if any of them eat your candy
     state.step8.siblings?.forEach(sibling => {
       if (sibling.willEatCandy) {
@@ -162,7 +162,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 9: Green transportation
-  if (state.step9.transportMethod !== null) {
+  if (state.step9.transportMethod) {
     const greenMethods = ['bike', 'scooter', 'skateboard', 'roller_skating', 'walking', 'running', 'electric_vehicle'];
     const isGreen = greenMethods.includes(state.step9.transportMethod);
     fields.green_yes = isGreen;
@@ -173,14 +173,14 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 10: Study candy (education/R&D credit)
-  if (state.step10.studyCandyPercent !== null) {
+  if (state.step10.studyCandyPercent) {
     fields.rnd_percent = state.step10.studyCandyPercent.toString();
   } else {
     fields.rnd_percent = "0";
   }
 
   // Step 11: Parents/guardians - no direct PDF field mapping
-   if (state.step11.livesWithParents !== null) {
+   if (state.step11.livesWithParents) {
     // Check each parent to see if any of them eat your candy
     state.step11.parents?.forEach(parent => {
       if (parent.willEatCandy) {
@@ -193,7 +193,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 12: Dental
-  if (state.step12.dentalWorkFromCandy !== null) {
+  if (state.step12.dentalWorkFromCandy) {
     fields.dental_yes = state.step12.dentalWorkFromCandy;
     fields.dental_no = !state.step12.dentalWorkFromCandy;
   }
@@ -202,27 +202,27 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 13: Sweetwest Airlines
-  if (state.step13.flewSweetwest !== null) {
+  if (state.step13.flewSweetwest) {
     fields.sweetwest_yes = state.step13.flewSweetwest;
     fields.sweetwest_no = !state.step13.flewSweetwest;
   }
 
   // Step 13: Leftover candy
-  if (state.step13.leftoverCandyPercent !== null) {
+  if (state.step13.leftoverCandyPercent) {
     fields.savers_percent = state.step13.leftoverCandyPercent.toString();
   } else {
     fields.savers_percent = "0";
   }
 
   // Step 13: Smarties
-  if (state.step13.smartiesPercent !== null) {
+  if (state.step13.smartiesPercent) {
     fields.smarties_percent = state.step13.smartiesPercent.toString();
   } else {
     fields.smarties_percent = "0";
   }
 
   // Step 14: Election fund donation
-  if (state.step14.donateSEF !== null) {
+  if (state.step14.donateSEF) {
     fields.election_yes = state.step14.donateSEF;
     fields.election_no = !state.step14.donateSEF;
   }
