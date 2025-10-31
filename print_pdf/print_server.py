@@ -51,7 +51,7 @@ def get_filename(response):
 
     # we expect the filename to be encoded in the header e.g. filename=myfilename
     try:
-        pdf_filename = cd.split("filename=")[1]
+        pdf_filename = cd.split("filename=")[1].strip('"')
         print(f"found filename: {pdf_filename}")
     except IndexError:
         print("ERROR: could not extract filename from Content-Disposition header (IndexError)")
