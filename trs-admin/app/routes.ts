@@ -19,4 +19,5 @@ export default [
   // API endpoint for the print server to fetch the next PDF to print
   // and mark PDFs as printed
   route("next-pdf-to-print", "routes/next-pdf-to-print.tsx"),
+  route("print-jobs", "routes/print-jobs.tsx"),
 ] satisfies RouteConfig;
