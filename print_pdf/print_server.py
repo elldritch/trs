@@ -12,7 +12,6 @@ this script, despite working when manually printing a PDF from Chrome.
 import os
 import re
 import requests
-import subprocess
 import time
 
 try:
@@ -35,8 +34,9 @@ def get_filename(response):
         print("ERROR: no Content-Disposition header found, cannot extract filename")
         return ""
 
+    # we expect the filename to be encoded in the header e.g. filename=myfilename
     try:
-        pdf_filename = response.headers.get("Content-Disposition").split("filename=")[1]
+        pdf_filename = cd.split("filename=")[1]
         print(f"found filename: {pdf_filename}")
     except IndexError:
         print("ERROR: could not extract filename from Content-Disposition header (IndexError)")
