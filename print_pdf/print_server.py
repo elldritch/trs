@@ -10,20 +10,20 @@ this script, despite working when manually printing a PDF from Chrome.
 """
 
 import os
-import re
 import requests
+import sys
 import time
 
 try:
     # Attempt to import necessary modules from pywin32
-    import win32api
     import win32print
 except ImportError:
     print("Error: This script requires the 'pywin32' library.")
     print("Please install it using: pip install pywin32")
     sys.exit(1)
 
-pdf_url = "trs.arborhalloween.com/next-pdf-to-print"
+# Note this URL is for both GETting the pdf and POSTing the pdf status
+pdf_url = "https://trs.arborhalloween.com/next-pdf-to-print"
 download_dir = "C:\\Users\\TODO_JOHNS_USERNAME_ON_THE_WINDOWS_LAPTOP\\Downloads\\TRS2025_pdfs"
 printer_name = "Brother HL-L6210DW series"
 
@@ -47,7 +47,15 @@ def get_filename(response):
 
 def get_next_pdf(pdf_url):
     # Send GET request to download the PDF
-    response = requests.get(pdf_url, stream=True)
+    try:
+        response = requests.get(pdf_url, stream=True, timeout=15)
+    except requests.exceptions.Timeout:
+        print("GET request timeout")
+        return ""
+    except requests.exceptions.RequestException as e:
+        print(f"GET Request failed: {e}")
+        return ""
+
     if response.status_code != 200:
         # if response is 404, that means there is no pdf in queue, so we can wait and try again later.
         if response.status_code == 404:
@@ -86,7 +94,15 @@ def mark_pdf_as_printed(pdf_path):
     pdf_filename = os.path.basename(pdf_path)
 
     # send the filename to the pdf_url with a POST request
-    response = requests.post(pdf_url, data={"filename": pdf_filename})
+    try:
+        response = requests.post(pdf_url, data={"filename": pdf_filename}, timeout=15)
+    except requests.exceptions.Timeout:
+        print("POST request timeout")
+        return False
+    except requests.exceptions.RequestException as e:
+        print(f"POST Request failed: {e}")
+        return False
+
     if response.status_code != 200:
         print(f"Error marking pdf as printed: {response.status_code}")
         return False
@@ -174,6 +190,7 @@ def print_pdf_and_wait(filepath, printer_name):
         time.sleep(3)
 
         # Start polling the print queue
+        # TODO: add a timeout?
         print("Monitoring print queue... Script will block until queue is clear.")
         while True:
             try:
