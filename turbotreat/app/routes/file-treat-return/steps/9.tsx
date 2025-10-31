@@ -33,7 +33,7 @@ export type Step9State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step9) {
+  if (!treatReturnState.step9 || treatReturnState.step9.hasCommute === undefined) {
     const initialState = {
       ...treatReturnState,
       step9: {

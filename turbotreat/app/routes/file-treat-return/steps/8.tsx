@@ -24,7 +24,7 @@ export type Step8State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step8) {
+  if (!treatReturnState.step8 || treatReturnState.step8.hasSiblings === undefined) {
     const initialState = {
       ...treatReturnState,
       step8: {

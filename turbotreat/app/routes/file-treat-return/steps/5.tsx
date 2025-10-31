@@ -14,7 +14,7 @@ export type Step5State = {
 export function clientLoader() {
   const treatReturnState = loadTreatReturnState();
 
-  if (!treatReturnState.step5) {
+  if (!treatReturnState.step5 || treatReturnState.step5 === undefined) {
     const initialState = {
       ...treatReturnState,
       step5: { 
