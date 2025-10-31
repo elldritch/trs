@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 
 import { useEffect } from "react";
-import { useFetcher, useNavigate } from "react-router";
+import { Link, useFetcher, useNavigate } from "react-router";
 import type { Route } from "./+types/submit";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
@@ -373,6 +373,8 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
             <p>
               Thank you for using TurboTreat&copy;.
               <br />
+              To recieve your treat refund, please visit your local TRS office. You can <a href="/appointment"
+                className="text-blue-500 underline">book an appointment with a TRS auditor</a> to skip the line.
               You may now safely leave this page.
             </p>
           </div>
