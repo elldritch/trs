@@ -7,6 +7,7 @@ import type { Route } from "./+types/submit";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import { customAlphabet } from "nanoid";
+import { calculateCandyCountFromApplication, calculateTreatReturnCandyCount, type CandyCountResult } from "~/lib/candy-calculator";
 
 import { prisma } from "~/lib/db.server";
 import {
@@ -61,7 +62,8 @@ export async function action({ request }: Route.ActionArgs) {
   await fs.mkdir(returnsDir, { recursive: true });
   await fs.writeFile(path.join(returnsDir, `${ticketId}.pdf`), pdfBytes);
 
-  await prisma.treatReturnApplication.create({
+  // Create the application record
+  const application = await prisma.treatReturnApplication.create({
     data: {
       ticketId,
       status: "IN_REVIEW",
@@ -130,6 +132,13 @@ export async function action({ request }: Route.ActionArgs) {
     },
   });
 
+  // Calculate and update the candy refund
+  const candyResult = calculateCandyCountFromApplication(application);
+  await prisma.treatReturnApplication.update({
+    where: { id: application.id },
+    data: { total_candy_refund: candyResult.candyCount },
+  });
+
   return { ticketId };
 }
 
@@ -152,13 +161,8 @@ function mapSchoolYearToGrade(schoolYear: string | null): string {
   }
 }
 
-type CandyCountResult = {
-  candyCount: number;
-  amtApplied: boolean;
-};
-
 /**
- * Extracts candy count parameters from TreatReturnState
+ * Extracts candy count parameters from TreatReturnState for client-side display
  */
 function getCandyCountFromState(state: TreatReturnState): CandyCountResult {
   // Grade
@@ -233,173 +237,6 @@ function getCandyCountFromState(state: TreatReturnState): CandyCountResult {
     smartiesTreatCredit,
     premiumTreatCredit
   );
-}
-
-function calculateTreatReturnCandyCount(
-  grade: string,
-  totalCandyWeight: number,
-  homeOfficeTreatCredit: number,
-  dependentsTreatCredit: boolean,
-  greenTreatCredit: boolean,
-  opportunityTreatCredit: boolean,
-  researchTreatCredit: number,
-  localTreatCredit: boolean,
-  dentalTreatCredit: boolean,
-  sweetwestTreatCredit: boolean,
-  saversTreatCredit: number,
-  smartiesTreatCredit: number,
-  premiumTreatCredit: boolean
-): CandyCountResult {
-  let candyCount = 0;
-
-  // Grade-based candy (item 1)
-  switch (grade) {
-    case "pre-k":
-    case "elementary":
-      candyCount += 2;
-      break;
-    case "middle":
-      candyCount += 1.25;
-      break;
-    case "high":
-    case "adult":
-      candyCount += 0;
-      break;
-  }
-
-  // Total candy weight (item 1d)
-  if (totalCandyWeight <= 0.25) {
-    candyCount += 2;
-  } else if (totalCandyWeight <= 0.5) {
-    candyCount += 1.75;
-  } else if (totalCandyWeight <= 1) {
-    candyCount += 1.5;
-  } else if (totalCandyWeight <= 1.5) {
-    candyCount += 1;
-  } else if (totalCandyWeight <= 2) {
-    candyCount += 0.75;
-  } else {
-    // 3+ lbs
-    candyCount += 0.5;
-  }
-
-  // 3a) Home Office Treat Credit
-  if (homeOfficeTreatCredit === 0) {
-    candyCount += 0;
-  } else if (homeOfficeTreatCredit < 50) {
-    candyCount += 0.25;
-  } else {
-    // > 50%
-    candyCount += 0.5;
-  }
-
-  // 3b) Dependents Treat Credit
-  if (dependentsTreatCredit) {
-    candyCount += 0.5;
-  }
-
-  // 3c) Green Transportation Treat Credit
-  if (greenTreatCredit) {
-    candyCount += 1;
-  }
-
-  // 3d) American Opportunity Treat Credit
-  if (opportunityTreatCredit) {
-    candyCount += 0.25;
-  }
-
-  // 3e) Research and Development Treat Credit
-  if (researchTreatCredit === 0) {
-    candyCount += 0;
-  } else if (researchTreatCredit < 50) {
-    candyCount += 0.125;
-  } else {
-    // > 50%
-    candyCount += 0.25;
-  }
-
-  // 3f) Local Tax Treat Credit
-  if (localTreatCredit) {
-    candyCount += 0.25;
-  }
-
-  // 3g) Unreimbursed Dentist Visits Treat Credit
-  if (dentalTreatCredit) {
-    candyCount += 0.25;
-  }
-
-  // 3h) Savers Treat Credit
-  if (saversTreatCredit === 0) {
-    candyCount += 0;
-  } else if (saversTreatCredit < 50) {
-    candyCount += 0.25;
-  } else {
-    // > 50%
-    candyCount += 0.5;
-  }
-
-  // 3i) Smarties Subsidy
-  if (smartiesTreatCredit === 0) {
-    candyCount += 0;
-  } else if (smartiesTreatCredit < 5) {
-    candyCount += 0.25;
-  } else if (smartiesTreatCredit < 10) {
-    candyCount += 0.5;
-  } else {
-    // 10% or above
-    candyCount += 0.75;
-  }
-
-  // 3j) Sweetwest customer Treat Credit
-  if (sweetwestTreatCredit) {
-    candyCount += 0.5;
-  }
-
-  // TurboTreat fee
-  candyCount -= 1;
-
-  // Premium deduction
-  if (premiumTreatCredit) {
-    candyCount -= 1;
-  }
-
-  // Floor the result
-  candyCount = Math.floor(candyCount);
-
-  // Apply Alternative Minimum Treat Tax (AMT)
-  let amtApplied = false;
-  let minCandy = 0;
-  let maxCandy = 0;
-
-  switch (grade) {
-    case "pre-k":
-    case "elementary":
-      minCandy = 3;
-      maxCandy = 6;
-      break;
-    case "middle":
-      minCandy = 2;
-      maxCandy = 5;
-      break;
-    case "high":
-      minCandy = 1;
-      maxCandy = 3;
-      break;
-    case "adult":
-      // No AMT for adults
-      return { candyCount, amtApplied: false };
-  }
-
-  // Check if AMT needs to be applied
-  if (candyCount < minCandy) {
-    candyCount = minCandy;
-    amtApplied = true;
-  } else if (candyCount > maxCandy) {
-    candyCount = maxCandy;
-    amtApplied = true;
-  }
-
-  return { candyCount, amtApplied };
 }
 
 export default function Submit({ loaderData }: Route.ComponentProps) {
