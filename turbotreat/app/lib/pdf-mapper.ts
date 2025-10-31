@@ -87,6 +87,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
 
   // Step 3: School
   mapSchoolFields(state.step3.schoolYear, fields);
+  fields.opportunity_no = true; // Default to no if unknown
   if (state.step3.attendsSchool) {
     fields.opportunity_yes = state.step3.attendsSchool;
     fields.opportunity_no = !state.step3.attendsSchool;
@@ -98,6 +99,9 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
     if (streets[0]) fields["1a_streetname"] = streets[0];
     if (streets[1]) fields["1b_streetname"] = streets[1];
     if (streets[2]) fields["1c_streetname"] = streets[2];
+  }
+  if (state.step4.streetNames?.length === 0 && state.step4.allFromArborAve) {
+    fields["1a_streetname"] = "Arbor Street";
   }
   if (state.step4.nonArborPercent) {
     fields.nonarbor_percent = state.step4.nonArborPercent.toString();
@@ -202,6 +206,8 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 13: Sweetwest Airlines
+  // Default to no if unknown
+  fields.sweetwest_no = true;
   if (state.step13.flewSweetwest) {
     fields.sweetwest_yes = state.step13.flewSweetwest;
     fields.sweetwest_no = !state.step13.flewSweetwest;
@@ -222,6 +228,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 14: Election fund donation
+  fields.election_no = true; // Default to no if unknown
   if (state.step14.donateSEF) {
     fields.election_yes = state.step14.donateSEF;
     fields.election_no = !state.step14.donateSEF;
