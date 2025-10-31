@@ -81,6 +81,8 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   // Step 2: Costume
   if (state.step2.costumeName) {
     fields.costume_name = state.step2.costumeName;
+  } else {
+    fields.costume_name = "N/A";
   }
 
   // Step 3: School
@@ -237,7 +239,10 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
  * Maps school year to appropriate school level checkboxes
  */
 function mapSchoolFields(schoolYear: SchoolYear, fields: FormFields): void {
-  if (!schoolYear) return;
+  if (!schoolYear) {
+    fields.school_adult = true; // Default to adult if unknown
+    return;
+  }
 
   if (schoolYear === "Pre-K") {
     fields.school_prek = true;
