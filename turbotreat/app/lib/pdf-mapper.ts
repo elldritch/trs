@@ -79,14 +79,14 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 2: Costume
+  fields.costume_name = "N/A";
   if (state.step2.costumeName) {
     fields.costume_name = state.step2.costumeName;
-  } else {
-    fields.costume_name = "N/A";
   }
 
   // Step 3: School
   mapSchoolFields(state.step3.schoolYear, fields);
+  fields.opportunity_no = true; // Default to no if unknown
   if (state.step3.attendsSchool) {
     fields.opportunity_yes = state.step3.attendsSchool;
     fields.opportunity_no = !state.step3.attendsSchool;
@@ -99,19 +99,20 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
     if (streets[1]) fields["1b_streetname"] = streets[1];
     if (streets[2]) fields["1c_streetname"] = streets[2];
   }
+  if (state.step4.streetNames?.length === 0 && state.step4.allFromArborAve) {
+    fields["1a_streetname"] = "Arbor Street";
+  }
+  fields.nonarbor_percent = "0";
   if (state.step4.nonArborPercent) {
     fields.nonarbor_percent = state.step4.nonArborPercent.toString();
-  } else {
-    fields.nonarbor_percent = "0";
   }
 
   // Step 5: Candy weight and tips
   mapCandyWeightFields(state.step5.candyWeight, fields);
   // Tips received - no direct field match in PDF, skipping for now
+  fields.tips_percent = "0";
   if (state.step5.tipsPercent) {
     fields.tips_percent = state.step5.tipsPercent.toString();
-  } else {
-    fields.tips_percent = "0";
   }
 
   // Step 6: Investments and film
@@ -123,21 +124,23 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
     totalInvestedDividendsPercent += state.step6.investedREITPercent || 0;
   }
   fields.business_percent = totalInvestedDividendsPercent.toString();
+  fields.illegal_no = true; // Default to no if unknown
   if (state.step6.otherSourcesOfCandy) {
     fields.illegal_yes = state.step6.otherSourcesOfCandy;
     fields.illegal_no = !state.step6.otherSourcesOfCandy;
   }
+  fields.film_no = true;
   if (state.step6.californiaFilm) {
     fields.film_yes = state.step6.californiaFilm;
     fields.film_no = !state.step6.californiaFilm;
   }
+  fields.payments_pcs = "0";
   if (state.step6.pieces1040TRES) {
     fields.payments_pcs = state.step6.pieces1040TRES.toString();
-  } else {
-    fields.payments_pcs = "0";
   }
 
   // Step 7: Homework (home office deduction)
+  fields.home_office_percent = "0";
   if (state.step7.totalHomeworkCount && state.step7.homeworkAtHomeCount) {
     const homeOfficePercent = (state.step7.homeworkAtHomeCount / state.step7.totalHomeworkCount) * 100;
     fields.home_office_percent = homeOfficePercent.toFixed(2);
@@ -162,24 +165,21 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
 
   // Step 9: Green transportation
+  fields.green_no = true;
   if (state.step9.transportMethod) {
     const greenMethods = ['bike', 'scooter', 'skateboard', 'roller_skating', 'walking', 'running', 'electric_vehicle'];
     const isGreen = greenMethods.includes(state.step9.transportMethod);
     fields.green_yes = isGreen;
     fields.green_no = !isGreen;
   }
-  if (!fields.green_yes && !fields.green_no) {
-    fields.green_no = true; // Default to no if unknown
-  }
-
   // Step 10: Study candy (education/R&D credit)
+  fields.rnd_percent = "0";
   if (state.step10.studyCandyPercent) {
     fields.rnd_percent = state.step10.studyCandyPercent.toString();
-  } else {
-    fields.rnd_percent = "0";
   }
 
   // Step 11: Parents/guardians - no direct PDF field mapping
+  fields.local_no = true; // Default to no if unknown
    if (state.step11.livesWithParents) {
     // Check each parent to see if any of them eat your candy
     state.step11.parents?.forEach(parent => {
@@ -187,41 +187,37 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
         fields.local_yes = true;
       }
     });
-    if (!fields.local_yes) {
-      fields.local_no = true;
-    }
   }
 
   // Step 12: Dental
+  fields.dental_no = true; // Default to no if unknown
   if (state.step12.dentalWorkFromCandy) {
     fields.dental_yes = state.step12.dentalWorkFromCandy;
     fields.dental_no = !state.step12.dentalWorkFromCandy;
   }
-  if (!fields.dental_yes && !fields.dental_no) {
-    fields.dental_no = true; // Default to no if unknown
-  }
 
   // Step 13: Sweetwest Airlines
+  // Default to no if unknown
+  fields.sweetwest_no = true;
   if (state.step13.flewSweetwest) {
     fields.sweetwest_yes = state.step13.flewSweetwest;
     fields.sweetwest_no = !state.step13.flewSweetwest;
   }
 
   // Step 13: Leftover candy
+  fields.savers_percent = "0";
   if (state.step13.leftoverCandyPercent) {
     fields.savers_percent = state.step13.leftoverCandyPercent.toString();
-  } else {
-    fields.savers_percent = "0";
   }
 
   // Step 13: Smarties
+  fields.smarties_percent = "0";
   if (state.step13.smartiesPercent) {
     fields.smarties_percent = state.step13.smartiesPercent.toString();
-  } else {
-    fields.smarties_percent = "0";
   }
 
   // Step 14: Election fund donation
+  fields.election_no = true; // Default to no if unknown
   if (state.step14.donateSEF) {
     fields.election_yes = state.step14.donateSEF;
     fields.election_no = !state.step14.donateSEF;
