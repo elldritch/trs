@@ -48,7 +48,10 @@ export async function action({ request }: Route.ActionArgs) {
             return data({ error: "Slot count must be a positive number", intent: "createSlots" }, { status: 400 });
         }
 
-        const timeslotDate = new Date(timeslot);
+        // Parse the datetime-local input as LA time
+        // datetime-local gives us a string like "2024-10-31T19:00"
+        // We need to interpret this as LA time, not UTC
+        const timeslotDate = new Date(timeslot + ':00.000-07:00');
         if (isNaN(timeslotDate.getTime())) {
             return data({ error: "Invalid time slot format", intent: "createSlots" }, { status: 400 });
         }
@@ -64,7 +67,7 @@ export async function action({ request }: Route.ActionArgs) {
 
         await Promise.all(createPromises);
 
-        return data({ success: `Created ${countNum} appointment slot(s) for ${timeslotDate.toLocaleString()}`, intent: "createSlots" });
+        return data({ success: `Created ${countNum} appointment slot(s) for ${timeslotDate.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}`, intent: "createSlots" });
     }
 
     if (intent === "bookAppointment") {
@@ -212,7 +215,7 @@ export default function Appointments({
                                         .filter(apt => !apt.treatReturnApplication)
                                         .map((appointment) => (
                                             <option key={appointment.id} value={appointment.id}>
-                                                {new Date(appointment.timeslot).toLocaleString()}
+                                                {new Date(appointment.timeslot).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                                             </option>
                                         ))}
                                 </select>
@@ -272,7 +275,7 @@ export default function Appointments({
                                 return (
                                     <tr key={appointment.id} className="border-b hover:bg-gray-50">
                                         <td className="px-6 py-4 text-sm text-gray-900" suppressHydrationWarning data-timestamp={appointment.timeslot}>
-                                            {new Date(appointment.timeslot).toLocaleString()}
+                                            {new Date(appointment.timeslot).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
                                             {isAvailable ? (

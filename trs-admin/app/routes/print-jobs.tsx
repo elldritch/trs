@@ -154,10 +154,10 @@ export default function PrintJobs({
                 </div>
             </div>
             <script dangerouslySetInnerHTML={{__html: `
-                // Format timestamps in user's local timezone
+                // Format timestamps in Los Angeles timezone
                 document.querySelectorAll('[data-timestamp]').forEach(el => {
                     const date = new Date(el.getAttribute('data-timestamp'));
-                    el.textContent = date.toLocaleString();
+                    el.textContent = date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
                 });
             `}} />
         </>

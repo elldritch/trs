@@ -230,7 +230,7 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   // Step 15: Premium - no direct PDF field mapping
 
   // Add current date
-  fields.date = new Date().toLocaleDateString('en-US');
+  fields.date = new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' });
 
   return fields;
 }

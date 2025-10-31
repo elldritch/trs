@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "TurboTreat® - Book Appointment" },
+    { title: "TurboTreatï¿½ - Book Appointment" },
     {
       name: "description",
       content: "Book your TRS audit appointment",
@@ -82,7 +82,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (existingAppointment) {
     return data({
-      error: `Your return (${ticketId}) already has an appointment booked for ${new Date(existingAppointment.timeslot).toLocaleString()}`
+      error: `Your return (${ticketId}) already has an appointment booked for ${new Date(existingAppointment.timeslot).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}`
     }, { status: 400 });
   }
 
@@ -108,7 +108,7 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   return data({
-    success: `Appointment successfully booked for ${new Date(timeslotDate).toLocaleString()}!`,
+    success: `Appointment successfully booked for ${new Date(timeslotDate).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}!`,
     ticketId
   });
 }
@@ -169,7 +169,7 @@ export default function Appointment({ loaderData }: Route.ComponentProps) {
                       <option value="">Select a time slot...</option>
                       {loaderData.timeSlots.map((slot) => (
                         <option key={slot.timeslot.toISOString()} value={slot.timeslot.toISOString()}>
-                          {new Date(slot.timeslot).toLocaleString()} ({slot.availableCount} slot{slot.availableCount !== 1 ? 's' : ''} available)
+                          {new Date(slot.timeslot).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })} ({slot.availableCount} slot{slot.availableCount !== 1 ? 's' : ''} available)
                         </option>
                       ))}
                     </select>
