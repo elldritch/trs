@@ -7,6 +7,7 @@ import type { Route } from "./+types/submit";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import { customAlphabet } from "nanoid";
+import { calculateCandyCountFromApplication, calculateTreatReturnCandyCount, type CandyCountResult } from "~/lib/candy-calculator";
 
 import { prisma } from "~/lib/db.server";
 import {
@@ -61,7 +62,8 @@ export async function action({ request }: Route.ActionArgs) {
   await fs.mkdir(returnsDir, { recursive: true });
   await fs.writeFile(path.join(returnsDir, `${ticketId}.pdf`), pdfBytes);
 
-  await prisma.treatReturnApplication.create({
+  // Create the application record
+  const application = await prisma.treatReturnApplication.create({
     data: {
       ticketId,
       status: "IN_REVIEW",
@@ -130,12 +132,119 @@ export async function action({ request }: Route.ActionArgs) {
     },
   });
 
+  // Calculate and update the candy refund
+  const candyResult = calculateCandyCountFromApplication(application);
+  await prisma.treatReturnApplication.update({
+    where: { id: application.id },
+    data: { total_candy_refund: candyResult.candyCount },
+  });
+
   return { ticketId };
+}
+
+/**
+ * Maps SchoolYear to grade category for candy calculation
+ */
+function mapSchoolYearToGrade(schoolYear: string | null): string {
+  if (!schoolYear) return "adult";
+
+  if (schoolYear === "Pre-K") {
+    return "pre-k";
+  } else if (["Elementary", "1st Grade", "2nd Grade", "3rd Grade", "4th Grade", "5th Grade"].includes(schoolYear)) {
+    return "elementary";
+  } else if (["6th Grade", "7th Grade", "8th Grade"].includes(schoolYear)) {
+    return "middle";
+  } else if (["9th Grade", "10th Grade", "11th Grade", "12th Grade"].includes(schoolYear)) {
+    return "high";
+  } else {
+    return "adult";
+  }
+}
+
+/**
+ * Extracts candy count parameters from TreatReturnState for client-side display
+ */
+function getCandyCountFromState(state: TreatReturnState): CandyCountResult {
+  // Grade
+  const grade = mapSchoolYearToGrade(state.step3.schoolYear);
+
+  // Total candy weight
+  const totalCandyWeight = state.step5.candyWeight || 0;
+
+  // Home Office Treat Credit (homework done at home percentage)
+  const homeOfficeTreatCredit =
+    state.step7.totalHomeworkCount && state.step7.homeworkAtHomeCount
+      ? (state.step7.homeworkAtHomeCount / state.step7.totalHomeworkCount) * 100
+      : 0;
+
+  // Dependents Treat Credit - check if ANY sibling will eat candy
+  let dependentsTreatCredit = false;
+  if (state.step8.hasSiblings && state.step8.siblings) {
+    state.step8.siblings.forEach(sibling => {
+      if (sibling.willEatCandy) {
+        dependentsTreatCredit = true;
+      }
+    });
+  }
+
+  // Green Transportation Treat Credit
+  const greenMethods = ['bike', 'scooter', 'skateboard', 'roller_skating', 'walking', 'running', 'electric_vehicle'];
+  const greenTreatCredit = greenMethods.includes(state.step9.transportMethod || "");
+
+  // American Opportunity Treat Credit
+  const opportunityTreatCredit = state.step10.willStudy ?? false;
+
+  // Research and Development Treat Credit
+  const researchTreatCredit = state.step10.studyCandyPercent || 0;
+
+  // Local Tax Treat Credit - check if ANY parent will eat candy
+  let localTreatCredit = false;
+  if (state.step11.livesWithParents && state.step11.parents) {
+    state.step11.parents.forEach(parent => {
+      if (parent.willEatCandy) {
+        localTreatCredit = true;
+      }
+    });
+  }
+
+  // Unreimbursed Dentist Visits Treat Credit
+  const dentalTreatCredit = state.step12.dentalWorkFromCandy ?? false;
+
+  // Savers Treat Credit
+  const saversTreatCredit = state.step13.leftoverCandyPercent || 0;
+
+  // Smarties Subsidy
+  const smartiesTreatCredit = state.step13.smartiesPercent || 0;
+
+  // Sweetwest customer Treat Credit
+  const sweetwestTreatCredit = state.step13.flewSweetwest ?? false;
+
+  // Premium
+  const premiumTreatCredit = state.step15.purchasePremium ?? false;
+
+  return calculateTreatReturnCandyCount(
+    grade,
+    totalCandyWeight,
+    homeOfficeTreatCredit,
+    dependentsTreatCredit,
+    greenTreatCredit,
+    opportunityTreatCredit,
+    researchTreatCredit,
+    localTreatCredit,
+    dentalTreatCredit,
+    sweetwestTreatCredit,
+    saversTreatCredit,
+    smartiesTreatCredit,
+    premiumTreatCredit
+  );
 }
 
 export default function Submit({ loaderData }: Route.ComponentProps) {
   const treatReturnState = loaderData;
   const navigate = useNavigate();
+
+  // Calculate the candy count
+  const result = getCandyCountFromState(treatReturnState);
 
   useEffect(() => {
     if (!step1.isCompleted(treatReturnState.step1)) {
@@ -212,6 +321,24 @@ export default function Submit({ loaderData }: Route.ComponentProps) {
       </h1>
       {!fetcher.data && (
         <>
+          <div className="mt-8 p-6 bg-sky-50 border border-sky-200 rounded-lg">
+            <h2 className="text-xl font-medium text-gray-900 text-center mb-2">
+              Your Estimated Treat Refund
+            </h2>
+            <p className="text-5xl font-light text-sky-700 text-center">
+              {result.candyCount} pieces
+            </p>
+            {result.amtApplied && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-300 rounded">
+                <p className="text-sm text-amber-800 text-center font-medium">
+                  ⚠️ Alternative Minimum Treat Tax (AMT) Applied
+                </p>
+                <p className="text-xs text-amber-700 text-center mt-1">
+                  Your refund has been adjusted upwards to comply with minimum treat limits for your grade level.
+                </p>
+              </div>
+            )}
+          </div>
           <p className="mt-4">
             Please verify your treat return answers and then click "submit"
             below to submit your return.
