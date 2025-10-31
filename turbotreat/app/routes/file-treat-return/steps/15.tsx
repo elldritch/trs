@@ -76,12 +76,6 @@ export default function Step15() {
 
          <div>
           <Link
-            to="/file/step/14"
-            className="block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
-          >
-            Previous
-          </Link>
-          <Link
             to="/file/finish"
             className={
               "block text-center mt-4 rounded-md font-medium text-white w-full py-2" +
@@ -91,6 +85,12 @@ export default function Step15() {
             }
           >
             Next
+          </Link>
+          <Link
+            to="/file/step/14"
+            className="block text-center mt-4 rounded-md font-medium text-white w-full py-2 bg-sky-700 cursor-pointer"
+          >
+            Previous
           </Link>
         </div>
       </div>
