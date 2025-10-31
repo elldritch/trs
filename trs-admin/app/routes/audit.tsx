@@ -6,6 +6,16 @@ import AdminNavbar from "../components/AdminNavbar";
 const prisma = new PrismaClient();
 
 
+export function meta({ }: Route.MetaArgs) {
+    return [
+        { title: "TRS Admin - Look up an application" },
+        {
+            name: "description",
+            content: "Look up an application by ticket ID",
+        },
+    ];
+}
+
 
 export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
