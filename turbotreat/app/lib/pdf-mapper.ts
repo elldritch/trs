@@ -108,6 +108,8 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   // Tips received - no direct field match in PDF, skipping for now
   if (state.step5.tipsPercent !== null) {
     fields.tips_percent = state.step5.tipsPercent.toString();
+  } else {
+    fields.tips_percent = "0";
   }
 
   // Step 6: Investments and film
@@ -129,6 +131,8 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   }
   if (state.step6.pieces1040TRES !== null) {
     fields.payments_pcs = state.step6.pieces1040TRES.toString();
+  } else {
+    fields.payments_pcs = "0";
   }
 
   // Step 7: Homework (home office deduction)
@@ -162,6 +166,9 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
     fields.green_yes = isGreen;
     fields.green_no = !isGreen;
   }
+  if (!fields.green_yes && !fields.green_no) {
+    fields.green_no = true; // Default to no if unknown
+  }
 
   // Step 10: Study candy (education/R&D credit)
   if (state.step10.studyCandyPercent !== null) {
@@ -187,6 +194,9 @@ export function mapStateToFormFields(state: TreatReturnState): FormFields {
   if (state.step12.dentalWorkFromCandy !== null) {
     fields.dental_yes = state.step12.dentalWorkFromCandy;
     fields.dental_no = !state.step12.dentalWorkFromCandy;
+  }
+  if (!fields.dental_yes && !fields.dental_no) {
+    fields.dental_no = true; // Default to no if unknown
   }
 
   // Step 13: Sweetwest Airlines
