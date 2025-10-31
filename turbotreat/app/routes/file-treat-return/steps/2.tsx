@@ -8,6 +8,7 @@ import {
 import {
   HelpButton,
   HelpText,
+  ProgressBar,
   QuestionHeader,
   Select,
   StepPagination,
@@ -85,6 +86,7 @@ export default function Step2({ loaderData }: Route.ComponentProps) {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={2} />
         <div>
           <QuestionHeader>
             Are you wearing a costume this Halloween season?

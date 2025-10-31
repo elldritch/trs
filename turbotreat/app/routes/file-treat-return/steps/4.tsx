@@ -4,7 +4,7 @@ import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-import { QuestionHeader, Select, StepPagination, TextInput, NumberInput } from "./components.client";
+import { ProgressBar, QuestionHeader, Select, StepPagination, TextInput, NumberInput } from "./components.client";
 
 export type Step4State = {
   multipleStreets: boolean | null;
@@ -77,6 +77,7 @@ export default function Step4() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={4} />
         <div>
           <QuestionHeader>
             Did you collect candy from multiple streets this year?

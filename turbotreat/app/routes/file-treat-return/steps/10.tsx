@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   Select,
   NumberInput,
@@ -68,6 +69,7 @@ export default function Step10() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={10} />
         <QuestionHeader>
           Will you be studying, reading, doing homework, learning new things, or spending time in a library ("study-oriented activities") over the upcoming year?
         </QuestionHeader>

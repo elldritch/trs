@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   HelpButton,
   HelpText,
@@ -105,6 +106,7 @@ export default function Step6() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={6} />
         <QuestionHeader>
           Did you invest candy in a Publicly Treatable Partnership (PTP) this year?
           <HelpButton onClick={() => setShowPTPHelp(!showPTPHelp)} />

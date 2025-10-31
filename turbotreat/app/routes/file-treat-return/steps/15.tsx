@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   HelpButton,
   HelpText,
@@ -56,6 +57,7 @@ export default function Step15() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={15} />
         <QuestionHeader>
           Would you like to pay for TurboTreat Premium with 1 candy from your tax refund?
           <HelpButton onClick={() => setShowPremiumHelp(!showPremiumHelp)} />

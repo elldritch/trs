@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   Select,
   NumberInput,
@@ -69,6 +70,7 @@ export default function Step7() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={7} />
         <QuestionHeader>
           Over the past year, have you completed at least three homework assignments?
         </QuestionHeader>

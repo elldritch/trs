@@ -4,7 +4,7 @@ import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-import { QuestionHeader, Select, StepPagination, NumberInput } from "./components.client";
+import { ProgressBar, QuestionHeader, Select, StepPagination, NumberInput } from "./components.client";
 
 export type Step5State = {
   candyWeight: number | null;
@@ -60,6 +60,7 @@ export default function Step5() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={5} />
         <QuestionHeader>
           Enter the total weight, in pounds, of the candy you have collected this year.
         </QuestionHeader>

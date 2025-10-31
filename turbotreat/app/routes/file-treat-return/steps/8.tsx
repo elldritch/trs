@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   Select,
   PersonList,
@@ -77,6 +78,7 @@ export default function Step8() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={8} />
         <QuestionHeader>Do you have any siblings?</QuestionHeader>
         <Select
           value={hasSiblings}

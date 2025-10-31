@@ -4,7 +4,7 @@ import {
   loadTreatReturnState,
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
-import { QuestionHeader, Select, StepPagination } from "./components.client";
+import { ProgressBar, QuestionHeader, Select, StepPagination } from "./components.client";
 
 export type Step3State = {
   attendsSchool: boolean | null;
@@ -69,6 +69,7 @@ export default function Step3() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={3} />
         <div>
           <QuestionHeader>
             Do you regularly attend school?

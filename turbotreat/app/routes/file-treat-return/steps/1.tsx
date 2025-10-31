@@ -9,6 +9,7 @@ import {
 import {
   HelpButton,
   HelpText,
+  ProgressBar,
   QuestionHeader,
   TextInput,
 } from "./components.client";
@@ -53,6 +54,7 @@ export default function Step1({ loaderData }: Route.ComponentProps) {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={1} />
         <QuestionHeader>
           What is your first name?
           <HelpButton onClick={() => setShowHelp(!showHelp)} />

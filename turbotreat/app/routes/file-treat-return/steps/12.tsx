@@ -5,6 +5,7 @@ import {
   setTreatReturnState,
 } from "~/lib/treat-return-state.client";
 import {
+  ProgressBar,
   QuestionHeader,
   HelpButton,
   HelpText,
@@ -74,6 +75,7 @@ export default function Step12() {
   return (
     <main className="max-w-2xl mx-auto p-4">
       <div className="space-y-8">
+        <ProgressBar currentStep={12} />
         <QuestionHeader>
           Have you been to the dentist in the past year?
         </QuestionHeader>
