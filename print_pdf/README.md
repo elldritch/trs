@@ -1,4 +1,5 @@
 # Windows PDF Printer Script
+MILDLY OUT OF DATE, DON'T LOOK TOO CLOSELY...
 This Python script sends a local PDF file on a Windows machine to a specific printer. It then monitors that printer's queue and blocks (waits) until the queue is clear before exiting.
 
 ## Requirements

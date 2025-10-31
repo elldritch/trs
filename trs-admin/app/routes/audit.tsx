@@ -1,7 +1,10 @@
-import { prisma } from "trs-db";
+import { PrismaClient } from "trs-db";
 import type { Route } from "./+types/audit";
 import { redirect, data, Form, useActionData } from "react-router";
 import AdminNavbar from "../components/AdminNavbar";
+
+const prisma = new PrismaClient();
+
 
 
 export async function action({ request }: Route.ActionArgs) {

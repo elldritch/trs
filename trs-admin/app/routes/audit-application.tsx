@@ -1,10 +1,18 @@
 import type { TreatReturnApplication } from "node_modules/trs-db/generated/prisma/client";
 import type { Route } from "./+types/audit-application";
-import { prisma } from "trs-db";
+import { PrismaClient } from "trs-db";
 import { data, redirect } from "react-router";
 import AdminNavbar from "../components/AdminNavbar";
 import { Form } from "react-router";
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid'
+
+const prisma = new PrismaClient();
+
+export function meta({ }: Route.MetaArgs) {
+  return [
+      { title: "TRS Admin - Audit application" },
+  ];
+}
 
 
 function flagUnusualResponses(application: TreatReturnApplication) {
@@ -76,6 +84,7 @@ export async function action({ request }: Route.ActionArgs) {
   });
   return data({ success: "Application sent to print" }, { status: 200 });
 }
+
 export default function AuditApplication({ loaderData }: Route.ComponentProps) {
   const { application } = loaderData;
   return <>

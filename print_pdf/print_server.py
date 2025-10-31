@@ -1,31 +1,114 @@
-import sys
+"""
+Notes:
+This script is for Windows, as it uses the win32print API.
+
+The printing was tested on a Windows 11 machine connected over USB to a Brother
+HL-L6210DW printer. We had to manually download and install the printer driver
+to get this to work. The default/generic Microsoft IPP driver that
+auto-loaded when this printer was connected over a network did not work with
+this script, despite working when manually printing a PDF from Chrome.
+"""
+
 import os
+import requests
+import sys
 import time
 
 try:
     # Attempt to import necessary modules from pywin32
-    import win32api
     import win32print
 except ImportError:
     print("Error: This script requires the 'pywin32' library.")
     print("Please install it using: pip install pywin32")
     sys.exit(1)
 
-"""
-Notes:
-This script is for Windows, as it uses the win32print API.
+# Note this URL is for both GETting the pdf and POSTing the pdf status
+pdf_url = "https://trs.arborhalloween.com/next-pdf-to-print"
+download_dir = "C:\\Users\\TODO_JOHNS_USERNAME_ON_THE_WINDOWS_LAPTOP\\Downloads\\TRS2025_pdfs"
+printer_name = "Brother HL-L6210DW series"
 
-This was tested on a Windows 11 machine connected over USB to a Brother
-HL-L6210DW printer. We had to manually download and install the printer driver
-to get this to work. The default/generic Microsoft IPP driver that
-auto-loaded when this printer was connected over a network did not work with
-this script, despite working when manually printing a PDF from Chrome.
+def get_filename(response): 
+    cd = response.headers.get("Content-Disposition") or response.headers.get("content-disposition")
 
-This script reads and spools the raw PDF data rather than invoking
-win32api.ShellExecute(0, "print", pdf_path, None, ".", 0) which would print
-the PDF using the default PDF viewer on the system. We didn't try that option
-but I'm documenting it here in case it comes in handy later.
-"""
+    if not cd:
+        print("ERROR: no Content-Disposition header found, cannot extract filename")
+        return ""
+
+    # we expect the filename to be encoded in the header e.g. filename=myfilename
+    try:
+        pdf_filename = cd.split("filename=")[1]
+        print(f"found filename: {pdf_filename}")
+    except IndexError:
+        print("ERROR: could not extract filename from Content-Disposition header (IndexError)")
+        return ""
+
+    return pdf_filename
+
+
+def get_next_pdf(pdf_url):
+    # Send GET request to download the PDF
+    try:
+        response = requests.get(pdf_url, stream=True, timeout=15)
+    except requests.exceptions.Timeout:
+        print("GET request timeout")
+        return ""
+    except requests.exceptions.RequestException as e:
+        print(f"GET Request failed: {e}")
+        return ""
+
+    if response.status_code != 200:
+        # if response is 404, that means there is no pdf in queue, so we can wait and try again later.
+        if response.status_code == 404:
+            print(f"No pdf in queue, waiting and trying again later. {response.status_code}")
+            return ""
+        # if response is some other error, we print the error and try again later.
+        else:
+            # print error
+            print(f"Error downloading pdf: {response.status_code}")
+            return ""
+
+    # ensure download directory exists
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir, exist_ok=True)
+
+    # extract the pdf filename from the response header
+    pdf_filename =  get_filename(response)
+    if not pdf_filename:
+        print("Error: no filename, skipping this print")
+        return ""
+
+    # create a filepath based on the name
+    target_path = os.path.join(download_dir, pdf_filename)
+
+    # save the pdf to the download directory (streamed)
+    with open(target_path, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:
+                f.write(chunk)
+
+    return target_path
+
+
+def mark_pdf_as_printed(pdf_path):
+    # extract the pdf filename from the path
+    pdf_filename = os.path.basename(pdf_path)
+
+    # send the filename to the pdf_url with a POST request
+    try:
+        response = requests.post(pdf_url, data={"filename": pdf_filename}, timeout=15)
+    except requests.exceptions.Timeout:
+        print("POST request timeout")
+        return False
+    except requests.exceptions.RequestException as e:
+        print(f"POST Request failed: {e}")
+        return False
+
+    if response.status_code != 200:
+        print(f"Error marking pdf as printed: {response.status_code}")
+        return False
+
+    return True
+
 
 def print_pdf_and_wait(filepath, printer_name):
     """
@@ -107,6 +190,7 @@ def print_pdf_and_wait(filepath, printer_name):
         time.sleep(3)
 
         # Start polling the print queue
+        # TODO: add a timeout?
         print("Monitoring print queue... Script will block until queue is clear.")
         while True:
             try:
@@ -130,12 +214,20 @@ def print_pdf_and_wait(filepath, printer_name):
             win32print.ClosePrinter(hPrinter)
             print("Closed printer handle.")
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python win_print_pdf.py \"C:\\path\\to\\your\\file.pdf\" \"Printer Name\"")
-        print("Example: python win_print_pdf.py \"form1040tr.pdf\" \"Brother HL-L6210DW series\"")
-        sys.exit(1)
 
-    pdf_path = sys.argv[1]
-    printer_arg = sys.argv[2]
-    print_pdf_and_wait(pdf_path, printer_arg)
+if __name__ == "__main__":
+    while True:
+        pdf_path = get_next_pdf(pdf_url)
+
+        if pdf_path:
+            print(f"Downloaded pdf: {pdf_path}")
+
+            # blocks until the print is complete
+            print_pdf_and_wait(pdf_path, printer_name)
+            print(f"Printed pdf: {pdf_path}")
+
+            # update the database to mark the pdf as printed
+            mark_pdf_as_printed(pdf_path)
+        else:
+            print("No pdf in queue, waiting and trying again later.")
+            time.sleep(3)
