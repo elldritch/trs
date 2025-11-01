@@ -20,4 +20,5 @@ export default [
   // and mark PDFs as printed
   route("next-pdf-to-print", "routes/next-pdf-to-print.tsx"),
   route("print-jobs", "routes/print-jobs.tsx"),
+  route("view-recent", "routes/view-recent.tsx"),
 ] satisfies RouteConfig;
