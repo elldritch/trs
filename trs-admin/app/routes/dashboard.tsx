@@ -19,7 +19,7 @@ export default function Dashboard({
     return (
         <>
             <AdminNavbar />
-            <h1 className="text-3xl font-bold mt-4 px-4">
+            <h1 className="text-3xl font-bold mt-4 px-4 text-gray-900 dark:text-gray-100">
                 How can we help you?
             </h1>
             <ul className="">

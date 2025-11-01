@@ -42,19 +42,19 @@ export default function Audit() {
 
     return <>
         <AdminNavbar />
-        <h1 className="text-3xl font-bold mt-4 px-4">Look up an application by ticket ID</h1>
+        <h1 className="text-3xl font-bold mt-4 px-4 text-gray-900 dark:text-gray-100">Look up an application by ticket ID</h1>
         <Form method="post" className="flex flex-col gap-2 px-4">
             <div className="flex items-center gap-2">
                 <input
                     type="text"
                     name="ticketId"
                     placeholder="Enter ticket ID"
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 <button type="submit" className="bg-trs-blue text-white px-4 py-2 rounded-md">Search</button>
             </div>
             {actionData?.error && (
-                <p className="text-red-600 text-sm">{actionData.error}</p>
+                <p className="text-red-600 dark:text-red-400 text-sm">{actionData.error}</p>
             )}
         </Form>
     </>;
