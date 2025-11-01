@@ -39,8 +39,7 @@ export function clientLoader() {
 
 export function isCompleted(step7: Step7State) {
   if (step7.completedThreeHomework === null) return false;
-  if (step7.totalHomeworkCount === null) return false;
-  if (step7.homeworkAtHomeCount === null) return false;
+  if (step7.completedThreeHomework === true && (step7.totalHomeworkCount === null || step7.homeworkAtHomeCount === null)) return false;
   return true;
 }
 
